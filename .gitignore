@@ -1,0 +1,5 @@
+.DS_Store
+dist/
+example-go-cli
+example-go-cli.exe
+tmp*

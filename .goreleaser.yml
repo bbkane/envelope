@@ -1,0 +1,54 @@
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod download
+    # you may remove this if you don't need go generate
+    # - go generate ./...
+# https://goreleaser.com/customization/homebrew/
+brews:
+  - caveats: |
+      Unfortunately, Apple wants to charge developers $100/year to distribute
+      their apps without a big scary "... the developer cannot be verified"
+      warning. I'm not willing to pay that to give away free apps.
+      See https://www.macworld.com/article/3140183/how-to-install-an-app-in-macos-sierra-thats-not-signed-by-a-developer.html to work around that
+    description: Example Go CLI to model tooling
+    folder: Formula
+    homepage: https://github.com/bbkane/example-go-cli
+    tap:
+      name: homebrew-tap
+      owner: bbkane
+      # Optionally a token can be provided, if it differs from the token provided to GoReleaser
+      token: '{{ .Env.KEY_GITHUB_GORELEASER_TO_HOMEBREW_TAP }}'
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goarch:
+      - amd64
+      # - arm
+      # - arm64
+      # - i386  # does anyone care about i386?
+    goos:
+      - linux
+      - windows
+      - darwin
+    ldflags:
+      - -s -w -X main.version=v{{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}} -X main.builtBy=goreleaser
+changelog:
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+  sort: asc
+checksum:
+  name_template: checksums.txt
+# https://goreleaser.com/customization/scoop/
+scoop:
+  bucket:
+    name: scoop-bucket
+    owner: bbkane
+    token: '{{ .Env.KEY_GITHUB_GORELEASER_TO_HOMEBREW_TAP }}'
+  description: Example Go CLI to model tooling
+  homepage: https://github.com/bbkane/example-go-cli
+  license: MIT
