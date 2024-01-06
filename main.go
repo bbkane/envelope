@@ -11,7 +11,7 @@ var version string
 
 func buildApp() warg.App {
 	app := warg.New(
-		"example-go-cli",
+		"namedenv",
 		section.New(
 			"Example Go CLI",
 			section.Command(

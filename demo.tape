@@ -1,6 +1,6 @@
 # https://github.com/charmbracelet/vhs
 
-Require example-go-cli
+Require namedenv
 
 Output demo.gif
 
@@ -18,7 +18,7 @@ Hide
 Sleep 3s
 Show
 
-Type "example-go-cli hello"
+Type "namedenv hello"
 Sleep 200ms
 Enter
 Sleep 1s

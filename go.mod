@@ -1,7 +1,6 @@
-module go.bbkane.com/example-go-cli
+module go.bbkane.com/namedenv
 
-// Will update this to go 1.20 when https://github.com/Homebrew/homebrew-core/pull/122082 lands
-go 1.19
+go 1.21
 
 require (
 	go.bbkane.com/gocolor v0.0.4 // indirect
