@@ -26,11 +26,33 @@ func buildApp() warg.App {
 		panic(err)
 	}
 
-	sqliteFlags := flag.FlagMap{
+	sqliteDSN := flag.FlagMap{
 		"--sqlite-dsn": flag.New(
 			"Sqlite DSN. Usually the file name",
 			scalar.String(
 				scalar.Default(dbPath),
+			),
+			flag.Required(),
+		),
+	}
+
+	// most tables have these, so let's just re-use the definition
+	commonCreateFlags := flag.FlagMap{
+		"--comment": flag.New(
+			"Comment",
+			scalar.String(),
+		),
+		"--create-time": flag.New(
+			"Create time",
+			scalar.String(
+				scalar.Default("bob"), // TODO: make current time
+			),
+			flag.Required(),
+		),
+		"--update-time": flag.New(
+			"Update time",
+			scalar.String(
+				scalar.Default("bob"), // TODO: make current time
 			),
 			flag.Required(),
 		),
@@ -49,9 +71,10 @@ func buildApp() warg.App {
 					"create",
 					"Create an environment",
 					envCreateCmd,
+					command.ExistingFlags(commonCreateFlags),
 					command.Flag(
 						"--name",
-						"Name of environment",
+						"Environment name",
 						scalar.String(
 							scalar.Default(cwd),
 						),
@@ -59,7 +82,7 @@ func buildApp() warg.App {
 						flag.Required(),
 					),
 				),
-				section.ExistingFlags(sqliteFlags),
+				section.ExistingFlags(sqliteDSN),
 			),
 		),
 		warg.OverrideVersion(version),

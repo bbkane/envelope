@@ -1,0 +1,9 @@
+version: "2"
+sql:
+  - engine: "sqlite"
+    queries: "envsqlc.sql"
+    schema: "embedded/sqlite_migrations"
+    gen:
+      go:
+        package: "envsqlc"
+        out: "envsqlc"
