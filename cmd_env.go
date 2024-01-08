@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"go.bbkane.com/namedenv/envsqlc"
+	"go.bbkane.com/namedenv/sqlite/connect"
+
 	"go.bbkane.com/warg/command"
 )
 
@@ -23,7 +25,7 @@ func envCreateCmd(cmdCtx command.Context) error {
 	}
 
 	// TODO: make this use a context
-	db, err := initSqlite(sqliteDSN)
+	db, err := connect.Connect(sqliteDSN)
 	if err != nil {
 		return fmt.Errorf("could not init db: %w", err)
 	}

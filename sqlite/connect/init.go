@@ -1,4 +1,4 @@
-package main
+package connect
 
 import (
 	"database/sql"
@@ -10,10 +10,10 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-//go:embed embedded/sqlite_migrations/*.sql
+//go:embed embedded_migrations/*.sql
 var migrationFS embed.FS
 
-func initSqlite(dsn string) (*sql.DB, error) {
+func Connect(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("db open error: %s: %w", dsn, err)
@@ -45,7 +45,7 @@ func migrate(db *sql.DB, migrationFS fs.FS) error {
 	}
 	// Read migration files from our embedded file system.
 	// This uses Go 1.16's 'embed' package.
-	embeddedMigrationGlob := "embedded/sqlite_migrations/*.sql"
+	embeddedMigrationGlob := "embedded_migrations/*.sql" // TODO: I'm already globbing to make the file system, can I just use everything in the file system?
 	names, err := fs.Glob(migrationFS, embeddedMigrationGlob)
 	if err != nil {
 		return err
