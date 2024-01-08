@@ -3,7 +3,7 @@
 //   sqlc v1.25.0
 // source: envsqlc.sql
 
-package envsqlc
+package sqlcgen
 
 import (
 	"context"

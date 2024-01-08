@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"go.bbkane.com/namedenv/envsqlc"
 	"go.bbkane.com/namedenv/sqlite/connect"
+	"go.bbkane.com/namedenv/sqlite/sqlcgen"
 
 	"go.bbkane.com/warg/command"
 )
@@ -32,9 +32,9 @@ func envCreateCmd(cmdCtx command.Context) error {
 
 	ctx := context.Background() // TODO: use a timeout!
 
-	queries := envsqlc.New(db)
+	queries := sqlcgen.New(db)
 
-	createdEnvID, err := queries.CreateEnv(ctx, envsqlc.CreateEnvParams{
+	createdEnvID, err := queries.CreateEnv(ctx, sqlcgen.CreateEnvParams{
 		Name: name,
 		Comment: sql.NullString{
 			String: comment,
