@@ -2,8 +2,10 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"github.com/mitchellh/go-homedir"
+	"go.bbkane.com/namedenv/domain"
 	"go.bbkane.com/warg"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
@@ -36,6 +38,11 @@ func buildApp() warg.App {
 		),
 	}
 
+	currentTime, err := domain.TimeToString(time.Now())
+	if err != nil {
+		panic(err) // shouldn't happen
+	}
+
 	// most tables have these, so let's just re-use the definition
 	commonCreateFlags := flag.FlagMap{
 		"--comment": flag.New(
@@ -45,14 +52,14 @@ func buildApp() warg.App {
 		"--create-time": flag.New(
 			"Create time",
 			scalar.String(
-				scalar.Default("bob"), // TODO: make current time
+				scalar.Default(currentTime),
 			),
 			flag.Required(),
 		),
 		"--update-time": flag.New(
 			"Update time",
 			scalar.String(
-				scalar.Default("bob"), // TODO: make current time
+				scalar.Default(currentTime),
 			),
 			flag.Required(),
 		),

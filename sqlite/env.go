@@ -34,11 +34,21 @@ func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (
 		comment.Valid = true
 	}
 
+	createTime, err := domain.TimeToString(args.CreateTime)
+	if err != nil {
+		return 0, fmt.Errorf("could not translate createTime into string: %w", err)
+	}
+
+	updateTime, err := domain.TimeToString(args.UpdateTime)
+	if err != nil {
+		return 0, fmt.Errorf("could not translate UpdateTime into string: %w", err)
+	}
+
 	createdEnvID, err := queries.CreateEnv(ctx, sqlcgen.CreateEnvParams{
 		Name:       args.Name,
 		Comment:    comment,
-		CreateTime: args.CreateTime.String(), // TODO: fix
-		UpdateTime: args.UpdateTime.String(), // TODO: fix
+		CreateTime: createTime,
+		UpdateTime: updateTime,
 	})
 	if err != nil {
 		return 0, fmt.Errorf("could not create env in db: %w", err)

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"time"
 )
 
@@ -24,4 +25,17 @@ type CreateEnvArgs struct {
 
 type EnvService interface {
 	CreateEnv(ctx context.Context, args CreateEnvArgs) (EnvID, error)
+}
+
+// TimeToString converts a time to UTC, then formats as RFC3339
+func TimeToString(t time.Time) (string, error) {
+	if t.IsZero() {
+		return "", errors.New("time should not be 0")
+	}
+	return t.UTC().Format(time.RFC3339), nil
+}
+
+// StringToTime converts a RFC3339 formatted string into a time.Time
+func StringToTime(s string) (time.Time, error) {
+	return time.Parse(time.RFC3339, s)
 }
