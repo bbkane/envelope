@@ -3,12 +3,25 @@ package sqlite
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"go.bbkane.com/namedenv/domain"
 	"go.bbkane.com/namedenv/sqlite/connect"
 	"go.bbkane.com/namedenv/sqlite/sqlcgen"
 )
+
+func DerefOrEmpty[T any](val *T) T {
+	if val == nil {
+		var empty T
+		return empty
+	}
+	return *val
+}
+
+func IsNotNil[T any](val *T) bool {
+	return val != nil
+}
 
 type EnvService struct {
 	db *sql.DB
@@ -28,10 +41,9 @@ func NewEnvService(ctx context.Context, dsn string) (domain.EnvService, error) {
 func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (domain.EnvID, error) {
 	queries := sqlcgen.New(e.db)
 
-	var comment sql.NullString
-	if args.Comment != nil {
-		comment.String = *args.Comment
-		comment.Valid = true
+	comment := sql.NullString{
+		String: DerefOrEmpty(args.Comment),
+		Valid:  IsNotNil(args.Comment),
 	}
 
 	createTime, err := domain.TimeToString(args.CreateTime)
@@ -54,4 +66,10 @@ func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (
 		return 0, fmt.Errorf("could not create env in db: %w", err)
 	}
 	return domain.EnvID(createdEnvID), nil
+}
+
+func (e *EnvService) UpdateEnv(ctx context.Context, args domain.UpdateEnvArgs) error {
+	// queries := sqlcgen.New(e.db)
+
+	return errors.New("TODO")
 }

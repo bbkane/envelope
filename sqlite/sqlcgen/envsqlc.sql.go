@@ -37,3 +37,31 @@ func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (int64, er
 	err := row.Scan(&id)
 	return id, err
 }
+
+const updateEnv = `-- name: UpdateEnv :exec
+UPDATE env SET
+    name = COALESCE(?, name),
+    comment = COALESCE(?, comment),
+    create_time = COALESCE(?, create_time),
+    update_time = COALESCE(?, update_time)
+WHERE id = ?
+`
+
+type UpdateEnvParams struct {
+	Name       string
+	Comment    sql.NullString
+	CreateTime string
+	UpdateTime string
+	ID         int64
+}
+
+func (q *Queries) UpdateEnv(ctx context.Context, arg UpdateEnvParams) error {
+	_, err := q.db.ExecContext(ctx, updateEnv,
+		arg.Name,
+		arg.Comment,
+		arg.CreateTime,
+		arg.UpdateTime,
+		arg.ID,
+	)
+	return err
+}
