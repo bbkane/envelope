@@ -58,9 +58,6 @@ func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (
 
 func (e *EnvService) UpdateEnv(ctx context.Context, args domain.UpdateEnvArgs) error {
 
-	// Due to https://github.com/sqlc-dev/sqlc/issues/3118 , sqlc isn't generating nullable types
-	// Once https://github.com/sqlc-dev/sqlc/issues/2800 is implemented, I can use that
-
 	queries := sqlcgen.New(e.db)
 
 	err := queries.UpdateEnv(ctx, sqlcgen.UpdateEnvParams{

@@ -11,18 +11,24 @@ import (
 	"go.bbkane.com/warg/command"
 )
 
+// ptrFromMap returns &val if key is in the map, otherwise nil
+// useful for converting from the cmdCtx.Flags to the types domain needs
+func ptrFromMap[T any](m map[string]any, key string) *T {
+	val, exists := m[key]
+	if exists {
+		ret := val.(T)
+		return &ret
+	}
+	return nil
+}
+
 func envCreateCmd(cmdCtx command.Context) error {
 	createTime := cmdCtx.Flags["--create-time"].(time.Time)
 	updateTime := cmdCtx.Flags["--update-time"].(time.Time)
 	name := cmdCtx.Flags["--name"].(string)
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 
-	var comment *string
-	commentFlag, commentExists := cmdCtx.Flags["--comment"]
-	if commentExists {
-		tmp := commentFlag.(string)
-		comment = &tmp
-	}
+	comment := ptrFromMap[string](cmdCtx.Flags, "--comment")
 
 	ctx := context.Background() // TODO: fix
 	envService, err := sqlite.NewEnvService(ctx, sqliteDSN)

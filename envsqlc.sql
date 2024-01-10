@@ -6,7 +6,7 @@ INSERT INTO env (
 )
 RETURNING id;
 
--- See https://github.com/sqlc-dev/sqlc/issues/937#issuecomment-798858187 for why NULLIF is needed
+-- See https://docs.sqlc.dev/en/latest/howto/named_parameters.html#nullable-parameters
 -- name: UpdateEnv :exec
 UPDATE env SET
     name = COALESCE(sqlc.narg('name'), name),

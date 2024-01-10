@@ -55,7 +55,7 @@ type UpdateEnvParams struct {
 	ID         int64
 }
 
-// See https://github.com/sqlc-dev/sqlc/issues/937#issuecomment-798858187 for why NULLIF is needed
+// See https://docs.sqlc.dev/en/latest/howto/named_parameters.html#nullable-parameters
 func (q *Queries) UpdateEnv(ctx context.Context, arg UpdateEnvParams) error {
 	_, err := q.db.ExecContext(ctx, updateEnv,
 		arg.Name,
