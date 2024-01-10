@@ -72,12 +72,7 @@ func envUpdateCmd(cmdCtx command.Context) error {
 		return fmt.Errorf("could not create env service: %w", err)
 	}
 
-	id, err := envService.FindEnvByName(ctx, name)
-	if err != nil {
-		return err
-	}
-
-	err = envService.UpdateEnv(ctx, id, domain.UpdateEnvArgs{
+	err = envService.UpdateEnv(ctx, name, domain.UpdateEnvArgs{
 		Comment:    comment,
 		CreateTime: createTime,
 		NewName:    newName,

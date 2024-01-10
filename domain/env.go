@@ -31,8 +31,7 @@ type UpdateEnvArgs struct {
 
 type EnvService interface {
 	CreateEnv(ctx context.Context, args CreateEnvArgs) (EnvID, error)
-	FindEnvByName(ctx context.Context, name string) (EnvID, error)
-	UpdateEnv(ctx context.Context, id EnvID, args UpdateEnvArgs) error
+	UpdateEnv(ctx context.Context, name string, args UpdateEnvArgs) error
 }
 
 // TimeToString converts a time to UTC, then formats as RFC3339
