@@ -27,10 +27,13 @@ func envCreateCmd(cmdCtx command.Context) error {
 	updateTime := cmdCtx.Flags["--update-time"].(time.Time)
 	name := cmdCtx.Flags["--name"].(string)
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
+	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
 
 	comment := ptrFromMap[string](cmdCtx.Flags, "--comment")
 
-	ctx := context.Background() // TODO: fix
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
 	envService, err := sqlite.NewEnvService(ctx, sqliteDSN)
 	if err != nil {
 		return fmt.Errorf("could not create env service: %w", err)

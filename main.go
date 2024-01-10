@@ -62,8 +62,6 @@ func buildApp() warg.App {
 		),
 	}
 
-	// currentTime := domain.TimeToString(time.Now())
-
 	// most tables have these, so let's just re-use the definition
 	commonCreateFlags := flag.FlagMap{
 		"--comment": flag.New(
@@ -83,6 +81,16 @@ func buildApp() warg.App {
 			scalar.New(
 				datetime(),
 				scalar.Default(time.Now()),
+			),
+			flag.Required(),
+		),
+	}
+
+	timeoutFlag := flag.FlagMap{
+		"--timeout": flag.New(
+			"Timeout for a run. Use https://pkg.go.dev/time#Duration to build it",
+			scalar.Duration(
+				scalar.Default(10*time.Minute),
 			),
 			flag.Required(),
 		),
@@ -112,6 +120,7 @@ func buildApp() warg.App {
 						flag.Required(),
 					),
 				),
+				section.ExistingFlags(timeoutFlag),
 				section.ExistingFlags(sqliteDSN),
 			),
 		),
