@@ -6,6 +6,9 @@ INSERT INTO env (
 )
 RETURNING id;
 
+-- name: FindEnvByName :one
+SELECT id FROM env WHERE name = ?;
+
 -- See https://docs.sqlc.dev/en/latest/howto/named_parameters.html#nullable-parameters
 -- name: UpdateEnv :exec
 UPDATE env SET

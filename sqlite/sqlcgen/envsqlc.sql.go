@@ -38,6 +38,17 @@ func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (int64, er
 	return id, err
 }
 
+const findEnvByName = `-- name: FindEnvByName :one
+SELECT id FROM env WHERE name = ?
+`
+
+func (q *Queries) FindEnvByName(ctx context.Context, name string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, findEnvByName, name)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const updateEnv = `-- name: UpdateEnv :exec
 UPDATE env SET
     name = COALESCE(?1, name),

@@ -47,6 +47,17 @@ func buildApp() warg.App {
 		panic(err)
 	}
 
+	nameFlag := flag.FlagMap{
+		"--name": flag.New(
+			"Environment name",
+			scalar.String(
+				scalar.Default(cwd),
+			),
+			flag.Alias("-n"),
+			flag.Required(),
+		),
+	}
+
 	dbPath, err := homedir.Expand("~/.config/namedenv.db")
 	if err != nil {
 		panic(err)
@@ -86,6 +97,33 @@ func buildApp() warg.App {
 		),
 	}
 
+	commonUpdateFlags := flag.FlagMap{
+		"--comment": flag.New(
+			"Comment",
+			scalar.String(),
+		),
+		"--create-time": flag.New(
+			"Create time",
+			scalar.New(
+				datetime(),
+			),
+		),
+		"--new-name": flag.New(
+			"Environment name",
+			scalar.String(
+				scalar.Default(cwd),
+			),
+		),
+		"--update-time": flag.New(
+			"Update time",
+			scalar.New(
+				datetime(),
+				scalar.Default(time.Now()),
+			),
+			flag.UnsetSentinel("UNSET"),
+		),
+	}
+
 	timeoutFlag := flag.FlagMap{
 		"--timeout": flag.New(
 			"Timeout for a run. Use https://pkg.go.dev/time#Duration to build it",
@@ -110,15 +148,14 @@ func buildApp() warg.App {
 					"Create an environment",
 					envCreateCmd,
 					command.ExistingFlags(commonCreateFlags),
-					command.Flag(
-						"--name",
-						"Environment name",
-						scalar.String(
-							scalar.Default(cwd),
-						),
-						flag.Alias("-n"),
-						flag.Required(),
-					),
+					command.ExistingFlags(nameFlag),
+				),
+				section.Command(
+					"update",
+					"Update an environment",
+					envUpdateCmd,
+					command.ExistingFlags(commonUpdateFlags),
+					command.ExistingFlags(nameFlag),
 				),
 				section.ExistingFlags(timeoutFlag),
 				section.ExistingFlags(sqliteDSN),

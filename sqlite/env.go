@@ -56,14 +56,24 @@ func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (
 	return domain.EnvID(createdEnvID), nil
 }
 
-func (e *EnvService) UpdateEnv(ctx context.Context, args domain.UpdateEnvArgs) error {
+func (e *EnvService) FindEnvByName(ctx context.Context, name string) (domain.EnvID, error) {
+	queries := sqlcgen.New(e.db)
+
+	id, err := queries.FindEnvByName(ctx, name)
+	if err != nil {
+		return 0, fmt.Errorf("could not find env with name: %s: %w: ", name, err)
+	}
+	return domain.EnvID(id), err
+}
+
+func (e *EnvService) UpdateEnv(ctx context.Context, id domain.EnvID, args domain.UpdateEnvArgs) error {
 
 	queries := sqlcgen.New(e.db)
 
 	err := queries.UpdateEnv(ctx, sqlcgen.UpdateEnvParams{
 		Name: sql.NullString{
-			String: DerefOrEmpty(args.Name),
-			Valid:  IsNotNil(args.Name),
+			String: DerefOrEmpty(args.NewName),
+			Valid:  IsNotNil(args.NewName),
 		},
 		Comment: sql.NullString{
 			String: DerefOrEmpty(args.Comment),
@@ -77,7 +87,7 @@ func (e *EnvService) UpdateEnv(ctx context.Context, args domain.UpdateEnvArgs) e
 			String: domain.TimeToString(DerefOrEmpty(args.CreateTime)),
 			Valid:  IsNotNil(args.CreateTime),
 		},
-		ID: int64(args.ID),
+		ID: int64(id),
 	})
 
 	if err != nil {

@@ -23,16 +23,16 @@ type CreateEnvArgs struct {
 }
 
 type UpdateEnvArgs struct {
-	Name       *string
 	Comment    *string
 	CreateTime *time.Time
+	NewName    *string
 	UpdateTime *time.Time
-	ID         EnvID
 }
 
 type EnvService interface {
 	CreateEnv(ctx context.Context, args CreateEnvArgs) (EnvID, error)
-	UpdateEnv(ctx context.Context, args UpdateEnvArgs) error
+	FindEnvByName(ctx context.Context, name string) (EnvID, error)
+	UpdateEnv(ctx context.Context, id EnvID, args UpdateEnvArgs) error
 }
 
 // TimeToString converts a time to UTC, then formats as RFC3339
