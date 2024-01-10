@@ -51,5 +51,16 @@ func envCreateCmd(cmdCtx command.Context) error {
 
 	fmt.Printf("Created env with ID: %#v\n", envID)
 
+	// TODO: make this it's own command...
+	newName := name + name
+	err = envService.UpdateEnv(ctx, domain.UpdateEnvArgs{
+		Name: &newName,
+		ID:   envID,
+	})
+
+	if err != nil {
+		return fmt.Errorf("TODO: rm me but here's the error: %w", err)
+	}
+
 	return nil
 }

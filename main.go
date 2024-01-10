@@ -38,10 +38,7 @@ func buildApp() warg.App {
 		),
 	}
 
-	currentTime, err := domain.TimeToString(time.Now())
-	if err != nil {
-		panic(err) // shouldn't happen
-	}
+	currentTime := domain.TimeToString(time.Now())
 
 	// most tables have these, so let's just re-use the definition
 	commonCreateFlags := flag.FlagMap{

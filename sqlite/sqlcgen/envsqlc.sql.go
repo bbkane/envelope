@@ -40,21 +40,22 @@ func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (int64, er
 
 const updateEnv = `-- name: UpdateEnv :exec
 UPDATE env SET
-    name = COALESCE(?, name),
-    comment = COALESCE(?, comment),
-    create_time = COALESCE(?, create_time),
-    update_time = COALESCE(?, update_time)
-WHERE id = ?
+    name = COALESCE(NULLIF(?1, ''), name),
+    comment = COALESCE(NULLIF(?2, ''), comment),
+    create_time = COALESCE(NULLIF(?3, ''), create_time),
+    update_time = COALESCE(NULLIF(?4, ''), update_time)
+WHERE id = ?5
 `
 
 type UpdateEnvParams struct {
-	Name       string
-	Comment    sql.NullString
-	CreateTime string
-	UpdateTime string
+	Name       interface{}
+	Comment    interface{}
+	CreateTime interface{}
+	UpdateTime interface{}
 	ID         int64
 }
 
+// See https://github.com/sqlc-dev/sqlc/issues/937#issuecomment-798858187 for why NULLIF is needed
 func (q *Queries) UpdateEnv(ctx context.Context, arg UpdateEnvParams) error {
 	_, err := q.db.ExecContext(ctx, updateEnv,
 		arg.Name,

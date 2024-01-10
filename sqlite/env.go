@@ -3,7 +3,6 @@ package sqlite
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 
 	"go.bbkane.com/namedenv/domain"
@@ -41,27 +40,16 @@ func NewEnvService(ctx context.Context, dsn string) (domain.EnvService, error) {
 func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (domain.EnvID, error) {
 	queries := sqlcgen.New(e.db)
 
-	comment := sql.NullString{
-		String: DerefOrEmpty(args.Comment),
-		Valid:  IsNotNil(args.Comment),
-	}
-
-	createTime, err := domain.TimeToString(args.CreateTime)
-	if err != nil {
-		return 0, fmt.Errorf("could not translate createTime into string: %w", err)
-	}
-
-	updateTime, err := domain.TimeToString(args.UpdateTime)
-	if err != nil {
-		return 0, fmt.Errorf("could not translate UpdateTime into string: %w", err)
-	}
-
 	createdEnvID, err := queries.CreateEnv(ctx, sqlcgen.CreateEnvParams{
-		Name:       args.Name,
-		Comment:    comment,
-		CreateTime: createTime,
-		UpdateTime: updateTime,
+		Name: args.Name,
+		Comment: sql.NullString{
+			String: DerefOrEmpty(args.Comment),
+			Valid:  IsNotNil(args.Comment),
+		},
+		CreateTime: domain.TimeToString(args.CreateTime),
+		UpdateTime: domain.TimeToString(args.UpdateTime),
 	})
+
 	if err != nil {
 		return 0, fmt.Errorf("could not create env in db: %w", err)
 	}
@@ -69,7 +57,23 @@ func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (
 }
 
 func (e *EnvService) UpdateEnv(ctx context.Context, args domain.UpdateEnvArgs) error {
-	// queries := sqlcgen.New(e.db)
 
-	return errors.New("TODO")
+	// Due to https://github.com/sqlc-dev/sqlc/issues/3118 , sqlc isn't generating nullable types
+	// Once https://github.com/sqlc-dev/sqlc/issues/2800 is implemented, I can use that
+
+	queries := sqlcgen.New(e.db)
+
+	err := queries.UpdateEnv(ctx, sqlcgen.UpdateEnvParams{
+		Name:       args.Name,
+		Comment:    args.Comment,
+		CreateTime: args.CreateTime,
+		UpdateTime: args.UpdateTime,
+		ID:         int64(args.ID),
+	})
+
+	if err != nil {
+		return fmt.Errorf("err updating env: %w", err)
+	}
+
+	return nil
 }
