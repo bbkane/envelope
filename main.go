@@ -5,15 +5,39 @@ import (
 	"time"
 
 	"github.com/mitchellh/go-homedir"
-	"go.bbkane.com/namedenv/domain"
 	"go.bbkane.com/warg"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/section"
+	"go.bbkane.com/warg/value/contained"
 	"go.bbkane.com/warg/value/scalar"
 )
 
 var version string
+
+func emptyOrNil[T any](iFace interface{}) (T, error) {
+	under, ok := iFace.(T)
+	if !ok {
+		return under, contained.ErrIncompatibleInterface
+	}
+	return under, nil
+}
+
+func datetime() contained.TypeInfo[time.Time] {
+	return contained.TypeInfo[time.Time]{
+		Description: "datetime in RFC3339 format",
+		FromIFace:   emptyOrNil[time.Time],
+		FromInstance: func(t time.Time) (time.Time, error) {
+			return t, nil
+		},
+		FromString: func(s string) (time.Time, error) {
+			return time.Parse(time.RFC3339, s)
+		},
+		Empty: func() time.Time {
+			return time.Time{}
+		},
+	}
+}
 
 func buildApp() warg.App {
 
@@ -38,7 +62,7 @@ func buildApp() warg.App {
 		),
 	}
 
-	currentTime := domain.TimeToString(time.Now())
+	// currentTime := domain.TimeToString(time.Now())
 
 	// most tables have these, so let's just re-use the definition
 	commonCreateFlags := flag.FlagMap{
@@ -48,15 +72,17 @@ func buildApp() warg.App {
 		),
 		"--create-time": flag.New(
 			"Create time",
-			scalar.String(
-				scalar.Default(currentTime),
+			scalar.New(
+				datetime(),
+				scalar.Default(time.Now()),
 			),
 			flag.Required(),
 		),
 		"--update-time": flag.New(
 			"Update time",
-			scalar.String(
-				scalar.Default(currentTime),
+			scalar.New(
+				datetime(),
+				scalar.Default(time.Now()),
 			),
 			flag.Required(),
 		),
