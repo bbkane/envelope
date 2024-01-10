@@ -64,11 +64,23 @@ func (e *EnvService) UpdateEnv(ctx context.Context, args domain.UpdateEnvArgs) e
 	queries := sqlcgen.New(e.db)
 
 	err := queries.UpdateEnv(ctx, sqlcgen.UpdateEnvParams{
-		Name:       args.Name,
-		Comment:    args.Comment,
-		CreateTime: args.CreateTime,
-		UpdateTime: args.UpdateTime,
-		ID:         int64(args.ID),
+		Name: sql.NullString{
+			String: DerefOrEmpty(args.Name),
+			Valid:  IsNotNil(args.Name),
+		},
+		Comment: sql.NullString{
+			String: DerefOrEmpty(args.Comment),
+			Valid:  IsNotNil(args.Comment),
+		},
+		CreateTime: sql.NullString{
+			String: domain.TimeToString(DerefOrEmpty(args.CreateTime)),
+			Valid:  IsNotNil(args.CreateTime),
+		},
+		UpdateTime: sql.NullString{
+			String: domain.TimeToString(DerefOrEmpty(args.CreateTime)),
+			Valid:  IsNotNil(args.CreateTime),
+		},
+		ID: int64(args.ID),
 	})
 
 	if err != nil {

@@ -40,18 +40,18 @@ func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (int64, er
 
 const updateEnv = `-- name: UpdateEnv :exec
 UPDATE env SET
-    name = COALESCE(NULLIF(?1, ''), name),
-    comment = COALESCE(NULLIF(?2, ''), comment),
-    create_time = COALESCE(NULLIF(?3, ''), create_time),
-    update_time = COALESCE(NULLIF(?4, ''), update_time)
+    name = COALESCE(?1, name),
+    comment = COALESCE(?2, comment),
+    create_time = COALESCE(?3, create_time),
+    update_time = COALESCE(?4, update_time)
 WHERE id = ?5
 `
 
 type UpdateEnvParams struct {
-	Name       interface{}
-	Comment    interface{}
-	CreateTime interface{}
-	UpdateTime interface{}
+	Name       sql.NullString
+	Comment    sql.NullString
+	CreateTime sql.NullString
+	UpdateTime sql.NullString
 	ID         int64
 }
 
