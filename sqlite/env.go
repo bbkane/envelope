@@ -3,6 +3,7 @@ package sqlite
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"go.bbkane.com/namedenv/domain"
@@ -99,7 +100,7 @@ func (e *EnvService) UpdateEnv(ctx context.Context, name string, args domain.Upd
 			String: domain.TimeToString(DerefOrEmpty(args.CreateTime)),
 			Valid:  IsNotNil(args.CreateTime),
 		},
-		Name: name, // TODO: fix
+		Name: name,
 	})
 
 	if err != nil {
@@ -107,4 +108,8 @@ func (e *EnvService) UpdateEnv(ctx context.Context, name string, args domain.Upd
 	}
 
 	return nil
+}
+
+func (e *EnvService) CreateEnvVar(ctx context.Context, args domain.CreateEnvVarArgs) (*domain.EnvVar, error) {
+	return nil, errors.New("TODO")
 }

@@ -14,3 +14,13 @@ UPDATE env SET
     create_time = COALESCE(sqlc.narg('create_time'), create_time),
     update_time = COALESCE(sqlc.narg('update_time'), update_time)
 WHERE name = sqlc.arg('name');
+
+-- name: FindEnvID :one
+SELECT id FROM env WHERE name = ?;
+
+-- name: CreateEnvVar :exec
+INSERT INTO env_var (
+    env_id, name, comment, create_time, update_time, type, local_value
+) VALUES (
+    ?     , ?   , ?      , ?          , ?          , ?   , ?
+);

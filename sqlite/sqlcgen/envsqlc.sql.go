@@ -50,6 +50,48 @@ func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (CreateEnv
 	return i, err
 }
 
+const createEnvVar = `-- name: CreateEnvVar :exec
+INSERT INTO env_var (
+    env_id, name, comment, create_time, update_time, type, local_value
+) VALUES (
+    ?     , ?   , ?      , ?          , ?          , ?   , ?
+)
+`
+
+type CreateEnvVarParams struct {
+	EnvID      sql.NullInt64
+	Name       sql.NullString
+	Comment    sql.NullString
+	CreateTime string
+	UpdateTime string
+	Type       string
+	LocalValue sql.NullString
+}
+
+func (q *Queries) CreateEnvVar(ctx context.Context, arg CreateEnvVarParams) error {
+	_, err := q.db.ExecContext(ctx, createEnvVar,
+		arg.EnvID,
+		arg.Name,
+		arg.Comment,
+		arg.CreateTime,
+		arg.UpdateTime,
+		arg.Type,
+		arg.LocalValue,
+	)
+	return err
+}
+
+const findEnvID = `-- name: FindEnvID :one
+SELECT id FROM env WHERE name = ?
+`
+
+func (q *Queries) FindEnvID(ctx context.Context, name string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, findEnvID, name)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const updateEnv = `-- name: UpdateEnv :exec
 UPDATE env SET
     name = COALESCE(?1, name),

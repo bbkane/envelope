@@ -47,16 +47,13 @@ func buildApp() warg.App {
 		panic(err)
 	}
 
-	nameFlag := flag.FlagMap{
-		"--name": flag.New(
-			"Environment name",
-			scalar.String(
-				scalar.Default(cwd),
-			),
-			flag.Alias("-n"),
-			flag.Required(),
+	envNameFlag := flag.New(
+		"Environment name",
+		scalar.String(
+			scalar.Default(cwd),
 		),
-	}
+		flag.Required(),
+	)
 
 	dbPath, err := homedir.Expand("~/.config/namedenv.db")
 	if err != nil {
@@ -109,7 +106,7 @@ func buildApp() warg.App {
 			),
 		),
 		"--new-name": flag.New(
-			"Environment name",
+			"New name",
 			scalar.String(
 				scalar.Default(cwd),
 			),
@@ -148,17 +145,49 @@ func buildApp() warg.App {
 					"Create an environment",
 					envCreateCmd,
 					command.ExistingFlags(commonCreateFlags),
-					command.ExistingFlags(nameFlag),
+					command.ExistingFlag("--name", envNameFlag),
 				),
 				section.Command(
 					"update",
 					"Update an environment",
 					envUpdateCmd,
 					command.ExistingFlags(commonUpdateFlags),
-					command.ExistingFlags(nameFlag),
+					command.ExistingFlag("--name", envNameFlag),
 				),
 				section.ExistingFlags(timeoutFlag),
 				section.ExistingFlags(sqliteDSN),
+				section.Section(
+					"var",
+					"Environment Variables!",
+					section.Command(
+						"create",
+						"Create an environmental variable",
+						envVarCreateCmd,
+						command.ExistingFlags(commonCreateFlags),
+						command.Flag(
+							"--local-value",
+							"Value if type is local",
+							scalar.String(),
+						),
+						command.Flag(
+							"--name",
+							"Env var name",
+							scalar.String(),
+							flag.Required(),
+						),
+						command.Flag(
+							"--type",
+							"Type of env var",
+							scalar.String(
+								scalar.Choices("local"),
+							),
+						),
+					),
+					section.ExistingFlag(
+						"--env-name",
+						envNameFlag,
+					),
+				),
 			),
 		),
 		warg.OverrideVersion(version),

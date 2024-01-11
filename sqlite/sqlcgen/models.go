@@ -15,3 +15,14 @@ type Env struct {
 	CreateTime string
 	UpdateTime string
 }
+
+type EnvVar struct {
+	ID         int64
+	EnvID      sql.NullInt64
+	Name       sql.NullString
+	Comment    sql.NullString
+	CreateTime string
+	UpdateTime string
+	Type       string
+	LocalValue sql.NullString
+}
