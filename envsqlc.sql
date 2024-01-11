@@ -4,7 +4,7 @@ INSERT INTO env (
 ) VALUES (
     ?   , ?      , ?          , ?
 )
-RETURNING id;
+RETURNING name, comment, create_time, update_time;
 
 -- See https://docs.sqlc.dev/en/latest/howto/named_parameters.html#nullable-parameters
 -- name: UpdateEnv :exec

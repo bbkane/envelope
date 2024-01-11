@@ -26,6 +26,13 @@ type EnvService struct {
 	db *sql.DB
 }
 
+func NullStringToStrPtr(val sql.NullString) *string {
+	if !val.Valid {
+		return nil
+	}
+	return &val.String
+}
+
 func NewEnvService(ctx context.Context, dsn string) (domain.EnvService, error) {
 	// TODO use context!!
 	db, err := connect.Connect(dsn)
@@ -37,7 +44,7 @@ func NewEnvService(ctx context.Context, dsn string) (domain.EnvService, error) {
 	}, nil
 }
 
-func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (domain.EnvID, error) {
+func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (*domain.Env, error) {
 	queries := sqlcgen.New(e.db)
 
 	createdEnvID, err := queries.CreateEnv(ctx, sqlcgen.CreateEnvParams{
@@ -51,9 +58,24 @@ func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (
 	})
 
 	if err != nil {
-		return 0, fmt.Errorf("could not create env in db: %w", err)
+		return nil, fmt.Errorf("could not create env in db: %w", err)
 	}
-	return domain.EnvID(createdEnvID), nil
+
+	createTime, err := domain.StringToTime(createdEnvID.CreateTime)
+	if err != nil {
+		panic(err)
+	}
+	updateTime, err := domain.StringToTime(createdEnvID.UpdateTime)
+	if err != nil {
+		panic(err)
+	}
+
+	return &domain.Env{
+		Name:       createdEnvID.Name,
+		Comment:    NullStringToStrPtr(createdEnvID.Comment),
+		CreateTime: createTime,
+		UpdateTime: updateTime,
+	}, nil
 }
 
 func (e *EnvService) UpdateEnv(ctx context.Context, name string, args domain.UpdateEnvArgs) error {

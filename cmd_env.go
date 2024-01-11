@@ -39,7 +39,7 @@ func envCreateCmd(cmdCtx command.Context) error {
 		return fmt.Errorf("could not create env service: %w", err)
 	}
 
-	envID, err := envService.CreateEnv(ctx, domain.CreateEnvArgs{
+	env, err := envService.CreateEnv(ctx, domain.CreateEnvArgs{
 		Name:       name,
 		Comment:    comment,
 		CreateTime: createTime,
@@ -50,7 +50,7 @@ func envCreateCmd(cmdCtx command.Context) error {
 		return fmt.Errorf("could not create env: %w", err)
 	}
 
-	fmt.Printf("Created env with ID: %#v\n", envID)
+	fmt.Printf("Created env: %#v\n", env)
 
 	return nil
 }

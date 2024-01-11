@@ -16,7 +16,7 @@ INSERT INTO env (
 ) VALUES (
     ?   , ?      , ?          , ?
 )
-RETURNING id
+RETURNING name, comment, create_time, update_time
 `
 
 type CreateEnvParams struct {
@@ -26,16 +26,28 @@ type CreateEnvParams struct {
 	UpdateTime string
 }
 
-func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (int64, error) {
+type CreateEnvRow struct {
+	Name       string
+	Comment    sql.NullString
+	CreateTime string
+	UpdateTime string
+}
+
+func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (CreateEnvRow, error) {
 	row := q.db.QueryRowContext(ctx, createEnv,
 		arg.Name,
 		arg.Comment,
 		arg.CreateTime,
 		arg.UpdateTime,
 	)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
+	var i CreateEnvRow
+	err := row.Scan(
+		&i.Name,
+		&i.Comment,
+		&i.CreateTime,
+		&i.UpdateTime,
+	)
+	return i, err
 }
 
 const updateEnv = `-- name: UpdateEnv :exec

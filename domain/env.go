@@ -5,10 +5,7 @@ import (
 	"time"
 )
 
-type EnvID int64
-
 type Env struct {
-	ID         EnvID
 	Name       string
 	Comment    *string
 	CreateTime time.Time
@@ -30,7 +27,7 @@ type UpdateEnvArgs struct {
 }
 
 type EnvService interface {
-	CreateEnv(ctx context.Context, args CreateEnvArgs) (EnvID, error)
+	CreateEnv(ctx context.Context, args CreateEnvArgs) (*Env, error)
 	UpdateEnv(ctx context.Context, name string, args UpdateEnvArgs) error
 }
 
