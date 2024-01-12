@@ -3,7 +3,6 @@ package sqlite
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 
 	"go.bbkane.com/namedenv/domain"
@@ -111,5 +110,40 @@ func (e *EnvService) UpdateEnv(ctx context.Context, name string, args domain.Upd
 }
 
 func (e *EnvService) CreateEnvVar(ctx context.Context, args domain.CreateEnvVarArgs) (*domain.EnvVar, error) {
-	return nil, errors.New("TODO")
+	queries := sqlcgen.New(e.db)
+
+	envID, err := queries.FindEnvID(ctx, args.EnvName)
+	if err != nil {
+		return nil, fmt.Errorf("could not find env with name: %s: %w", args.Name, err)
+	}
+
+	err = queries.CreateEnvVar(ctx, sqlcgen.CreateEnvVarParams{
+		EnvID: envID,
+		Name:  args.Name,
+		Comment: sql.NullString{
+			String: DerefOrEmpty(args.Comment),
+			Valid:  IsNotNil(args.Comment),
+		},
+		CreateTime: domain.TimeToString(args.CreateTime),
+		UpdateTime: domain.TimeToString(args.UpdateTime),
+		Type:       string(args.Type),
+
+		// TODO do I need to do anything fancy here when I get more value types?
+		LocalValue: sql.NullString{
+			String: DerefOrEmpty(args.LocalValue),
+			Valid:  IsNotNil(args.LocalValue),
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("could not create env var: %w", err)
+	}
+	return &domain.EnvVar{
+		EnvName:    args.EnvName,
+		Name:       args.Name,
+		Comment:    args.Comment,
+		CreateTime: args.CreateTime,
+		UpdateTime: args.UpdateTime,
+		Type:       args.Type,
+		LocalValue: args.LocalValue,
+	}, nil
 }

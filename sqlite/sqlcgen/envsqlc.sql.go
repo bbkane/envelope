@@ -59,8 +59,8 @@ INSERT INTO env_var (
 `
 
 type CreateEnvVarParams struct {
-	EnvID      sql.NullInt64
-	Name       sql.NullString
+	EnvID      int64
+	Name       string
 	Comment    sql.NullString
 	CreateTime string
 	UpdateTime string

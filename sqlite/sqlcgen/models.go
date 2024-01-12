@@ -18,8 +18,8 @@ type Env struct {
 
 type EnvVar struct {
 	ID         int64
-	EnvID      sql.NullInt64
-	Name       sql.NullString
+	EnvID      int64
+	Name       string
 	Comment    sql.NullString
 	CreateTime string
 	UpdateTime string

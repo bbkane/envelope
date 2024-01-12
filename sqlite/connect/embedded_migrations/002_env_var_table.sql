@@ -1,7 +1,7 @@
 CREATE TABLE env_var (
     id INTEGER PRIMARY KEY,
-    env_id INTEGER REFERENCES env(id),
-    name TEXT UNIQUE,
+    env_id INTEGER NOT NULL REFERENCES env(id),
+    name TEXT NOT NULL UNIQUE,
     comment TEXT,
     create_time TEXT NOT NULL,
     update_time TEXT NOT NULL,
