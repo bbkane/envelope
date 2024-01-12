@@ -181,6 +181,7 @@ func buildApp() warg.App {
 							scalar.String(
 								scalar.Choices("local"),
 							),
+							flag.Required(),
 						),
 					),
 					section.ExistingFlag(

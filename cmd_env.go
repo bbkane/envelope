@@ -23,13 +23,16 @@ func ptrFromMap[T any](m map[string]any, key string) *T {
 }
 
 func envCreateCmd(cmdCtx command.Context) error {
-	createTime := cmdCtx.Flags["--create-time"].(time.Time)
-	updateTime := cmdCtx.Flags["--update-time"].(time.Time)
-	name := cmdCtx.Flags["--name"].(string)
+	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
 
+	// common create Flags
 	comment := ptrFromMap[string](cmdCtx.Flags, "--comment")
+	createTime := cmdCtx.Flags["--create-time"].(time.Time)
+	updateTime := cmdCtx.Flags["--update-time"].(time.Time)
+
+	name := cmdCtx.Flags["--name"].(string)
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
