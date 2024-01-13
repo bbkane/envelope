@@ -46,6 +46,16 @@ type EnvVar struct {
 	LocalValue *string
 }
 
+// GetLocalValue gets the local value. It's expected that the EnvVar is constructed correctly
+func (ev *EnvVar) Value() string {
+	switch ev.Type {
+	case EnvVarType_local:
+		return *ev.LocalValue
+	default:
+		panic("unexpected type: " + ev.Type)
+	}
+}
+
 type CreateEnvVarArgs struct {
 	EnvName    string
 	Name       string
@@ -63,6 +73,7 @@ type EnvService interface {
 	UpdateEnv(ctx context.Context, name string, args UpdateEnvArgs) error
 
 	CreateEnvVar(ctx context.Context, args CreateEnvVarArgs) (*EnvVar, error)
+
 	ListEnvVars(ctx context.Context, envName string) ([]EnvVar, error)
 }
 

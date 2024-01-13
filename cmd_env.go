@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/alessio/shellescape"
 	"go.bbkane.com/namedenv/domain"
 	"go.bbkane.com/namedenv/sqlite"
 
@@ -112,6 +113,9 @@ func envPrintScriptExportCmd(cmdCtx command.Context) error {
 		return fmt.Errorf("could not list env vars: %s: %w", name, err)
 	}
 
-	fmt.Println(envVars)
+	for _, ev := range envVars {
+		fmt.Printf("echo 'Adding:' %s;\n", shellescape.Quote(ev.Name))
+		fmt.Printf("export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value()))
+	}
 	return nil
 }

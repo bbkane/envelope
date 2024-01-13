@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/alessio/shellescape v1.4.2
 	github.com/mitchellh/go-homedir v1.1.0
 	modernc.org/sqlite v1.28.0
 )
