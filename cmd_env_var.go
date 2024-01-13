@@ -10,7 +10,7 @@ import (
 	"go.bbkane.com/warg/command"
 )
 
-func envVarCreateCmd(cmdCtx command.Context) error {
+func envVarCreateLocalCmd(cmdCtx command.Context) error {
 	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
@@ -21,9 +21,8 @@ func envVarCreateCmd(cmdCtx command.Context) error {
 	updateTime := cmdCtx.Flags["--update-time"].(time.Time)
 
 	envName := cmdCtx.Flags["--env-name"].(string)
-	localValue := ptrFromMap[string](cmdCtx.Flags, "--local-value")
+	localValue := ptrFromMap[string](cmdCtx.Flags, "--value")
 	name := cmdCtx.Flags["--name"].(string)
-	typeFlg := cmdCtx.Flags["--type"].(string)
 
 	if localValue == nil {
 		panic("TODO, need to confirm type and values work")
@@ -45,7 +44,7 @@ func envVarCreateCmd(cmdCtx command.Context) error {
 			Comment:    comment,
 			CreateTime: createTime,
 			UpdateTime: updateTime,
-			Type:       domain.EnvVarType(typeFlg),
+			Type:       domain.EnvVarType(domain.EnvVarType_local),
 			LocalValue: localValue,
 		},
 	)

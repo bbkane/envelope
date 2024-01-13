@@ -59,13 +59,17 @@ func envCreateCmd(cmdCtx command.Context) error {
 }
 
 func envUpdateCmd(cmdCtx command.Context) error {
-	comment := ptrFromMap[string](cmdCtx.Flags, "--comment")
-	createTime := ptrFromMap[time.Time](cmdCtx.Flags, "--create-time")
-	name := cmdCtx.Flags["--name"].(string)
-	newName := ptrFromMap[string](cmdCtx.Flags, "--new-name")
+	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
+
+	// common update flags
+	comment := ptrFromMap[string](cmdCtx.Flags, "--comment")
+	createTime := ptrFromMap[time.Time](cmdCtx.Flags, "--create-time")
+	newName := ptrFromMap[string](cmdCtx.Flags, "--new-name")
 	updateTime := ptrFromMap[time.Time](cmdCtx.Flags, "--update-time")
+
+	name := cmdCtx.Flags["--name"].(string)
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -85,5 +89,29 @@ func envUpdateCmd(cmdCtx command.Context) error {
 	if err != nil {
 		return fmt.Errorf("could not update env: %w", err)
 	}
+	return nil
+}
+
+func envPrintScriptExportCmd(cmdCtx command.Context) error {
+	// common flags
+	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
+	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
+
+	name := cmdCtx.Flags["--name"].(string)
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	envService, err := sqlite.NewEnvService(ctx, sqliteDSN)
+	if err != nil {
+		return fmt.Errorf("could not create env service: %w", err)
+	}
+
+	envVars, err := envService.ListEnvVars(ctx, name)
+	if err != nil {
+		return fmt.Errorf("could not list env vars: %s: %w", name, err)
+	}
+
+	fmt.Println(envVars)
 	return nil
 }

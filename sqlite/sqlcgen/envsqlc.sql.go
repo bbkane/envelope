@@ -92,6 +92,44 @@ func (q *Queries) FindEnvID(ctx context.Context, name string) (int64, error) {
 	return id, err
 }
 
+const listEnvVars = `-- name: ListEnvVars :many
+SELECT id, env_id, name, comment, create_time, update_time, type, local_value FROM env_var
+WHERE env_id = ?
+ORDER BY name ASC
+`
+
+func (q *Queries) ListEnvVars(ctx context.Context, envID int64) ([]EnvVar, error) {
+	rows, err := q.db.QueryContext(ctx, listEnvVars, envID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EnvVar
+	for rows.Next() {
+		var i EnvVar
+		if err := rows.Scan(
+			&i.ID,
+			&i.EnvID,
+			&i.Name,
+			&i.Comment,
+			&i.CreateTime,
+			&i.UpdateTime,
+			&i.Type,
+			&i.LocalValue,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateEnv = `-- name: UpdateEnv :exec
 UPDATE env SET
     name = COALESCE(?1, name),

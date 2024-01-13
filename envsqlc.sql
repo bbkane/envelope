@@ -24,3 +24,8 @@ INSERT INTO env_var (
 ) VALUES (
     ?     , ?   , ?      , ?          , ?          , ?   , ?
 );
+
+-- name: ListEnvVars :many
+SELECT * FROM env_var
+WHERE env_id = ?
+ORDER BY name ASC

@@ -154,33 +154,39 @@ func buildApp() warg.App {
 					command.ExistingFlags(commonUpdateFlags),
 					command.ExistingFlag("--name", envNameFlag),
 				),
+				section.Section(
+					"print-script",
+					"Print a script from a stored environment",
+					section.Command(
+						"export",
+						"Print export script",
+						envPrintScriptExportCmd,
+					),
+					section.ExistingFlag("--name", envNameFlag),
+				),
 				section.ExistingFlags(timeoutFlag),
 				section.ExistingFlags(sqliteDSN),
 				section.Section(
 					"var",
 					"Environment Variables!",
-					section.Command(
+					section.Section(
 						"create",
-						"Create an environmental variable",
-						envVarCreateCmd,
-						command.ExistingFlags(commonCreateFlags),
-						command.Flag(
-							"--local-value",
-							"Value if type is local",
-							scalar.String(),
+						"Create an environmetnal variable",
+						section.Command(
+							"local",
+							"Create a variable local to the this env",
+							envVarCreateLocalCmd,
+							command.Flag(
+								"--value",
+								"Value if type is local",
+								scalar.String(),
+							),
 						),
-						command.Flag(
+						section.ExistingFlags(commonCreateFlags),
+						section.Flag(
 							"--name",
 							"Env var name",
 							scalar.String(),
-							flag.Required(),
-						),
-						command.Flag(
-							"--type",
-							"Type of env var",
-							scalar.String(
-								scalar.Choices("local"),
-							),
 							flag.Required(),
 						),
 					),
