@@ -36,9 +36,9 @@ func envVarCreateLocalCmd(cmdCtx command.Context) error {
 		return fmt.Errorf("could not create env service: %w", err)
 	}
 
-	envVar, err := envService.CreateEnvVar(
+	envVar, err := envService.CreateLocalEnvVar(
 		ctx,
-		domain.CreateEnvVarArgs{
+		domain.CreateLocalEnvVarArgs{
 			EnvName:    envName,
 			Name:       name,
 			Comment:    comment,

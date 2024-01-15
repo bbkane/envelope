@@ -50,33 +50,31 @@ func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (CreateEnv
 	return i, err
 }
 
-const createEnvVar = `-- name: CreateEnvVar :exec
-INSERT INTO env_var (
-    env_id, name, comment, create_time, update_time, type, local_value
+const createLocalEnvVar = `-- name: CreateLocalEnvVar :exec
+INSERT INTO env_var_local(
+    env_id, name, comment, create_time, update_time, value
 ) VALUES (
-    ?     , ?   , ?      , ?          , ?          , ?   , ?
+    ?     , ?   , ?      , ?          , ?          , ?
 )
 `
 
-type CreateEnvVarParams struct {
+type CreateLocalEnvVarParams struct {
 	EnvID      int64
 	Name       string
 	Comment    sql.NullString
 	CreateTime string
 	UpdateTime string
-	Type       string
-	LocalValue sql.NullString
+	Value      string
 }
 
-func (q *Queries) CreateEnvVar(ctx context.Context, arg CreateEnvVarParams) error {
-	_, err := q.db.ExecContext(ctx, createEnvVar,
+func (q *Queries) CreateLocalEnvVar(ctx context.Context, arg CreateLocalEnvVarParams) error {
+	_, err := q.db.ExecContext(ctx, createLocalEnvVar,
 		arg.EnvID,
 		arg.Name,
 		arg.Comment,
 		arg.CreateTime,
 		arg.UpdateTime,
-		arg.Type,
-		arg.LocalValue,
+		arg.Value,
 	)
 	return err
 }
@@ -92,21 +90,21 @@ func (q *Queries) FindEnvID(ctx context.Context, name string) (int64, error) {
 	return id, err
 }
 
-const listEnvVars = `-- name: ListEnvVars :many
-SELECT id, env_id, name, comment, create_time, update_time, type, local_value FROM env_var
+const listLocalEnvVars = `-- name: ListLocalEnvVars :many
+SELECT id, env_id, name, comment, create_time, update_time, value FROM env_var_local
 WHERE env_id = ?
 ORDER BY name ASC
 `
 
-func (q *Queries) ListEnvVars(ctx context.Context, envID int64) ([]EnvVar, error) {
-	rows, err := q.db.QueryContext(ctx, listEnvVars, envID)
+func (q *Queries) ListLocalEnvVars(ctx context.Context, envID int64) ([]EnvVarLocal, error) {
+	rows, err := q.db.QueryContext(ctx, listLocalEnvVars, envID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []EnvVar
+	var items []EnvVarLocal
 	for rows.Next() {
-		var i EnvVar
+		var i EnvVarLocal
 		if err := rows.Scan(
 			&i.ID,
 			&i.EnvID,
@@ -114,8 +112,7 @@ func (q *Queries) ListEnvVars(ctx context.Context, envID int64) ([]EnvVar, error
 			&i.Comment,
 			&i.CreateTime,
 			&i.UpdateTime,
-			&i.Type,
-			&i.LocalValue,
+			&i.Value,
 		); err != nil {
 			return nil, err
 		}

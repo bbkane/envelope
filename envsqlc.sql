@@ -18,14 +18,14 @@ WHERE name = sqlc.arg('name');
 -- name: FindEnvID :one
 SELECT id FROM env WHERE name = ?;
 
--- name: CreateEnvVar :exec
-INSERT INTO env_var (
-    env_id, name, comment, create_time, update_time, type, local_value
+-- name: CreateLocalEnvVar :exec
+INSERT INTO env_var_local(
+    env_id, name, comment, create_time, update_time, value
 ) VALUES (
-    ?     , ?   , ?      , ?          , ?          , ?   , ?
+    ?     , ?   , ?      , ?          , ?          , ?
 );
 
--- name: ListEnvVars :many
-SELECT * FROM env_var
+-- name: ListLocalEnvVars :many
+SELECT * FROM env_var_local
 WHERE env_id = ?
-ORDER BY name ASC
+ORDER BY name ASC;

@@ -109,7 +109,7 @@ func (e *EnvService) UpdateEnv(ctx context.Context, name string, args domain.Upd
 	return nil
 }
 
-func (e *EnvService) CreateEnvVar(ctx context.Context, args domain.CreateEnvVarArgs) (*domain.EnvVar, error) {
+func (e *EnvService) CreateLocalEnvVar(ctx context.Context, args domain.CreateLocalEnvVarArgs) (*domain.LocalEnvVar, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := queries.FindEnvID(ctx, args.EnvName)
@@ -117,7 +117,7 @@ func (e *EnvService) CreateEnvVar(ctx context.Context, args domain.CreateEnvVarA
 		return nil, fmt.Errorf("could not find env with name: %s: %w", args.Name, err)
 	}
 
-	err = queries.CreateEnvVar(ctx, sqlcgen.CreateEnvVarParams{
+	err = queries.CreateLocalEnvVar(ctx, sqlcgen.CreateLocalEnvVarParams{
 		EnvID: envID,
 		Name:  args.Name,
 		Comment: sql.NullString{
@@ -126,18 +126,13 @@ func (e *EnvService) CreateEnvVar(ctx context.Context, args domain.CreateEnvVarA
 		},
 		CreateTime: domain.TimeToString(args.CreateTime),
 		UpdateTime: domain.TimeToString(args.UpdateTime),
-		Type:       string(args.Type),
-
-		// TODO do I need to do anything fancy here when I get more value types?
-		LocalValue: sql.NullString{
-			String: DerefOrEmpty(args.LocalValue),
-			Valid:  IsNotNil(args.LocalValue),
-		},
+		Value:      *args.LocalValue,
 	})
+
 	if err != nil {
 		return nil, fmt.Errorf("could not create env var: %w", err)
 	}
-	return &domain.EnvVar{
+	return &domain.LocalEnvVar{
 		EnvName:    args.EnvName,
 		Name:       args.Name,
 		Comment:    args.Comment,
@@ -148,7 +143,7 @@ func (e *EnvService) CreateEnvVar(ctx context.Context, args domain.CreateEnvVarA
 	}, nil
 }
 
-func (e *EnvService) ListEnvVars(ctx context.Context, envName string) ([]domain.EnvVar, error) {
+func (e *EnvService) ListLocalEnvVars(ctx context.Context, envName string) ([]domain.LocalEnvVar, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := queries.FindEnvID(ctx, envName)
@@ -156,11 +151,11 @@ func (e *EnvService) ListEnvVars(ctx context.Context, envName string) ([]domain.
 		return nil, fmt.Errorf("could not find env with name: %s: %w", envName, err)
 	}
 
-	envs, err := queries.ListEnvVars(ctx, envID)
+	envs, err := queries.ListLocalEnvVars(ctx, envID)
 	if err != nil {
 		return nil, fmt.Errorf("could not list env vars: %s: %w", envName, err)
 	}
-	var ret []domain.EnvVar
+	var ret []domain.LocalEnvVar
 	for _, sqlcEnv := range envs {
 
 		createTime, err := domain.StringToTime(sqlcEnv.CreateTime)
@@ -173,20 +168,14 @@ func (e *EnvService) ListEnvVars(ctx context.Context, envName string) ([]domain.
 			return nil, fmt.Errorf("invalid update time for env_var %s: %w", sqlcEnv.Name, err)
 		}
 
-		// TODO: clean this up when I have more types
-		// I should also probably move it to the domain layer
-		if !(sqlcEnv.Type == string(domain.EnvVarType_local) && sqlcEnv.LocalValue.Valid) {
-			return nil, fmt.Errorf("invalid type, value combination: %s", sqlcEnv.Name)
-		}
-
-		ret = append(ret, domain.EnvVar{
+		ret = append(ret, domain.LocalEnvVar{
 			Name:       sqlcEnv.Name,
 			Comment:    NullStringToStrPtr(sqlcEnv.Comment),
 			CreateTime: createTime,
 			EnvName:    envName,
 			UpdateTime: updateTime,
-			Type:       domain.EnvVarType(sqlcEnv.Type),
-			LocalValue: NullStringToStrPtr(sqlcEnv.LocalValue),
+			LocalValue: &sqlcEnv.Value,
+			Type:       "TODO: rm me",
 		})
 	}
 

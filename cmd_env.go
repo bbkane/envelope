@@ -108,7 +108,7 @@ func envPrintScriptExportCmd(cmdCtx command.Context) error {
 		return fmt.Errorf("could not create env service: %w", err)
 	}
 
-	envVars, err := envService.ListEnvVars(ctx, name)
+	envVars, err := envService.ListLocalEnvVars(ctx, name)
 	if err != nil {
 		return fmt.Errorf("could not list env vars: %s: %w", name, err)
 	}

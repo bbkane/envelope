@@ -26,3 +26,19 @@ type EnvVar struct {
 	Type       string
 	LocalValue sql.NullString
 }
+
+type EnvVarLocal struct {
+	ID         int64
+	EnvID      int64
+	Name       string
+	Comment    sql.NullString
+	CreateTime string
+	UpdateTime string
+	Value      string
+}
+
+type EnvVarUniqueName struct {
+	ID    int64
+	EnvID int64
+	Name  string
+}

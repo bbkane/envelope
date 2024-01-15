@@ -36,7 +36,7 @@ const (
 	EnvVarType_local EnvVarType = "local"
 )
 
-type EnvVar struct {
+type LocalEnvVar struct {
 	EnvName    string
 	Name       string
 	Comment    *string
@@ -47,7 +47,7 @@ type EnvVar struct {
 }
 
 // GetLocalValue gets the local value. It's expected that the EnvVar is constructed correctly
-func (ev *EnvVar) Value() string {
+func (ev *LocalEnvVar) Value() string {
 	switch ev.Type {
 	case EnvVarType_local:
 		return *ev.LocalValue
@@ -56,7 +56,7 @@ func (ev *EnvVar) Value() string {
 	}
 }
 
-type CreateEnvVarArgs struct {
+type CreateLocalEnvVarArgs struct {
 	EnvName    string
 	Name       string
 	Comment    *string
@@ -72,9 +72,8 @@ type EnvService interface {
 	CreateEnv(ctx context.Context, args CreateEnvArgs) (*Env, error)
 	UpdateEnv(ctx context.Context, name string, args UpdateEnvArgs) error
 
-	CreateEnvVar(ctx context.Context, args CreateEnvVarArgs) (*EnvVar, error)
-
-	ListEnvVars(ctx context.Context, envName string) ([]EnvVar, error)
+	CreateLocalEnvVar(ctx context.Context, args CreateLocalEnvVarArgs) (*LocalEnvVar, error)
+	ListLocalEnvVars(ctx context.Context, envName string) ([]LocalEnvVar, error)
 }
 
 // -- Utility function
