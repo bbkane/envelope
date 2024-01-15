@@ -54,7 +54,7 @@ func envCreateCmd(cmdCtx command.Context) error {
 		return fmt.Errorf("could not create env: %w", err)
 	}
 
-	fmt.Printf("Created env: %#v\n", env)
+	fmt.Fprintf(cmdCtx.Stdout, "Created env: %#v\n", env)
 
 	return nil
 }
@@ -114,8 +114,8 @@ func envPrintScriptExportCmd(cmdCtx command.Context) error {
 	}
 
 	for _, ev := range envVars {
-		fmt.Printf("echo 'Adding:' %s;\n", shellescape.Quote(ev.Name))
-		fmt.Printf("export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
+		fmt.Fprintf(cmdCtx.Stdout, "echo 'Adding:' %s;\n", shellescape.Quote(ev.Name))
+		fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
 	}
 	return nil
 }

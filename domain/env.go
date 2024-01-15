@@ -62,10 +62,15 @@ type EnvService interface {
 
 // TimeToString converts a time to UTC, then formats as RFC3339
 func TimeToString(t time.Time) string {
-	return t.UTC().Format(time.RFC3339)
+
+	return t.Round(0).UTC().Format(time.RFC3339)
 }
 
 // StringToTime converts a RFC3339 formatted string into a time.Time
 func StringToTime(s string) (time.Time, error) {
-	return time.Parse(time.RFC3339, s)
+	t, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		return t, err
+	}
+	return t.Round(0), nil
 }

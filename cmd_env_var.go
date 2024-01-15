@@ -48,7 +48,7 @@ func envVarCreateLocalCmd(cmdCtx command.Context) error {
 		return fmt.Errorf("couldn't create env var: %s: %w", name, err)
 	}
 
-	fmt.Printf("Created env var: %#v\n", envVar)
+	fmt.Fprintf(cmdCtx.Stdout, "Created env var: %#v\n", envVar)
 	return nil
 
 }

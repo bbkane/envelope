@@ -39,7 +39,7 @@ func datetime() contained.TypeInfo[time.Time] {
 	}
 }
 
-func buildApp() warg.App {
+func buildApp() *warg.App {
 
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -200,7 +200,7 @@ func buildApp() warg.App {
 		),
 		warg.OverrideVersion(version),
 	)
-	return app
+	return &app
 }
 
 func main() {
