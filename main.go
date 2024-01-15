@@ -178,8 +178,9 @@ func buildApp() warg.App {
 							envVarCreateLocalCmd,
 							command.Flag(
 								"--value",
-								"Value if type is local",
+								"Value for this local env var",
 								scalar.String(),
+								flag.Required(),
 							),
 						),
 						section.ExistingFlags(commonCreateFlags),

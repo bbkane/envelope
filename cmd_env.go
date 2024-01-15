@@ -115,7 +115,7 @@ func envPrintScriptExportCmd(cmdCtx command.Context) error {
 
 	for _, ev := range envVars {
 		fmt.Printf("echo 'Adding:' %s;\n", shellescape.Quote(ev.Name))
-		fmt.Printf("export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value()))
+		fmt.Printf("export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
 	}
 	return nil
 }

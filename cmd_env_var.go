@@ -21,12 +21,9 @@ func envVarCreateLocalCmd(cmdCtx command.Context) error {
 	updateTime := cmdCtx.Flags["--update-time"].(time.Time)
 
 	envName := cmdCtx.Flags["--env-name"].(string)
-	localValue := ptrFromMap[string](cmdCtx.Flags, "--value")
-	name := cmdCtx.Flags["--name"].(string)
+	value := cmdCtx.Flags["--value"].(string)
 
-	if localValue == nil {
-		panic("TODO, need to confirm type and values work")
-	}
+	name := cmdCtx.Flags["--name"].(string)
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -44,8 +41,7 @@ func envVarCreateLocalCmd(cmdCtx command.Context) error {
 			Comment:    comment,
 			CreateTime: createTime,
 			UpdateTime: updateTime,
-			Type:       domain.EnvVarType(domain.EnvVarType_local),
-			LocalValue: localValue,
+			Value:      value,
 		},
 	)
 	if err != nil {

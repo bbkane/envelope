@@ -126,7 +126,7 @@ func (e *EnvService) CreateLocalEnvVar(ctx context.Context, args domain.CreateLo
 		},
 		CreateTime: domain.TimeToString(args.CreateTime),
 		UpdateTime: domain.TimeToString(args.UpdateTime),
-		Value:      *args.LocalValue,
+		Value:      args.Value,
 	})
 
 	if err != nil {
@@ -138,8 +138,7 @@ func (e *EnvService) CreateLocalEnvVar(ctx context.Context, args domain.CreateLo
 		Comment:    args.Comment,
 		CreateTime: args.CreateTime,
 		UpdateTime: args.UpdateTime,
-		Type:       args.Type,
-		LocalValue: args.LocalValue,
+		Value:      args.Value,
 	}, nil
 }
 
@@ -174,8 +173,7 @@ func (e *EnvService) ListLocalEnvVars(ctx context.Context, envName string) ([]do
 			CreateTime: createTime,
 			EnvName:    envName,
 			UpdateTime: updateTime,
-			LocalValue: &sqlcEnv.Value,
-			Type:       "TODO: rm me",
+			Value:      sqlcEnv.Value,
 		})
 	}
 

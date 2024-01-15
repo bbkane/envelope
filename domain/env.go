@@ -30,30 +30,13 @@ type UpdateEnvArgs struct {
 
 // -- EnvVar
 
-type EnvVarType string
-
-const (
-	EnvVarType_local EnvVarType = "local"
-)
-
 type LocalEnvVar struct {
 	EnvName    string
 	Name       string
 	Comment    *string
 	CreateTime time.Time
 	UpdateTime time.Time
-	Type       EnvVarType
-	LocalValue *string
-}
-
-// GetLocalValue gets the local value. It's expected that the EnvVar is constructed correctly
-func (ev *LocalEnvVar) Value() string {
-	switch ev.Type {
-	case EnvVarType_local:
-		return *ev.LocalValue
-	default:
-		panic("unexpected type: " + ev.Type)
-	}
+	Value      string
 }
 
 type CreateLocalEnvVarArgs struct {
@@ -62,8 +45,7 @@ type CreateLocalEnvVarArgs struct {
 	Comment    *string
 	CreateTime time.Time
 	UpdateTime time.Time
-	Type       EnvVarType
-	LocalValue *string
+	Value      string
 }
 
 // -- interface
