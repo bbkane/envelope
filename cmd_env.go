@@ -7,6 +7,7 @@ import (
 
 	"github.com/alessio/shellescape"
 	"go.bbkane.com/namedenv/domain"
+	"go.bbkane.com/namedenv/keyring"
 	"go.bbkane.com/namedenv/sqlite"
 
 	"go.bbkane.com/warg/command"
@@ -38,12 +39,14 @@ func envCreateCmd(cmdCtx command.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	envService, err := sqlite.NewEnvService(ctx, sqliteDSN)
+	keyring := keyring.NewOSKeyring(sqliteDSN)
+
+	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
 	if err != nil {
 		return fmt.Errorf("could not create env service: %w", err)
 	}
 
-	env, err := envService.CreateEnv(ctx, domain.CreateEnvArgs{
+	env, err := envService.EnvCreate(ctx, domain.CreateEnvArgs{
 		Name:       name,
 		Comment:    comment,
 		CreateTime: createTime,
@@ -75,12 +78,14 @@ func envUpdateCmd(cmdCtx command.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	envService, err := sqlite.NewEnvService(ctx, sqliteDSN)
+	keyring := keyring.NewOSKeyring(sqliteDSN)
+
+	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
 	if err != nil {
 		return fmt.Errorf("could not create env service: %w", err)
 	}
 
-	err = envService.UpdateEnv(ctx, name, domain.UpdateEnvArgs{
+	err = envService.EnvUpdate(ctx, name, domain.UpdateEnvArgs{
 		Comment:    comment,
 		CreateTime: createTime,
 		NewName:    newName,
@@ -103,12 +108,14 @@ func envPrintScriptExportCmd(cmdCtx command.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	envService, err := sqlite.NewEnvService(ctx, sqliteDSN)
+	keyring := keyring.NewOSKeyring(sqliteDSN)
+
+	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
 	if err != nil {
 		return fmt.Errorf("could not create env service: %w", err)
 	}
 
-	envVars, err := envService.ListLocalEnvVars(ctx, name)
+	envVars, err := envService.EnvVarLocalList(ctx, name)
 	if err != nil {
 		return fmt.Errorf("could not list env vars: %s: %w", name, err)
 	}

@@ -28,7 +28,7 @@ type UpdateEnvArgs struct {
 	UpdateTime *time.Time
 }
 
-// -- EnvVar
+// -- LocalEnvVar
 
 type LocalEnvVar struct {
 	EnvName    string
@@ -48,14 +48,42 @@ type CreateLocalEnvVarArgs struct {
 	Value      string
 }
 
+// -- Keyring
+
+// Keyring provides a simple set/get interface for a keyring service.
+type Keyring interface {
+	Set(key, value string) error
+	Get(key string) (string, error)
+	Delete(key string) error
+	Service() string
+}
+
+type KeyringEntry struct {
+	Name       string
+	Comment    *string
+	CreateTime time.Time
+	UpdateTime time.Time
+	Value      string
+}
+
+type KeyringEntryCreateArgs struct {
+	Name       string
+	Comment    *string
+	CreateTime time.Time
+	UpdateTime time.Time
+	Value      string
+}
+
 // -- interface
 
 type EnvService interface {
-	CreateEnv(ctx context.Context, args CreateEnvArgs) (*Env, error)
-	UpdateEnv(ctx context.Context, name string, args UpdateEnvArgs) error
+	EnvCreate(ctx context.Context, args CreateEnvArgs) (*Env, error)
+	EnvUpdate(ctx context.Context, name string, args UpdateEnvArgs) error
 
-	CreateLocalEnvVar(ctx context.Context, args CreateLocalEnvVarArgs) (*LocalEnvVar, error)
-	ListLocalEnvVars(ctx context.Context, envName string) ([]LocalEnvVar, error)
+	EnvVarLocalCreate(ctx context.Context, args CreateLocalEnvVarArgs) (*LocalEnvVar, error)
+	EnvVarLocalList(ctx context.Context, envName string) ([]LocalEnvVar, error)
+
+	KeyringEntryCreate(ctx context.Context, args KeyringEntryCreateArgs) (*KeyringEntry, error)
 }
 
 // -- Utility function

@@ -29,3 +29,10 @@ INSERT INTO env_var_local(
 SELECT * FROM env_var_local
 WHERE env_id = ?
 ORDER BY name ASC;
+
+-- name: CreateKeyringEntry :exec
+INSERT INTO keyring_entry(
+    name, comment, create_time, update_time
+) VALUES (
+    ?   , ?      , ?          , ?
+);

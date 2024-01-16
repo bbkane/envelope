@@ -50,6 +50,31 @@ func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (CreateEnv
 	return i, err
 }
 
+const createKeyringEntry = `-- name: CreateKeyringEntry :exec
+INSERT INTO keyring_entry(
+    name, comment, create_time, update_time
+) VALUES (
+    ?   , ?      , ?          , ?
+)
+`
+
+type CreateKeyringEntryParams struct {
+	Name       string
+	Comment    sql.NullString
+	CreateTime string
+	UpdateTime string
+}
+
+func (q *Queries) CreateKeyringEntry(ctx context.Context, arg CreateKeyringEntryParams) error {
+	_, err := q.db.ExecContext(ctx, createKeyringEntry,
+		arg.Name,
+		arg.Comment,
+		arg.CreateTime,
+		arg.UpdateTime,
+	)
+	return err
+}
+
 const createLocalEnvVar = `-- name: CreateLocalEnvVar :exec
 INSERT INTO env_var_local(
     env_id, name, comment, create_time, update_time, value

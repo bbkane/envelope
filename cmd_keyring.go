@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	"go.bbkane.com/namedenv/domain"
@@ -11,7 +14,18 @@ import (
 	"go.bbkane.com/warg/command"
 )
 
-func envVarCreateLocalCmd(cmdCtx command.Context) error {
+func promptKeyringValue() (string, error) {
+	fmt.Print("Enter value to store in keyring: ")
+	reader := bufio.NewReader(os.Stdin)
+	val, err := reader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	val = strings.TrimSpace(val)
+	return val, nil
+}
+
+func keyringCreateCmd(cmdCtx command.Context) error {
 	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
@@ -21,10 +35,12 @@ func envVarCreateLocalCmd(cmdCtx command.Context) error {
 	createTime := cmdCtx.Flags["--create-time"].(time.Time)
 	updateTime := cmdCtx.Flags["--update-time"].(time.Time)
 
-	envName := cmdCtx.Flags["--env-name"].(string)
-	value := cmdCtx.Flags["--value"].(string)
-
 	name := cmdCtx.Flags["--name"].(string)
+
+	val, err := promptKeyringValue()
+	if err != nil {
+		return fmt.Errorf("promptKeyringValue err: %w", err)
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -36,22 +52,20 @@ func envVarCreateLocalCmd(cmdCtx command.Context) error {
 		return fmt.Errorf("could not create env service: %w", err)
 	}
 
-	envVar, err := envService.EnvVarLocalCreate(
-		ctx,
-		domain.CreateLocalEnvVarArgs{
-			EnvName:    envName,
-			Name:       name,
-			Comment:    comment,
-			CreateTime: createTime,
-			UpdateTime: updateTime,
-			Value:      value,
-		},
-	)
+	entry, err := envService.KeyringEntryCreate(ctx, domain.KeyringEntryCreateArgs{
+		Name:       name,
+		Comment:    comment,
+		CreateTime: createTime,
+		UpdateTime: updateTime,
+		Value:      val,
+	})
+
 	if err != nil {
-		return fmt.Errorf("couldn't create env var: %s: %w", name, err)
+		return fmt.Errorf("could not create keyring: %w", err)
 	}
 
-	fmt.Fprintf(cmdCtx.Stdout, "Created env var: %#v\n", envVar)
-	return nil
+	// TODO: don't print the value?
+	fmt.Fprintf(cmdCtx.Stdout, "Created keyring: %#v\n", entry)
 
+	return nil
 }

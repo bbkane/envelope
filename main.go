@@ -197,6 +197,19 @@ func buildApp() *warg.App {
 					),
 				),
 			),
+			section.Section(
+				"keyring",
+				"Work with the OS Keyring",
+				section.Command(
+					"create",
+					"Create a keyring entry. Prompts for value instead of using a flag",
+					keyringCreateCmd,
+					command.ExistingFlags(commonCreateFlags),
+					command.ExistingFlag("--name", envNameFlag),
+				),
+				section.ExistingFlags(timeoutFlag),
+				section.ExistingFlags(sqliteDSN),
+			),
 		),
 		warg.OverrideVersion(version),
 	)

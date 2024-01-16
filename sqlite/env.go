@@ -23,7 +23,8 @@ func IsNotNil[T any](val *T) bool {
 }
 
 type EnvService struct {
-	db *sql.DB
+	db      *sql.DB
+	keyring domain.Keyring
 }
 
 func NullStringToStrPtr(val sql.NullString) *string {
@@ -33,18 +34,19 @@ func NullStringToStrPtr(val sql.NullString) *string {
 	return &val.String
 }
 
-func NewEnvService(ctx context.Context, dsn string) (domain.EnvService, error) {
+func NewEnvService(ctx context.Context, dsn string, keyring domain.Keyring) (domain.EnvService, error) {
 	// TODO use context!!
 	db, err := connect.Connect(dsn)
 	if err != nil {
 		return nil, fmt.Errorf("could not init db: %w", err)
 	}
 	return &EnvService{
-		db: db,
+		db:      db,
+		keyring: keyring,
 	}, nil
 }
 
-func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (*domain.Env, error) {
+func (e *EnvService) EnvCreate(ctx context.Context, args domain.CreateEnvArgs) (*domain.Env, error) {
 	queries := sqlcgen.New(e.db)
 
 	createdEnvID, err := queries.CreateEnv(ctx, sqlcgen.CreateEnvParams{
@@ -78,7 +80,7 @@ func (e *EnvService) CreateEnv(ctx context.Context, args domain.CreateEnvArgs) (
 	}, nil
 }
 
-func (e *EnvService) UpdateEnv(ctx context.Context, name string, args domain.UpdateEnvArgs) error {
+func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.UpdateEnvArgs) error {
 
 	queries := sqlcgen.New(e.db)
 
@@ -109,7 +111,7 @@ func (e *EnvService) UpdateEnv(ctx context.Context, name string, args domain.Upd
 	return nil
 }
 
-func (e *EnvService) CreateLocalEnvVar(ctx context.Context, args domain.CreateLocalEnvVarArgs) (*domain.LocalEnvVar, error) {
+func (e *EnvService) EnvVarLocalCreate(ctx context.Context, args domain.CreateLocalEnvVarArgs) (*domain.LocalEnvVar, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := queries.FindEnvID(ctx, args.EnvName)
@@ -142,7 +144,7 @@ func (e *EnvService) CreateLocalEnvVar(ctx context.Context, args domain.CreateLo
 	}, nil
 }
 
-func (e *EnvService) ListLocalEnvVars(ctx context.Context, envName string) ([]domain.LocalEnvVar, error) {
+func (e *EnvService) EnvVarLocalList(ctx context.Context, envName string) ([]domain.LocalEnvVar, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := queries.FindEnvID(ctx, envName)
@@ -178,4 +180,32 @@ func (e *EnvService) ListLocalEnvVars(ctx context.Context, envName string) ([]do
 	}
 
 	return ret, nil
+}
+
+func (e *EnvService) KeyringEntryCreate(ctx context.Context, args domain.KeyringEntryCreateArgs) (*domain.KeyringEntry, error) {
+	err := e.keyring.Set(args.Name, args.Value)
+	if err != nil {
+		return nil, fmt.Errorf("could not set value in keyring: %w", err)
+	}
+	queries := sqlcgen.New(e.db)
+
+	err = queries.CreateKeyringEntry(ctx, sqlcgen.CreateKeyringEntryParams{
+		Name: args.Name,
+		Comment: sql.NullString{
+			String: DerefOrEmpty(args.Comment),
+			Valid:  IsNotNil(args.Comment),
+		},
+		CreateTime: domain.TimeToString(args.CreateTime),
+		UpdateTime: domain.TimeToString(args.UpdateTime),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("val in keyring, but not in db: (%s, %s) %w", e.keyring.Service(), args.Name, err)
+	}
+	return &domain.KeyringEntry{
+		Name:       args.Name,
+		Comment:    args.Comment,
+		CreateTime: args.CreateTime,
+		UpdateTime: args.UpdateTime,
+		Value:      args.Value,
+	}, nil
 }
