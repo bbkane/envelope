@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"context"
@@ -9,9 +9,37 @@ import (
 	"go.bbkane.com/namedenv/keyring"
 	"go.bbkane.com/namedenv/sqlite"
 	"go.bbkane.com/warg/command"
+	"go.bbkane.com/warg/flag"
+	"go.bbkane.com/warg/value/scalar"
 )
 
-func envVarCreateLocalCmd(cmdCtx command.Context) error {
+func EnvVarCreateLocalCmd() command.Command {
+	return command.New(
+		"Create a variable local to the this env",
+		envVarCreateLocalRun,
+		command.Flag(
+			"--value",
+			"Value for this local env var",
+			scalar.String(),
+			flag.Required(),
+		),
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(commonCreateFlag()),
+		command.Flag(
+			"--name",
+			"Env var name",
+			scalar.String(),
+			flag.Required(),
+		),
+		command.ExistingFlag(
+			"--env-name",
+			envNameFlag(),
+		),
+	)
+}
+
+func envVarCreateLocalRun(cmdCtx command.Context) error {
 	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)

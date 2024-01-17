@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"context"
@@ -13,18 +13,18 @@ import (
 	"go.bbkane.com/warg/command"
 )
 
-// ptrFromMap returns &val if key is in the map, otherwise nil
-// useful for converting from the cmdCtx.Flags to the types domain needs
-func ptrFromMap[T any](m map[string]any, key string) *T {
-	val, exists := m[key]
-	if exists {
-		ret := val.(T)
-		return &ret
-	}
-	return nil
+func EnvCreateCmd() command.Command {
+	return command.New(
+		"Create an environment",
+		envCreateRun,
+		command.ExistingFlags(commonCreateFlag()),
+		command.ExistingFlag("--name", envNameFlag()),
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
+	)
 }
 
-func envCreateCmd(cmdCtx command.Context) error {
+func envCreateRun(cmdCtx command.Context) error {
 	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
@@ -62,7 +62,18 @@ func envCreateCmd(cmdCtx command.Context) error {
 	return nil
 }
 
-func envUpdateCmd(cmdCtx command.Context) error {
+func EnvUpdateCmd() command.Command {
+	return command.New(
+		"Update an environment",
+		EnvUpdateRun,
+		command.ExistingFlags(commonUpdateFlags()),
+		command.ExistingFlag("--name", envNameFlag()),
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
+	)
+}
+
+func EnvUpdateRun(cmdCtx command.Context) error {
 	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
@@ -98,7 +109,15 @@ func envUpdateCmd(cmdCtx command.Context) error {
 	return nil
 }
 
-func envPrintScriptExportCmd(cmdCtx command.Context) error {
+func EnvPrintScriptExportCmd() command.Command {
+	return command.New(
+		"Print export script",
+		EnvPrintScriptExportRun,
+		command.ExistingFlag("--name", envNameFlag()),
+	)
+}
+
+func EnvPrintScriptExportRun(cmdCtx command.Context) error {
 	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)

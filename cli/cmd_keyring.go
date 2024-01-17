@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"bufio"
@@ -25,7 +25,18 @@ func promptKeyringValue() (string, error) {
 	return val, nil
 }
 
-func keyringCreateCmd(cmdCtx command.Context) error {
+func KeyringCreateCmd() command.Command {
+	return command.New(
+		"Create a keyring entry. Prompts for value instead of using a flag",
+		keyringCreateRun,
+		command.ExistingFlags(commonCreateFlag()),
+		command.ExistingFlag("--name", envNameFlag()),
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
+	)
+}
+
+func keyringCreateRun(cmdCtx command.Context) error {
 	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
