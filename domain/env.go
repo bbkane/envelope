@@ -14,14 +14,14 @@ type Env struct {
 	UpdateTime time.Time
 }
 
-type CreateEnvArgs struct {
+type EnvCreateArgs struct {
 	Name       string
 	Comment    *string
 	CreateTime time.Time
 	UpdateTime time.Time
 }
 
-type UpdateEnvArgs struct {
+type EnvUpdateArgs struct {
 	Comment    *string
 	CreateTime *time.Time
 	NewName    *string
@@ -39,7 +39,7 @@ type LocalEnvVar struct {
 	Value      string
 }
 
-type CreateLocalEnvVarArgs struct {
+type EnvVarLocalCreateArgs struct {
 	EnvName    string
 	Name       string
 	Comment    *string
@@ -77,10 +77,10 @@ type KeyringEntryCreateArgs struct {
 // -- interface
 
 type EnvService interface {
-	EnvCreate(ctx context.Context, args CreateEnvArgs) (*Env, error)
-	EnvUpdate(ctx context.Context, name string, args UpdateEnvArgs) error
+	EnvCreate(ctx context.Context, args EnvCreateArgs) (*Env, error)
+	EnvUpdate(ctx context.Context, name string, args EnvUpdateArgs) error
 
-	EnvVarLocalCreate(ctx context.Context, args CreateLocalEnvVarArgs) (*LocalEnvVar, error)
+	EnvVarLocalCreate(ctx context.Context, args EnvVarLocalCreateArgs) (*LocalEnvVar, error)
 	EnvVarLocalList(ctx context.Context, envName string) ([]LocalEnvVar, error)
 
 	KeyringEntryCreate(ctx context.Context, args KeyringEntryCreateArgs) (*KeyringEntry, error)

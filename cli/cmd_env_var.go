@@ -66,7 +66,7 @@ func envVarCreateLocalRun(cmdCtx command.Context) error {
 
 	envVar, err := envService.EnvVarLocalCreate(
 		ctx,
-		domain.CreateLocalEnvVarArgs{
+		domain.EnvVarLocalCreateArgs{
 			EnvName:    envName,
 			Name:       name,
 			Comment:    comment,

@@ -47,7 +47,7 @@ func NewEnvService(ctx context.Context, dsn string, keyring domain.Keyring) (dom
 	}, nil
 }
 
-func (e *EnvService) EnvCreate(ctx context.Context, args domain.CreateEnvArgs) (*domain.Env, error) {
+func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (*domain.Env, error) {
 	queries := sqlcgen.New(e.db)
 
 	createdEnvID, err := queries.CreateEnv(ctx, sqlcgen.CreateEnvParams{
@@ -81,7 +81,7 @@ func (e *EnvService) EnvCreate(ctx context.Context, args domain.CreateEnvArgs) (
 	}, nil
 }
 
-func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.UpdateEnvArgs) error {
+func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.EnvUpdateArgs) error {
 
 	queries := sqlcgen.New(e.db)
 
@@ -112,7 +112,7 @@ func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.Upd
 	return nil
 }
 
-func (e *EnvService) EnvVarLocalCreate(ctx context.Context, args domain.CreateLocalEnvVarArgs) (*domain.LocalEnvVar, error) {
+func (e *EnvService) EnvVarLocalCreate(ctx context.Context, args domain.EnvVarLocalCreateArgs) (*domain.LocalEnvVar, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := queries.FindEnvID(ctx, args.EnvName)
