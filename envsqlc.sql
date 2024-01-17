@@ -36,3 +36,6 @@ INSERT INTO keyring_entry(
 ) VALUES (
     ?   , ?      , ?          , ?
 );
+
+-- name: FindKeyringID :one
+SELECT id from keyring_entry WHERE name = ?

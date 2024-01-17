@@ -115,6 +115,17 @@ func (q *Queries) FindEnvID(ctx context.Context, name string) (int64, error) {
 	return id, err
 }
 
+const findKeyringID = `-- name: FindKeyringID :one
+SELECT id from keyring_entry WHERE name = ?
+`
+
+func (q *Queries) FindKeyringID(ctx context.Context, name string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, findKeyringID, name)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const listLocalEnvVars = `-- name: ListLocalEnvVars :many
 SELECT id, env_id, name, comment, create_time, update_time, value FROM env_var_local
 WHERE env_id = ?
