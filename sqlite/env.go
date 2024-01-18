@@ -11,28 +11,9 @@ import (
 	"go.bbkane.com/namedenv/sqlite/sqlcgen"
 )
 
-func DerefOrEmpty[T any](val *T) T {
-	if val == nil {
-		var empty T
-		return empty
-	}
-	return *val
-}
-
-func IsNotNil[T any](val *T) bool {
-	return val != nil
-}
-
 type EnvService struct {
 	db      *sql.DB
 	keyring domain.Keyring
-}
-
-func NullStringToStrPtr(val sql.NullString) *string {
-	if !val.Valid {
-		return nil
-	}
-	return &val.String
 }
 
 func NewEnvService(ctx context.Context, dsn string, keyring domain.Keyring) (domain.EnvService, error) {
@@ -51,11 +32,8 @@ func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (
 	queries := sqlcgen.New(e.db)
 
 	createdEnvID, err := queries.CreateEnv(ctx, sqlcgen.CreateEnvParams{
-		Name: args.Name,
-		Comment: sql.NullString{
-			String: DerefOrEmpty(args.Comment),
-			Valid:  IsNotNil(args.Comment),
-		},
+		Name:       args.Name,
+		Comment:    args.Comment,
 		CreateTime: domain.TimeToString(args.CreateTime),
 		UpdateTime: domain.TimeToString(args.UpdateTime),
 	})
@@ -75,7 +53,7 @@ func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (
 
 	return &domain.Env{
 		Name:       createdEnvID.Name,
-		Comment:    NullStringToStrPtr(createdEnvID.Comment),
+		Comment:    createdEnvID.Comment,
 		CreateTime: createTime,
 		UpdateTime: updateTime,
 	}, nil
@@ -85,24 +63,24 @@ func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.Env
 
 	queries := sqlcgen.New(e.db)
 
+	var createTimeStr *string
+	if args.CreateTime != nil {
+		tmp := domain.TimeToString(*args.CreateTime)
+		createTimeStr = &tmp
+	}
+
+	var updateTimeStr *string
+	if args.CreateTime != nil {
+		tmp := domain.TimeToString(*args.UpdateTime)
+		updateTimeStr = &tmp
+	}
+
 	err := queries.UpdateEnv(ctx, sqlcgen.UpdateEnvParams{
-		NewName: sql.NullString{
-			String: DerefOrEmpty(args.NewName),
-			Valid:  IsNotNil(args.NewName),
-		},
-		Comment: sql.NullString{
-			String: DerefOrEmpty(args.Comment),
-			Valid:  IsNotNil(args.Comment),
-		},
-		CreateTime: sql.NullString{
-			String: domain.TimeToString(DerefOrEmpty(args.CreateTime)),
-			Valid:  IsNotNil(args.CreateTime),
-		},
-		UpdateTime: sql.NullString{
-			String: domain.TimeToString(DerefOrEmpty(args.CreateTime)),
-			Valid:  IsNotNil(args.CreateTime),
-		},
-		Name: name,
+		NewName:    args.NewName,
+		Comment:    args.Comment,
+		CreateTime: createTimeStr,
+		UpdateTime: updateTimeStr,
+		Name:       name,
 	})
 
 	if err != nil {
@@ -121,12 +99,9 @@ func (e *EnvService) EnvVarLocalCreate(ctx context.Context, args domain.EnvVarLo
 	}
 
 	err = queries.CreateLocalEnvVar(ctx, sqlcgen.CreateLocalEnvVarParams{
-		EnvID: envID,
-		Name:  args.Name,
-		Comment: sql.NullString{
-			String: DerefOrEmpty(args.Comment),
-			Valid:  IsNotNil(args.Comment),
-		},
+		EnvID:      envID,
+		Name:       args.Name,
+		Comment:    args.Comment,
 		CreateTime: domain.TimeToString(args.CreateTime),
 		UpdateTime: domain.TimeToString(args.UpdateTime),
 		Value:      args.Value,
@@ -172,7 +147,7 @@ func (e *EnvService) EnvVarLocalList(ctx context.Context, envName string) ([]dom
 
 		ret = append(ret, domain.LocalEnvVar{
 			Name:       sqlcEnv.Name,
-			Comment:    NullStringToStrPtr(sqlcEnv.Comment),
+			Comment:    sqlcEnv.Comment,
 			CreateTime: createTime,
 			EnvName:    envName,
 			UpdateTime: updateTime,
@@ -207,11 +182,8 @@ func (e *EnvService) KeyringEntryCreate(ctx context.Context, args domain.Keyring
 	}
 
 	err = queries.CreateKeyringEntry(ctx, sqlcgen.CreateKeyringEntryParams{
-		Name: args.Name,
-		Comment: sql.NullString{
-			String: DerefOrEmpty(args.Comment),
-			Valid:  IsNotNil(args.Comment),
-		},
+		Name:       args.Name,
+		Comment:    args.Comment,
 		CreateTime: domain.TimeToString(args.CreateTime),
 		UpdateTime: domain.TimeToString(args.UpdateTime),
 	})
