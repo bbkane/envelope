@@ -148,6 +148,19 @@ func timeoutFlagMap() flag.FlagMap {
 
 }
 
+func timeZoneFlagMap() flag.FlagMap {
+	return flag.FlagMap{
+		"--timezone": flag.New(
+			"Timezone to display dates",
+			scalar.String(
+				scalar.Default("local"),
+				scalar.Choices("local", "utc"),
+			),
+			flag.Required(),
+		),
+	}
+}
+
 // ptrFromMap returns &val if key is in the map, otherwise nil
 // useful for converting from the cmdCtx.Flags to the types domain needs
 func ptrFromMap[T any](m map[string]any, key string) *T {

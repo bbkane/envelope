@@ -154,6 +154,7 @@ func EnvShowCmd() command.Command {
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(timeZoneFlagMap()),
 	)
 }
 
@@ -163,6 +164,7 @@ func envShowRun(cmdCtx command.Context) error {
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
 
 	name := cmdCtx.Flags["--name"].(string)
+	timezone := cmdCtx.Flags["--timezone"].(string)
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -179,6 +181,6 @@ func envShowRun(cmdCtx command.Context) error {
 		return fmt.Errorf("could not show env: %s: %w", name, err)
 	}
 
-	tableprint.EnvTable(cmdCtx.Stdout, *env)
+	tableprint.EnvTable(cmdCtx.Stdout, *env, tableprint.Timezone(timezone))
 	return nil
 }

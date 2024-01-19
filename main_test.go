@@ -44,6 +44,16 @@ func TestAddEnv(t *testing.T) {
 				"--update-time", zeroTime,
 			},
 		},
+		{
+			name: "showEnv",
+			app:  buildApp(),
+			args: []string{
+				"namedenv", "env", "show",
+				"--sqlite-dsn", dbFile.Name(),
+				"--name", "env_name",
+				"--timezone", "utc",
+			},
+		},
 	}
 
 	for _, tt := range tests {

@@ -7,7 +7,7 @@ import (
 	"go.bbkane.com/namedenv/domain"
 )
 
-func EnvTable(w io.Writer, env domain.Env) {
+func EnvTable(w io.Writer, env domain.Env, timezone Timezone) {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleRounded)
 	t.SetOutputMirror(w)
@@ -24,8 +24,8 @@ func EnvTable(w io.Writer, env domain.Env) {
 	t.AppendRows([]table.Row{
 		{"Name", env.Name},
 		{"Comment", valOrEmpty(env.Comment)},
-		{"CreateTime", env.CreateTime.Local()},
-		{"UpdateTime", env.UpdateTime.Local()},
+		{"CreateTime", formatTime(env.CreateTime, timezone)},
+		{"UpdateTime", formatTime(env.UpdateTime, timezone)},
 	})
 
 	t.Render()
