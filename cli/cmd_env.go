@@ -9,6 +9,7 @@ import (
 	"go.bbkane.com/namedenv/domain"
 	"go.bbkane.com/namedenv/keyring"
 	"go.bbkane.com/namedenv/sqlite"
+	"go.bbkane.com/namedenv/tableprint"
 
 	"go.bbkane.com/warg/command"
 )
@@ -178,6 +179,6 @@ func envShowRun(cmdCtx command.Context) error {
 		return fmt.Errorf("could not show env: %s: %w", name, err)
 	}
 
-	fmt.Println(env)
+	tableprint.EnvTable(cmdCtx.Stdout, *env)
 	return nil
 }
