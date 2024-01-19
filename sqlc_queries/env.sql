@@ -18,24 +18,8 @@ WHERE name = sqlc.arg('name');
 -- name: FindEnvID :one
 SELECT id FROM env WHERE name = ?;
 
--- name: CreateLocalEnvVar :exec
-INSERT INTO env_var_local(
-    env_id, name, comment, create_time, update_time, value
-) VALUES (
-    ?     , ?   , ?      , ?          , ?          , ?
-);
-
--- name: ListLocalEnvVars :many
-SELECT * FROM env_var_local
-WHERE env_id = ?
-ORDER BY name ASC;
-
--- name: CreateKeyringEntry :exec
-INSERT INTO keyring_entry(
+-- name: FindEnv :one
+SELECT
     name, comment, create_time, update_time
-) VALUES (
-    ?   , ?      , ?          , ?
-);
-
--- name: FindKeyringID :one
-SELECT id from keyring_entry WHERE name = ?
+FROM env
+WHERE name = ?;

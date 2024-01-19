@@ -5,6 +5,6 @@ sql:
         emit_pointers_for_null_types: true
         out: sqlite/sqlcgen
         package: sqlcgen
-    queries: envsqlc.sql
+    queries: sqlc_queries
     schema: sqlite/connect/embedded_migrations
 version: "2"
