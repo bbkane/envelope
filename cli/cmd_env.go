@@ -145,3 +145,39 @@ func EnvPrintScriptExportRun(cmdCtx command.Context) error {
 	}
 	return nil
 }
+
+func EnvShowCmd() command.Command {
+	return command.New(
+		"Print environment details",
+		envShowRun,
+		command.ExistingFlag("--name", envNameFlag()),
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
+	)
+}
+
+func envShowRun(cmdCtx command.Context) error {
+	// common flags
+	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
+	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
+
+	name := cmdCtx.Flags["--name"].(string)
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	keyring := keyring.NewOSKeyring(sqliteDSN)
+
+	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
+	if err != nil {
+		return fmt.Errorf("could not create env service: %w", err)
+	}
+
+	env, err := envService.EnvShow(ctx, name)
+	if err != nil {
+		return fmt.Errorf("could not show env: %s: %w", name, err)
+	}
+
+	fmt.Println(env)
+	return nil
+}

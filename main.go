@@ -27,6 +27,10 @@ func buildApp() *warg.App {
 					"update",
 					cli.EnvUpdateCmd(),
 				),
+				section.ExistingCommand(
+					"show",
+					cli.EnvShowCmd(),
+				),
 				section.Section(
 					"print-script",
 					"Print a script from a stored environment",

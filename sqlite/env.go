@@ -2,31 +2,11 @@ package sqlite
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"fmt"
 
 	"go.bbkane.com/namedenv/domain"
-	"go.bbkane.com/namedenv/sqlite/connect"
 	"go.bbkane.com/namedenv/sqlite/sqlcgen"
 )
-
-type EnvService struct {
-	db      *sql.DB
-	keyring domain.Keyring
-}
-
-func NewEnvService(ctx context.Context, dsn string, keyring domain.Keyring) (domain.EnvService, error) {
-	// TODO use context!!
-	db, err := connect.Connect(dsn)
-	if err != nil {
-		return nil, fmt.Errorf("could not init db: %w", err)
-	}
-	return &EnvService{
-		db:      db,
-		keyring: keyring,
-	}, nil
-}
 
 func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (*domain.Env, error) {
 	queries := sqlcgen.New(e.db)
@@ -90,111 +70,29 @@ func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.Env
 	return nil
 }
 
-func (e *EnvService) EnvVarLocalCreate(ctx context.Context, args domain.EnvVarLocalCreateArgs) (*domain.LocalEnvVar, error) {
+func (e *EnvService) EnvShow(ctx context.Context, name string) (*domain.Env, error) {
 	queries := sqlcgen.New(e.db)
 
-	envID, err := queries.FindEnvID(ctx, args.EnvName)
-	if err != nil {
-		return nil, fmt.Errorf("could not find env with name: %s: %w", args.Name, err)
-	}
-
-	err = queries.CreateLocalEnvVar(ctx, sqlcgen.CreateLocalEnvVarParams{
-		EnvID:      envID,
-		Name:       args.Name,
-		Comment:    args.Comment,
-		CreateTime: domain.TimeToString(args.CreateTime),
-		UpdateTime: domain.TimeToString(args.UpdateTime),
-		Value:      args.Value,
-	})
+	sqlcEnv, err := queries.FindEnv(ctx, name)
 
 	if err != nil {
-		return nil, fmt.Errorf("could not create env var: %w", err)
+		return nil, fmt.Errorf("could not find env: %s: %w", name, err)
 	}
-	return &domain.LocalEnvVar{
-		EnvName:    args.EnvName,
-		Name:       args.Name,
-		Comment:    args.Comment,
-		CreateTime: args.CreateTime,
-		UpdateTime: args.UpdateTime,
-		Value:      args.Value,
-	}, nil
-}
 
-func (e *EnvService) EnvVarLocalList(ctx context.Context, envName string) ([]domain.LocalEnvVar, error) {
-	queries := sqlcgen.New(e.db)
-
-	envID, err := queries.FindEnvID(ctx, envName)
+	createTime, err := domain.StringToTime(sqlcEnv.CreateTime)
 	if err != nil {
-		return nil, fmt.Errorf("could not find env with name: %s: %w", envName, err)
+		return nil, fmt.Errorf("bad create_time: %s: %w", name, err)
 	}
 
-	envs, err := queries.ListLocalEnvVars(ctx, envID)
+	updateTime, err := domain.StringToTime(sqlcEnv.UpdateTime)
 	if err != nil {
-		return nil, fmt.Errorf("could not list env vars: %s: %w", envName, err)
-	}
-	var ret []domain.LocalEnvVar
-	for _, sqlcEnv := range envs {
-
-		createTime, err := domain.StringToTime(sqlcEnv.CreateTime)
-		if err != nil {
-			return nil, fmt.Errorf("invalid create time for env_var %s: %w", sqlcEnv.Name, err)
-		}
-
-		updateTime, err := domain.StringToTime(sqlcEnv.UpdateTime)
-		if err != nil {
-			return nil, fmt.Errorf("invalid update time for env_var %s: %w", sqlcEnv.Name, err)
-		}
-
-		ret = append(ret, domain.LocalEnvVar{
-			Name:       sqlcEnv.Name,
-			Comment:    sqlcEnv.Comment,
-			CreateTime: createTime,
-			EnvName:    envName,
-			UpdateTime: updateTime,
-			Value:      sqlcEnv.Value,
-		})
+		return nil, fmt.Errorf("bad update_time: %s: %w", name, err)
 	}
 
-	return ret, nil
-}
-
-func (e *EnvService) KeyringEntryCreate(ctx context.Context, args domain.KeyringEntryCreateArgs) (*domain.KeyringEntry, error) {
-
-	queries := sqlcgen.New(e.db)
-
-	// check if the value exists before trying to create it
-	// We assume if the keyring entry is in the db, it's also in the os keyring
-	_, err := queries.FindKeyringID(ctx, args.Name)
-
-	// oops, one exists
-	if err == nil {
-		return nil, errors.New("expecting no entries, but we found one")
-	}
-
-	// we expect this error, but we want to alert on any others
-	if err != sql.ErrNoRows {
-		return nil, fmt.Errorf("keyring query error: %w", err)
-	}
-
-	err = e.keyring.Set(args.Name, args.Value)
-	if err != nil {
-		return nil, fmt.Errorf("could not set value in keyring: %w", err)
-	}
-
-	err = queries.CreateKeyringEntry(ctx, sqlcgen.CreateKeyringEntryParams{
-		Name:       args.Name,
-		Comment:    args.Comment,
-		CreateTime: domain.TimeToString(args.CreateTime),
-		UpdateTime: domain.TimeToString(args.UpdateTime),
-	})
-	if err != nil {
-		return nil, fmt.Errorf("val in keyring, but not in db: (%s, %s) %w", e.keyring.Service(), args.Name, err)
-	}
-	return &domain.KeyringEntry{
-		Name:       args.Name,
-		Comment:    args.Comment,
-		CreateTime: args.CreateTime,
-		UpdateTime: args.UpdateTime,
-		Value:      args.Value,
+	return &domain.Env{
+		Name:       name,
+		Comment:    sqlcEnv.Comment,
+		CreateTime: createTime,
+		UpdateTime: updateTime,
 	}, nil
 }

@@ -12,6 +12,8 @@ import (
 	"go.bbkane.com/namedenv/keyring"
 	"go.bbkane.com/namedenv/sqlite"
 	"go.bbkane.com/warg/command"
+	"go.bbkane.com/warg/flag"
+	"go.bbkane.com/warg/value/scalar"
 )
 
 func promptKeyringValue() (string, error) {
@@ -30,7 +32,12 @@ func KeyringCreateCmd() command.Command {
 		"Create a keyring entry. Prompts for value instead of using a flag",
 		keyringCreateRun,
 		command.ExistingFlags(commonCreateFlag()),
-		command.ExistingFlag("--name", envNameFlag()),
+		command.Flag(
+			"--name",
+			"Keyring entry name",
+			scalar.String(),
+			flag.Required(),
+		),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlag()),
 	)
