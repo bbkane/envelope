@@ -199,5 +199,10 @@ func envUpdateRun(cmdCtx command.Context) error {
 	if err != nil {
 		return fmt.Errorf("could not update env: %w", err)
 	}
+	finalName := name
+	if newName != nil {
+		finalName = *newName
+	}
+	fmt.Fprintln(cmdCtx.Stdout, "updated env:", finalName)
 	return nil
 }
