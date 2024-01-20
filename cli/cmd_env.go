@@ -1,15 +1,12 @@
 package cli
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"time"
 
 	"github.com/alessio/shellescape"
 	"go.bbkane.com/namedenv/domain"
-	"go.bbkane.com/namedenv/keyring"
-	"go.bbkane.com/namedenv/sqlite"
 	"go.bbkane.com/namedenv/tableprint"
 
 	"go.bbkane.com/warg/command"
@@ -29,9 +26,6 @@ func EnvCreateCmd() command.Command {
 }
 
 func envCreateRun(cmdCtx command.Context) error {
-	// common flags
-	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
-	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
 
 	// common create Flags
 	comment := cmdCtx.Flags["--comment"].(string)
@@ -40,17 +34,13 @@ func envCreateRun(cmdCtx command.Context) error {
 
 	name := cmdCtx.Flags["--name"].(string)
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	keyring := keyring.NewOSKeyring(sqliteDSN)
-
-	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
+	iesr, err := initEnvService(cmdCtx.Flags)
 	if err != nil {
-		return fmt.Errorf("could not create env service: %w", err)
+		return err
 	}
+	defer iesr.Cancel()
 
-	env, err := envService.EnvCreate(ctx, domain.EnvCreateArgs{
+	env, err := iesr.EnvService.EnvCreate(iesr.Ctx, domain.EnvCreateArgs{
 		Name:       name,
 		Comment:    comment,
 		CreateTime: createTime,
@@ -61,7 +51,7 @@ func envCreateRun(cmdCtx command.Context) error {
 		return fmt.Errorf("could not create env: %w", err)
 	}
 
-	fmt.Fprintf(cmdCtx.Stdout, "Created env: %#v\n", env)
+	fmt.Fprintf(cmdCtx.Stdout, "Created env: %s\n", env.Name)
 
 	return nil
 }
@@ -77,75 +67,22 @@ func EnvDeleteCmd() command.Command {
 }
 
 func envDeleteRun(cmdCtx command.Context) error {
-	// common flags
-	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
-	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
 
 	name := cmdCtx.Flags["--name"].(string)
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	keyring := keyring.NewOSKeyring(sqliteDSN)
-
-	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
+	iesr, err := initEnvService(cmdCtx.Flags)
 	if err != nil {
-		return fmt.Errorf("could not create env service: %w", err)
+		return err
 	}
+	defer iesr.Cancel()
 
-	err = envService.EnvDelete(ctx, name)
+	err = iesr.EnvService.EnvDelete(iesr.Ctx, name)
 
 	if err != nil {
 		return fmt.Errorf("could not delete env: %s: %w", name, err)
 	}
 
-	return nil
-}
-
-func EnvUpdateCmd() command.Command {
-	return command.New(
-		"Update an environment",
-		envUpdateRun,
-		command.ExistingFlags(commonUpdateFlags()),
-		command.ExistingFlag("--name", envNameFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
-	)
-}
-
-func envUpdateRun(cmdCtx command.Context) error {
-	// common flags
-	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
-	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
-
-	// common update flags
-	comment := ptrFromMap[string](cmdCtx.Flags, "--comment")
-	createTime := ptrFromMap[time.Time](cmdCtx.Flags, "--create-time")
-	newName := ptrFromMap[string](cmdCtx.Flags, "--new-name")
-	updateTime := ptrFromMap[time.Time](cmdCtx.Flags, "--update-time")
-
-	name := cmdCtx.Flags["--name"].(string)
-
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	keyring := keyring.NewOSKeyring(sqliteDSN)
-
-	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
-	if err != nil {
-		return fmt.Errorf("could not create env service: %w", err)
-	}
-
-	err = envService.EnvUpdate(ctx, name, domain.EnvUpdateArgs{
-		Comment:    comment,
-		CreateTime: createTime,
-		NewName:    newName,
-		UpdateTime: updateTime,
-	})
-
-	if err != nil {
-		return fmt.Errorf("could not update env: %w", err)
-	}
+	fmt.Fprintf(cmdCtx.Stdout, "deleted: %s\n", name)
 	return nil
 }
 
@@ -169,25 +106,16 @@ func EnvPrintScriptCmd() command.Command {
 }
 
 func envPrintScriptRun(cmdCtx command.Context) error {
-	// common flags
-	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
-	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
-
 	name := cmdCtx.Flags["--name"].(string)
-
 	scriptType := cmdCtx.Flags["--type"].(string)
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	keyring := keyring.NewOSKeyring(sqliteDSN)
-
-	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
+	iesr, err := initEnvService(cmdCtx.Flags)
 	if err != nil {
-		return fmt.Errorf("could not create env service: %w", err)
+		return err
 	}
+	defer iesr.Cancel()
 
-	envVars, err := envService.EnvVarLocalList(ctx, name)
+	envVars, err := iesr.EnvService.EnvVarLocalList(iesr.Ctx, name)
 	if err != nil {
 		return fmt.Errorf("could not list env vars: %s: %w", name, err)
 	}
@@ -215,28 +143,61 @@ func EnvShowCmd() command.Command {
 }
 
 func envShowRun(cmdCtx command.Context) error {
-	// common flags
-	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
-	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
 
 	name := cmdCtx.Flags["--name"].(string)
 	timezone := cmdCtx.Flags["--timezone"].(string)
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	keyring := keyring.NewOSKeyring(sqliteDSN)
-
-	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
+	iesr, err := initEnvService(cmdCtx.Flags)
 	if err != nil {
-		return fmt.Errorf("could not create env service: %w", err)
+		return err
 	}
+	defer iesr.Cancel()
 
-	env, err := envService.EnvShow(ctx, name)
+	env, err := iesr.EnvService.EnvShow(iesr.Ctx, name)
 	if err != nil {
 		return fmt.Errorf("could not show env: %s: %w", name, err)
 	}
 
 	tableprint.EnvTable(cmdCtx.Stdout, *env, tableprint.Timezone(timezone))
+	return nil
+}
+
+func EnvUpdateCmd() command.Command {
+	return command.New(
+		"Update an environment",
+		envUpdateRun,
+		command.ExistingFlags(commonUpdateFlags()),
+		command.ExistingFlag("--name", envNameFlag()),
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
+	)
+}
+
+func envUpdateRun(cmdCtx command.Context) error {
+
+	// common update flags
+	comment := ptrFromMap[string](cmdCtx.Flags, "--comment")
+	createTime := ptrFromMap[time.Time](cmdCtx.Flags, "--create-time")
+	newName := ptrFromMap[string](cmdCtx.Flags, "--new-name")
+	updateTime := ptrFromMap[time.Time](cmdCtx.Flags, "--update-time")
+
+	name := cmdCtx.Flags["--name"].(string)
+
+	iesr, err := initEnvService(cmdCtx.Flags)
+	if err != nil {
+		return err
+	}
+	defer iesr.Cancel()
+
+	err = iesr.EnvService.EnvUpdate(iesr.Ctx, name, domain.EnvUpdateArgs{
+		Comment:    comment,
+		CreateTime: createTime,
+		NewName:    newName,
+		UpdateTime: updateTime,
+	})
+
+	if err != nil {
+		return fmt.Errorf("could not update env: %w", err)
+	}
 	return nil
 }

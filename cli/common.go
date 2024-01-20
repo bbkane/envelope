@@ -1,10 +1,16 @@
 package cli
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"time"
 
 	"github.com/mitchellh/go-homedir"
+	"go.bbkane.com/namedenv/domain"
+	"go.bbkane.com/namedenv/keyring"
+	"go.bbkane.com/namedenv/sqlite"
+	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 
 	"go.bbkane.com/warg/value/contained"
@@ -173,4 +179,34 @@ func ptrFromMap[T any](m map[string]any, key string) *T {
 		return &ret
 	}
 	return nil
+}
+
+type initEnvServiceRet struct {
+	Cancel     context.CancelFunc
+	Ctx        context.Context
+	EnvService domain.EnvService
+}
+
+// initEnvService reads --sqlite-dsn and --timeout to create a
+// EnvService. It means I don't have to type these EVERY time
+func initEnvService(passedFlags command.PassedFlags) (*initEnvServiceRet, error) {
+	// common flags
+	sqliteDSN := passedFlags["--sqlite-dsn"].(string)
+	timeout := passedFlags["--timeout"].(time.Duration)
+
+	//nolint:govet // we don't need the cancel if we err out
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+
+	keyring := keyring.NewOSKeyring(sqliteDSN)
+
+	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
+	if err != nil {
+		//nolint:govet // we don't need the cancel if we err out
+		return nil, fmt.Errorf("could not create env service: %w", err)
+	}
+	return &initEnvServiceRet{
+		EnvService: envService,
+		Cancel:     cancel,
+		Ctx:        ctx,
+	}, nil
 }
