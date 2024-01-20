@@ -115,6 +115,8 @@ func EnvPrintScriptExportCmd() command.Command {
 		"Print export script",
 		EnvPrintScriptExportRun,
 		command.ExistingFlag("--name", envNameFlag()),
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
 	)
 }
 
