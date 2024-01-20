@@ -1,13 +1,11 @@
 package cli
 
 import (
-	"context"
 	"fmt"
 	"time"
 
 	"go.bbkane.com/namedenv/domain"
-	"go.bbkane.com/namedenv/keyring"
-	"go.bbkane.com/namedenv/sqlite"
+	"go.bbkane.com/namedenv/tableprint"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
@@ -40,9 +38,6 @@ func EnvLocalVarCreateCmd() command.Command {
 }
 
 func envVarCreateLocalRun(cmdCtx command.Context) error {
-	// common flags
-	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
-	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
 
 	// common create Flags
 	comment := cmdCtx.Flags["--comment"].(string)
@@ -54,19 +49,15 @@ func envVarCreateLocalRun(cmdCtx command.Context) error {
 
 	name := cmdCtx.Flags["--name"].(string)
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	keyring := keyring.NewOSKeyring(sqliteDSN)
-
-	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
+	iesr, err := initEnvService(cmdCtx.Flags)
 	if err != nil {
-		return fmt.Errorf("could not create env service: %w", err)
+		return err
 	}
+	defer iesr.Cancel()
 
-	envVar, err := envService.EnvVarLocalCreate(
-		ctx,
-		domain.EnvVarLocalCreateArgs{
+	_, err = iesr.EnvService.EnvLocalVarCreate(
+		iesr.Ctx,
+		domain.EnvLocalVarCreateArgs{
 			EnvName:    envName,
 			Name:       name,
 			Comment:    comment,
@@ -79,7 +70,47 @@ func envVarCreateLocalRun(cmdCtx command.Context) error {
 		return fmt.Errorf("couldn't create env var: %s: %w", name, err)
 	}
 
-	fmt.Fprintf(cmdCtx.Stdout, "Created env var: %#v\n", envVar)
+	fmt.Fprintf(cmdCtx.Stdout, "Created env var: %s: %s\n", envName, name)
 	return nil
+}
 
+func EnvLocalVarShowCmd() command.Command {
+	return command.New(
+		"Show details for a localvar",
+		envLocalVarShowRun,
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(timeZoneFlagMap()),
+		command.Flag(
+			"--name",
+			"Env var name",
+			scalar.String(),
+			flag.Required(),
+		),
+		command.ExistingFlag(
+			"--env-name",
+			envNameFlag(),
+		),
+	)
+}
+
+func envLocalVarShowRun(cmdCtx command.Context) error {
+
+	envName := cmdCtx.Flags["--env-name"].(string)
+	name := cmdCtx.Flags["--name"].(string)
+	timezone := cmdCtx.Flags["--timezone"].(string)
+
+	iesr, err := initEnvService(cmdCtx.Flags)
+	if err != nil {
+		return err
+	}
+	defer iesr.Cancel()
+
+	envVar, err := iesr.EnvService.EnvLocalVarShow(iesr.Ctx, envName, name)
+	if err != nil {
+		return fmt.Errorf("couldn't find env var: %s: %w", name, err)
+	}
+
+	tableprint.EnvLocalVarShowPrint(cmdCtx.Stdout, *envVar, tableprint.Timezone(timezone))
+	return nil
 }

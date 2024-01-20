@@ -115,7 +115,7 @@ func envPrintScriptRun(cmdCtx command.Context) error {
 	}
 	defer iesr.Cancel()
 
-	envVars, err := iesr.EnvService.EnvVarLocalList(iesr.Ctx, name)
+	envVars, err := iesr.EnvService.EnvLocalVarList(iesr.Ctx, name)
 	if err != nil {
 		return fmt.Errorf("could not list env vars: %s: %w", name, err)
 	}

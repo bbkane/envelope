@@ -28,9 +28,9 @@ type EnvUpdateArgs struct {
 	UpdateTime *time.Time
 }
 
-// -- LocalEnvVar
+// -- EnvLocalVar
 
-type LocalEnvVar struct {
+type EnvLocalVar struct {
 	EnvName    string
 	Name       string
 	Comment    string
@@ -39,7 +39,7 @@ type LocalEnvVar struct {
 	Value      string
 }
 
-type EnvVarLocalCreateArgs struct {
+type EnvLocalVarCreateArgs struct {
 	EnvName    string
 	Name       string
 	Comment    string
@@ -82,8 +82,9 @@ type EnvService interface {
 	EnvUpdate(ctx context.Context, name string, args EnvUpdateArgs) error
 	EnvShow(ctx context.Context, name string) (*Env, error)
 
-	EnvVarLocalCreate(ctx context.Context, args EnvVarLocalCreateArgs) (*LocalEnvVar, error)
-	EnvVarLocalList(ctx context.Context, envName string) ([]LocalEnvVar, error)
+	EnvLocalVarCreate(ctx context.Context, args EnvLocalVarCreateArgs) (*EnvLocalVar, error)
+	EnvLocalVarList(ctx context.Context, envName string) ([]EnvLocalVar, error)
+	EnvLocalVarShow(ctx context.Context, envName string, name string) (*EnvLocalVar, error)
 
 	KeyringEntryCreate(ctx context.Context, args KeyringEntryCreateArgs) (*KeyringEntry, error)
 }
@@ -103,4 +104,15 @@ func StringToTime(s string) (time.Time, error) {
 		return t, err
 	}
 	return t.Round(0), nil
+}
+
+// StringToTimeMust works like StringToTime but panics on errors.
+// I think this is usually acceptable as times are formatted pretty carefully
+// in the db
+func StringToTimeMust(s string) time.Time {
+	t, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		panic(err)
+	}
+	return t.Round(0)
 }
