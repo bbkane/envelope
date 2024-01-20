@@ -32,28 +32,19 @@ func buildApp() *warg.App {
 					cli.EnvUpdateCmd(),
 				),
 				section.ExistingCommand(
+					"print-script",
+					cli.EnvPrintScriptCmd(),
+				),
+				section.ExistingCommand(
 					"show",
 					cli.EnvShowCmd(),
 				),
 				section.Section(
-					"print-script",
-					"Print a script from a stored environment",
+					"localvar",
+					"Env vars owned by this environment",
 					section.ExistingCommand(
-						"export",
-						cli.EnvPrintScriptExportCmd(),
-					),
-				),
-
-				section.Section(
-					"var",
-					"Environment Variables!",
-					section.Section(
 						"create",
-						"Create an environmetnal variable",
-						section.ExistingCommand(
-							"local",
-							cli.EnvVarCreateLocalCmd(),
-						),
+						cli.EnvLocalVarCreateCmd(),
 					),
 				),
 			),

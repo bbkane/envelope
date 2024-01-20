@@ -13,7 +13,7 @@ import (
 	"go.bbkane.com/warg/value/scalar"
 )
 
-func EnvVarCreateLocalCmd() command.Command {
+func EnvLocalVarCreateCmd() command.Command {
 	return command.New(
 		"Create a variable local to the this env",
 		envVarCreateLocalRun,

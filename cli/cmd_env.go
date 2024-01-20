@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -12,6 +13,8 @@ import (
 	"go.bbkane.com/namedenv/tableprint"
 
 	"go.bbkane.com/warg/command"
+	"go.bbkane.com/warg/flag"
+	"go.bbkane.com/warg/value/scalar"
 )
 
 func EnvCreateCmd() command.Command {
@@ -146,22 +149,33 @@ func envUpdateRun(cmdCtx command.Context) error {
 	return nil
 }
 
-func EnvPrintScriptExportCmd() command.Command {
+func EnvPrintScriptCmd() command.Command {
 	return command.New(
 		"Print export script",
-		envPrintScriptExportRun,
+		envPrintScriptRun,
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlag()),
+		command.Flag(
+			"--type",
+			"Type of script",
+			scalar.String(
+				scalar.Choices("export", "unexport"),
+				scalar.Default("export"),
+			),
+			flag.Required(),
+		),
 	)
 }
 
-func envPrintScriptExportRun(cmdCtx command.Context) error {
+func envPrintScriptRun(cmdCtx command.Context) error {
 	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
 
 	name := cmdCtx.Flags["--name"].(string)
+
+	scriptType := cmdCtx.Flags["--type"].(string)
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -177,11 +191,15 @@ func envPrintScriptExportRun(cmdCtx command.Context) error {
 	if err != nil {
 		return fmt.Errorf("could not list env vars: %s: %w", name, err)
 	}
-
-	for _, ev := range envVars {
-		fmt.Fprintf(cmdCtx.Stdout, "echo 'Adding:' %s;\n", shellescape.Quote(ev.Name))
-		fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
+	if scriptType == "export" {
+		for _, ev := range envVars {
+			fmt.Fprintf(cmdCtx.Stdout, "echo 'Adding:' %s;\n", shellescape.Quote(ev.Name))
+			fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
+		}
+	} else {
+		return errors.New("Unimplemented --script-type: " + scriptType)
 	}
+
 	return nil
 }
 
