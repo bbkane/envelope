@@ -9,7 +9,7 @@ import ()
 type Env struct {
 	ID         int64
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime string
 	UpdateTime string
 }
@@ -18,7 +18,7 @@ type EnvVarLocal struct {
 	ID         int64
 	EnvID      int64
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime string
 	UpdateTime string
 	Value      string
@@ -33,7 +33,7 @@ type EnvVarUniqueName struct {
 type KeyringEntry struct {
 	ID         int64
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime string
 	UpdateTime string
 }

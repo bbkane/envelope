@@ -19,7 +19,7 @@ INSERT INTO keyring_entry(
 
 type CreateKeyringEntryParams struct {
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime string
 	UpdateTime string
 }

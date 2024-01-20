@@ -75,7 +75,10 @@ func commonCreateFlag() flag.FlagMap {
 	commonCreateFlags := flag.FlagMap{
 		"--comment": flag.New(
 			"Comment",
-			scalar.String(),
+			scalar.String(
+				scalar.Default(""),
+			),
+			flag.Required(),
 		),
 		"--create-time": flag.New(
 			"Create time",

@@ -31,7 +31,7 @@ func envCreateRun(cmdCtx command.Context) error {
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
 
 	// common create Flags
-	comment := ptrFromMap[string](cmdCtx.Flags, "--comment")
+	comment := cmdCtx.Flags["--comment"].(string)
 	createTime := cmdCtx.Flags["--create-time"].(time.Time)
 	updateTime := cmdCtx.Flags["--update-time"].(time.Time)
 

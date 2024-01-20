@@ -9,14 +9,14 @@ import (
 
 type Env struct {
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime time.Time
 	UpdateTime time.Time
 }
 
 type EnvCreateArgs struct {
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime time.Time
 	UpdateTime time.Time
 }
@@ -33,7 +33,7 @@ type EnvUpdateArgs struct {
 type LocalEnvVar struct {
 	EnvName    string
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime time.Time
 	UpdateTime time.Time
 	Value      string
@@ -42,7 +42,7 @@ type LocalEnvVar struct {
 type EnvVarLocalCreateArgs struct {
 	EnvName    string
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime time.Time
 	UpdateTime time.Time
 	Value      string
@@ -60,7 +60,7 @@ type Keyring interface {
 
 type KeyringEntry struct {
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime time.Time
 	UpdateTime time.Time
 	Value      string
@@ -68,7 +68,7 @@ type KeyringEntry struct {
 
 type KeyringEntryCreateArgs struct {
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime time.Time
 	UpdateTime time.Time
 	Value      string

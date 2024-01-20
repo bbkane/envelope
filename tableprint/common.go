@@ -2,13 +2,6 @@ package tableprint
 
 import "time"
 
-func valOrEmpty(val *string) string {
-	if val == nil {
-		return ""
-	}
-	return *val
-}
-
 type Timezone string
 
 const (

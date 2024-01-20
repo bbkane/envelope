@@ -20,7 +20,7 @@ INSERT INTO env_var_local(
 type CreateLocalEnvVarParams struct {
 	EnvID      int64
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime string
 	UpdateTime string
 	Value      string

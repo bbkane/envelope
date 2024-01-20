@@ -1,3 +1,12 @@
+CREATE TABLE env (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    comment TEXT NOT NULL,
+    create_time TEXT NOT NULL,
+    update_time TEXT NOT NULL,
+    UNIQUE(name)
+) STRICT;
+
 -- Create a table to keep all the env_names unique to the owning env
 
 CREATE TABLE env_var_unique_name (
@@ -16,7 +25,7 @@ CREATE TABLE env_var_local (
     id INTEGER PRIMARY KEY,
     env_id INTEGER NOT NULL,
     name TEXT NOT NULL,
-    comment TEXT,
+    comment TEXT NOT NULL,
     create_time TEXT NOT NULL,
     update_time TEXT NOT NULL,
     value TEXT NOT NULL,
@@ -41,4 +50,15 @@ CREATE TRIGGER env_var_local_name_delete AFTER DELETE ON env_var_local
 BEGIN
     DELETE FROM env_var_unique_name WHERE name = OLD.name;
 END;
+
+-- Create keyring_entry
+
+CREATE TABLE keyring_entry (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    comment TEXT NOT NULL,
+    create_time TEXT NOT NULL,
+    update_time TEXT NOT NULL,
+    UNIQUE(name)
+) STRICT;
 

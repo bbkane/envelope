@@ -23,7 +23,7 @@ func EnvTable(w io.Writer, env domain.Env, timezone Timezone) {
 	t.AppendHeader(table.Row{"Name", "Value"})
 	t.AppendRows([]table.Row{
 		{"Name", env.Name},
-		{"Comment", valOrEmpty(env.Comment)},
+		{"Comment", env.Comment},
 		{"CreateTime", formatTime(env.CreateTime, timezone)},
 		{"UpdateTime", formatTime(env.UpdateTime, timezone)},
 	})

@@ -20,14 +20,14 @@ RETURNING name, comment, create_time, update_time
 
 type CreateEnvParams struct {
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime string
 	UpdateTime string
 }
 
 type CreateEnvRow struct {
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime string
 	UpdateTime string
 }
@@ -58,7 +58,7 @@ WHERE name = ?
 
 type FindEnvRow struct {
 	Name       string
-	Comment    *string
+	Comment    string
 	CreateTime string
 	UpdateTime string
 }
