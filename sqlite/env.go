@@ -39,6 +39,16 @@ func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (
 	}, nil
 }
 
+func (e *EnvService) EnvDelete(ctx context.Context, name string) error {
+	queries := sqlcgen.New(e.db)
+
+	err := queries.DeleteEnv(ctx, name)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.EnvUpdateArgs) error {
 
 	queries := sqlcgen.New(e.db)

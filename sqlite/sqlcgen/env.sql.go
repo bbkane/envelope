@@ -49,6 +49,15 @@ func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (CreateEnv
 	return i, err
 }
 
+const deleteEnv = `-- name: DeleteEnv :exec
+DELETE FROM env WHERE name = ?
+`
+
+func (q *Queries) DeleteEnv(ctx context.Context, name string) error {
+	_, err := q.db.ExecContext(ctx, deleteEnv, name)
+	return err
+}
+
 const findEnv = `-- name: FindEnv :one
 SELECT
     name, comment, create_time, update_time

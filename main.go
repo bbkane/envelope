@@ -24,6 +24,10 @@ func buildApp() *warg.App {
 					cli.EnvCreateCmd(),
 				),
 				section.ExistingCommand(
+					"delete",
+					cli.EnvDeleteCmd(),
+				),
+				section.ExistingCommand(
 					"update",
 					cli.EnvUpdateCmd(),
 				),

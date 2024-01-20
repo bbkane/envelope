@@ -63,10 +63,46 @@ func envCreateRun(cmdCtx command.Context) error {
 	return nil
 }
 
+func EnvDeleteCmd() command.Command {
+	return command.New(
+		"Delete an environment and associated vars",
+		envDeleteRun,
+		command.ExistingFlag("--name", envNameFlag()),
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
+	)
+}
+
+func envDeleteRun(cmdCtx command.Context) error {
+	// common flags
+	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
+	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
+
+	name := cmdCtx.Flags["--name"].(string)
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	keyring := keyring.NewOSKeyring(sqliteDSN)
+
+	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
+	if err != nil {
+		return fmt.Errorf("could not create env service: %w", err)
+	}
+
+	err = envService.EnvDelete(ctx, name)
+
+	if err != nil {
+		return fmt.Errorf("could not delete env: %s: %w", name, err)
+	}
+
+	return nil
+}
+
 func EnvUpdateCmd() command.Command {
 	return command.New(
 		"Update an environment",
-		EnvUpdateRun,
+		envUpdateRun,
 		command.ExistingFlags(commonUpdateFlags()),
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
@@ -74,7 +110,7 @@ func EnvUpdateCmd() command.Command {
 	)
 }
 
-func EnvUpdateRun(cmdCtx command.Context) error {
+func envUpdateRun(cmdCtx command.Context) error {
 	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
@@ -113,14 +149,14 @@ func EnvUpdateRun(cmdCtx command.Context) error {
 func EnvPrintScriptExportCmd() command.Command {
 	return command.New(
 		"Print export script",
-		EnvPrintScriptExportRun,
+		envPrintScriptExportRun,
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlag()),
 	)
 }
 
-func EnvPrintScriptExportRun(cmdCtx command.Context) error {
+func envPrintScriptExportRun(cmdCtx command.Context) error {
 	// common flags
 	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
