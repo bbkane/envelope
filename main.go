@@ -19,50 +19,23 @@ func buildApp() *warg.App {
 			section.Section(
 				"env",
 				"Environment commands",
-				section.ExistingCommand(
-					"create",
-					cli.EnvCreateCmd(),
-				),
-				section.ExistingCommand(
-					"delete",
-					cli.EnvDeleteCmd(),
-				),
-				section.ExistingCommand(
-					"update",
-					cli.EnvUpdateCmd(),
-				),
-				section.ExistingCommand(
-					"print-script",
-					cli.EnvPrintScriptCmd(),
-				),
-				section.ExistingCommand(
-					"show",
-					cli.EnvShowCmd(),
-				),
+				section.ExistingCommand("create", cli.EnvCreateCmd()),
+				section.ExistingCommand("delete", cli.EnvDeleteCmd()),
+				section.ExistingCommand("update", cli.EnvUpdateCmd()),
+				section.ExistingCommand("print-script", cli.EnvPrintScriptCmd()),
+				section.ExistingCommand("show", cli.EnvShowCmd()),
 				section.Section(
 					"localvar",
 					"Env vars owned by this environment",
-					section.ExistingCommand(
-						"create",
-						cli.EnvLocalVarCreateCmd(),
-					),
-					section.ExistingCommand(
-						"delete",
-						cli.EnvLocalVarDeleteCmd(),
-					),
-					section.ExistingCommand(
-						"show",
-						cli.EnvLocalVarShowCmd(),
-					),
+					section.ExistingCommand("create", cli.EnvLocalVarCreateCmd()),
+					section.ExistingCommand("delete", cli.EnvLocalVarDeleteCmd()),
+					section.ExistingCommand("show", cli.EnvLocalVarShowCmd()),
 				),
 			),
 			section.Section(
 				"keyring",
 				"Work with the OS Keyring",
-				section.ExistingCommand(
-					"create",
-					cli.KeyringCreateCmd(),
-				),
+				section.ExistingCommand("create", cli.KeyringCreateCmd()),
 			),
 		),
 		warg.OverrideVersion(version),
