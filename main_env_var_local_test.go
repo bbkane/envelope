@@ -22,13 +22,11 @@ func TestEnvLocalVarCreate(t *testing.T) {
 
 	tests := []struct {
 		name            string
-		app             *warg.App
 		args            []string
 		expectActionErr bool
 	}{
 		{
 			name: "01_envCreate",
-			app:  buildApp(),
 			args: []string{
 				"namedenv", "env", "create",
 				"--sqlite-dsn", dbFile.Name(),
@@ -40,7 +38,6 @@ func TestEnvLocalVarCreate(t *testing.T) {
 		},
 		{
 			name: "02_envLocalVarCreate",
-			app:  buildApp(),
 			args: []string{
 				"namedenv", "env", "localvar", "create",
 				"--sqlite-dsn", dbFile.Name(),
@@ -54,7 +51,6 @@ func TestEnvLocalVarCreate(t *testing.T) {
 		},
 		{
 			name: "03_envLocalVarShow",
-			app:  buildApp(),
 			args: []string{
 				"namedenv", "env", "localvar", "show",
 				"--sqlite-dsn", dbFile.Name(),
@@ -70,8 +66,8 @@ func TestEnvLocalVarCreate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			warg.GoldenTest(
 				t,
-				*tt.app,
-				warg.GoldenTestOpts{
+				warg.GoldenTestArgs{
+					App:             buildApp(),
 					UpdateGolden:    updateGolden,
 					ExpectActionErr: false,
 				},
