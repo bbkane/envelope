@@ -38,6 +38,20 @@ func (q *Queries) EnvLocalVarCreate(ctx context.Context, arg EnvLocalVarCreatePa
 	return err
 }
 
+const envLocalVarDelete = `-- name: EnvLocalVarDelete :exec
+DELETE FROM env_var_local WHERE env_id = ? AND  name = ?
+`
+
+type EnvLocalVarDeleteParams struct {
+	EnvID int64
+	Name  string
+}
+
+func (q *Queries) EnvLocalVarDelete(ctx context.Context, arg EnvLocalVarDeleteParams) error {
+	_, err := q.db.ExecContext(ctx, envLocalVarDelete, arg.EnvID, arg.Name)
+	return err
+}
+
 const envLocalVarList = `-- name: EnvLocalVarList :many
 SELECT id, env_id, name, comment, create_time, update_time, value FROM env_var_local
 WHERE env_id = ?

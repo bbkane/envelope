@@ -38,6 +38,24 @@ func (e *EnvService) EnvLocalVarCreate(ctx context.Context, args domain.EnvLocal
 	}, nil
 }
 
+func (e *EnvService) EnvLocalVarDelete(ctx context.Context, envName string, name string) error {
+	queries := sqlcgen.New(e.db)
+
+	envID, err := queries.FindEnvID(ctx, envName)
+	if err != nil {
+		return fmt.Errorf("could not find env with name: %s: %w", envName, err)
+	}
+
+	err = queries.EnvLocalVarDelete(ctx, sqlcgen.EnvLocalVarDeleteParams{
+		EnvID: envID,
+		Name:  name,
+	})
+	if err != nil {
+		return fmt.Errorf("could not delete env var: %s: %s: %w", envName, name, err)
+	}
+	return nil
+}
+
 func (e *EnvService) EnvLocalVarList(ctx context.Context, envName string) ([]domain.EnvLocalVar, error) {
 	queries := sqlcgen.New(e.db)
 

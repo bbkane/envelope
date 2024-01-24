@@ -83,6 +83,7 @@ type EnvService interface {
 	EnvShow(ctx context.Context, name string) (*Env, error)
 
 	EnvLocalVarCreate(ctx context.Context, args EnvLocalVarCreateArgs) (*EnvLocalVar, error)
+	EnvLocalVarDelete(ctx context.Context, envName string, name string) error
 	EnvLocalVarList(ctx context.Context, envName string) ([]EnvLocalVar, error)
 	EnvLocalVarShow(ctx context.Context, envName string, name string) (*EnvLocalVar, error)
 

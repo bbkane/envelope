@@ -47,6 +47,10 @@ func buildApp() *warg.App {
 						cli.EnvLocalVarCreateCmd(),
 					),
 					section.ExistingCommand(
+						"delete",
+						cli.EnvLocalVarDeleteCmd(),
+					),
+					section.ExistingCommand(
 						"show",
 						cli.EnvLocalVarShowCmd(),
 					),

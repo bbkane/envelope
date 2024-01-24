@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 func EnvLocalVarCreateCmd() command.Command {
 	return command.New(
 		"Create a variable local to the this env",
-		envVarCreateLocalRun,
+		envLocalVarCreateRun,
 		command.Flag(
 			"--value",
 			"Value for this local env var",
@@ -37,7 +38,7 @@ func EnvLocalVarCreateCmd() command.Command {
 	)
 }
 
-func envVarCreateLocalRun(cmdCtx command.Context) error {
+func envLocalVarCreateRun(cmdCtx command.Context) error {
 
 	// common create Flags
 	comment := cmdCtx.Flags["--comment"].(string)
@@ -71,6 +72,44 @@ func envVarCreateLocalRun(cmdCtx command.Context) error {
 	}
 
 	fmt.Fprintf(cmdCtx.Stdout, "Created env var: %s: %s\n", envName, name)
+	return nil
+}
+
+func EnvLocalVarDeleteCmd() command.Command {
+	return command.New(
+		"Delete a variable local to the this env",
+		envLocalVarDeleteRun,
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
+		command.Flag(
+			"--name",
+			"Env var name",
+			scalar.String(),
+			flag.Required(),
+		),
+		command.ExistingFlag(
+			"--env-name",
+			envNameFlag(),
+		),
+	)
+}
+
+func envLocalVarDeleteRun(cmdCtx command.Context) error {
+	envName := cmdCtx.Flags["--env-name"].(string)
+
+	name := cmdCtx.Flags["--name"].(string)
+
+	iesr, err := initEnvService(cmdCtx.Flags)
+	if err != nil {
+		return err
+	}
+	defer iesr.Cancel()
+
+	err = iesr.EnvService.EnvLocalVarDelete(context.TODO(), envName, name)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(cmdCtx.Stdout, "Deleted %s: %s\n", envName, name)
 	return nil
 }
 
