@@ -13,7 +13,7 @@ SELECT * FROM env_var_local
 WHERE env_id = ?
 ORDER BY name ASC;
 
--- name: FindEnvLocalVar :one
+-- name: EnvLocalVarShow :one
 SELECT *
 FROM env_var_local
 WHERE env_id = ? AND name = ?;

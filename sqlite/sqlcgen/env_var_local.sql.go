@@ -89,19 +89,19 @@ func (q *Queries) EnvLocalVarList(ctx context.Context, envID int64) ([]EnvVarLoc
 	return items, nil
 }
 
-const findEnvLocalVar = `-- name: FindEnvLocalVar :one
+const envLocalVarShow = `-- name: EnvLocalVarShow :one
 SELECT id, env_id, name, comment, create_time, update_time, value
 FROM env_var_local
 WHERE env_id = ? AND name = ?
 `
 
-type FindEnvLocalVarParams struct {
+type EnvLocalVarShowParams struct {
 	EnvID int64
 	Name  string
 }
 
-func (q *Queries) FindEnvLocalVar(ctx context.Context, arg FindEnvLocalVarParams) (EnvVarLocal, error) {
-	row := q.db.QueryRowContext(ctx, findEnvLocalVar, arg.EnvID, arg.Name)
+func (q *Queries) EnvLocalVarShow(ctx context.Context, arg EnvLocalVarShowParams) (EnvVarLocal, error) {
+	row := q.db.QueryRowContext(ctx, envLocalVarShow, arg.EnvID, arg.Name)
 	var i EnvVarLocal
 	err := row.Scan(
 		&i.ID,

@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const createEnv = `-- name: CreateEnv :one
+const envCreate = `-- name: EnvCreate :one
 INSERT INTO env (
     name, comment, create_time, update_time
 ) VALUES (
@@ -18,28 +18,28 @@ INSERT INTO env (
 RETURNING name, comment, create_time, update_time
 `
 
-type CreateEnvParams struct {
+type EnvCreateParams struct {
 	Name       string
 	Comment    string
 	CreateTime string
 	UpdateTime string
 }
 
-type CreateEnvRow struct {
+type EnvCreateRow struct {
 	Name       string
 	Comment    string
 	CreateTime string
 	UpdateTime string
 }
 
-func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (CreateEnvRow, error) {
-	row := q.db.QueryRowContext(ctx, createEnv,
+func (q *Queries) EnvCreate(ctx context.Context, arg EnvCreateParams) (EnvCreateRow, error) {
+	row := q.db.QueryRowContext(ctx, envCreate,
 		arg.Name,
 		arg.Comment,
 		arg.CreateTime,
 		arg.UpdateTime,
 	)
-	var i CreateEnvRow
+	var i EnvCreateRow
 	err := row.Scan(
 		&i.Name,
 		&i.Comment,
@@ -49,32 +49,43 @@ func (q *Queries) CreateEnv(ctx context.Context, arg CreateEnvParams) (CreateEnv
 	return i, err
 }
 
-const deleteEnv = `-- name: DeleteEnv :exec
+const envDelete = `-- name: EnvDelete :exec
 DELETE FROM env WHERE name = ?
 `
 
-func (q *Queries) DeleteEnv(ctx context.Context, name string) error {
-	_, err := q.db.ExecContext(ctx, deleteEnv, name)
+func (q *Queries) EnvDelete(ctx context.Context, name string) error {
+	_, err := q.db.ExecContext(ctx, envDelete, name)
 	return err
 }
 
-const findEnv = `-- name: FindEnv :one
+const envFindID = `-- name: EnvFindID :one
+SELECT id FROM env WHERE name = ?
+`
+
+func (q *Queries) EnvFindID(ctx context.Context, name string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, envFindID, name)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const envShow = `-- name: EnvShow :one
 SELECT
     name, comment, create_time, update_time
 FROM env
 WHERE name = ?
 `
 
-type FindEnvRow struct {
+type EnvShowRow struct {
 	Name       string
 	Comment    string
 	CreateTime string
 	UpdateTime string
 }
 
-func (q *Queries) FindEnv(ctx context.Context, name string) (FindEnvRow, error) {
-	row := q.db.QueryRowContext(ctx, findEnv, name)
-	var i FindEnvRow
+func (q *Queries) EnvShow(ctx context.Context, name string) (EnvShowRow, error) {
+	row := q.db.QueryRowContext(ctx, envShow, name)
+	var i EnvShowRow
 	err := row.Scan(
 		&i.Name,
 		&i.Comment,
@@ -84,18 +95,7 @@ func (q *Queries) FindEnv(ctx context.Context, name string) (FindEnvRow, error) 
 	return i, err
 }
 
-const findEnvID = `-- name: FindEnvID :one
-SELECT id FROM env WHERE name = ?
-`
-
-func (q *Queries) FindEnvID(ctx context.Context, name string) (int64, error) {
-	row := q.db.QueryRowContext(ctx, findEnvID, name)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
-}
-
-const updateEnv = `-- name: UpdateEnv :exec
+const envUpdate = `-- name: EnvUpdate :exec
 UPDATE env SET
     name = COALESCE(?1, name),
     comment = COALESCE(?2, comment),
@@ -104,7 +104,7 @@ UPDATE env SET
 WHERE name = ?5
 `
 
-type UpdateEnvParams struct {
+type EnvUpdateParams struct {
 	NewName    *string
 	Comment    *string
 	CreateTime *string
@@ -113,8 +113,8 @@ type UpdateEnvParams struct {
 }
 
 // See https://docs.sqlc.dev/en/latest/howto/named_parameters.html#nullable-parameters
-func (q *Queries) UpdateEnv(ctx context.Context, arg UpdateEnvParams) error {
-	_, err := q.db.ExecContext(ctx, updateEnv,
+func (q *Queries) EnvUpdate(ctx context.Context, arg EnvUpdateParams) error {
+	_, err := q.db.ExecContext(ctx, envUpdate,
 		arg.NewName,
 		arg.Comment,
 		arg.CreateTime,

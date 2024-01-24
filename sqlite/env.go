@@ -11,7 +11,7 @@ import (
 func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (*domain.Env, error) {
 	queries := sqlcgen.New(e.db)
 
-	createdEnvID, err := queries.CreateEnv(ctx, sqlcgen.CreateEnvParams{
+	createdEnvID, err := queries.EnvCreate(ctx, sqlcgen.EnvCreateParams{
 		Name:       args.Name,
 		Comment:    args.Comment,
 		CreateTime: domain.TimeToString(args.CreateTime),
@@ -42,7 +42,7 @@ func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (
 func (e *EnvService) EnvDelete(ctx context.Context, name string) error {
 	queries := sqlcgen.New(e.db)
 
-	err := queries.DeleteEnv(ctx, name)
+	err := queries.EnvDelete(ctx, name)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.Env
 		updateTimeStr = &tmp
 	}
 
-	err := queries.UpdateEnv(ctx, sqlcgen.UpdateEnvParams{
+	err := queries.EnvUpdate(ctx, sqlcgen.EnvUpdateParams{
 		NewName:    args.NewName,
 		Comment:    args.Comment,
 		CreateTime: createTimeStr,
@@ -83,7 +83,7 @@ func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.Env
 func (e *EnvService) EnvShow(ctx context.Context, name string) (*domain.Env, error) {
 	queries := sqlcgen.New(e.db)
 
-	sqlcEnv, err := queries.FindEnv(ctx, name)
+	sqlcEnv, err := queries.EnvShow(ctx, name)
 
 	if err != nil {
 		return nil, fmt.Errorf("could not find env: %s: %w", name, err)

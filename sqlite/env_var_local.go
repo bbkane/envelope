@@ -11,7 +11,7 @@ import (
 func (e *EnvService) EnvLocalVarCreate(ctx context.Context, args domain.EnvLocalVarCreateArgs) (*domain.EnvLocalVar, error) {
 	queries := sqlcgen.New(e.db)
 
-	envID, err := queries.FindEnvID(ctx, args.EnvName)
+	envID, err := queries.EnvFindID(ctx, args.EnvName)
 	if err != nil {
 		return nil, fmt.Errorf("could not find env with name: %s: %w", args.Name, err)
 	}
@@ -41,7 +41,7 @@ func (e *EnvService) EnvLocalVarCreate(ctx context.Context, args domain.EnvLocal
 func (e *EnvService) EnvLocalVarDelete(ctx context.Context, envName string, name string) error {
 	queries := sqlcgen.New(e.db)
 
-	envID, err := queries.FindEnvID(ctx, envName)
+	envID, err := queries.EnvFindID(ctx, envName)
 	if err != nil {
 		return fmt.Errorf("could not find env with name: %s: %w", envName, err)
 	}
@@ -59,7 +59,7 @@ func (e *EnvService) EnvLocalVarDelete(ctx context.Context, envName string, name
 func (e *EnvService) EnvLocalVarList(ctx context.Context, envName string) ([]domain.EnvLocalVar, error) {
 	queries := sqlcgen.New(e.db)
 
-	envID, err := queries.FindEnvID(ctx, envName)
+	envID, err := queries.EnvFindID(ctx, envName)
 	if err != nil {
 		return nil, fmt.Errorf("could not find env with name: %s: %w", envName, err)
 	}
@@ -97,12 +97,12 @@ func (e *EnvService) EnvLocalVarList(ctx context.Context, envName string) ([]dom
 func (e *EnvService) EnvLocalVarShow(ctx context.Context, envName string, name string) (*domain.EnvLocalVar, error) {
 	queries := sqlcgen.New(e.db)
 
-	envID, err := queries.FindEnvID(ctx, envName)
+	envID, err := queries.EnvFindID(ctx, envName)
 	if err != nil {
 		return nil, fmt.Errorf("could not find env with name: %s: %w", envName, err)
 	}
 
-	sqlEnvLocalVar, err := queries.FindEnvLocalVar(ctx, sqlcgen.FindEnvLocalVarParams{
+	sqlEnvLocalVar, err := queries.EnvLocalVarShow(ctx, sqlcgen.EnvLocalVarShowParams{
 		EnvID: envID,
 		Name:  name,
 	})
