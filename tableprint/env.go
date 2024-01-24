@@ -1,24 +1,20 @@
 package tableprint
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"go.bbkane.com/namedenv/domain"
 )
 
-func EnvTable(w io.Writer, env domain.Env, timezone Timezone) {
+func EnvShowRun(w io.Writer, env domain.Env, localvars []domain.EnvLocalVar, timezone Timezone) {
+
 	t := table.NewWriter()
 	t.SetStyle(table.StyleRounded)
 	t.SetOutputMirror(w)
 
-	//nolint:exhaustruct
-	columnConfigs := []table.ColumnConfig{
-		{Name: "Name"},
-		{Name: "Value"},
-	}
-
-	t.SetColumnConfigs(columnConfigs)
+	fmt.Fprintln(w, "Env")
 
 	t.AppendHeader(table.Row{"Name", "Value"})
 	t.AppendRows([]table.Row{
@@ -29,4 +25,24 @@ func EnvTable(w io.Writer, env domain.Env, timezone Timezone) {
 	})
 
 	t.Render()
+
+	t.ResetHeaders()
+	t.ResetRows()
+
+	if len(localvars) > 0 {
+		fmt.Fprintln(w, "LocalVars")
+
+		t.AppendHeader(table.Row{"Name", "Value", "Comment", "CreateTime", "UpdateTime"})
+		for _, e := range localvars {
+			t.AppendRow(table.Row{
+				e.Name, e.Value, e.Comment, e.CreateTime, e.UpdateTime,
+			})
+		}
+
+		t.Render()
+
+		t.ResetHeaders()
+		t.ResetRows()
+	}
+
 }

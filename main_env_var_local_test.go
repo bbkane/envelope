@@ -60,6 +60,16 @@ func TestEnvLocalVarCreate(t *testing.T) {
 			},
 			expectActionErr: false,
 		},
+		{
+			name: "04_envShow",
+			args: []string{
+				"namedenv", "env", "show",
+				"--sqlite-dsn", dbFile.Name(),
+				"--name", "env_name",
+				"--timezone", "utc",
+			},
+			expectActionErr: false,
+		},
 	}
 
 	for _, tt := range tests {

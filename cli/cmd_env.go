@@ -158,7 +158,12 @@ func envShowRun(cmdCtx command.Context) error {
 		return fmt.Errorf("could not show env: %s: %w", name, err)
 	}
 
-	tableprint.EnvTable(cmdCtx.Stdout, *env, tableprint.Timezone(timezone))
+	localvars, err := iesr.EnvService.EnvLocalVarList(iesr.Ctx, name)
+	if err != nil {
+		return err
+	}
+
+	tableprint.EnvShowRun(cmdCtx.Stdout, *env, localvars, tableprint.Timezone(timezone))
 	return nil
 }
 
