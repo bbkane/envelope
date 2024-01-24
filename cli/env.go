@@ -86,6 +86,35 @@ func envDeleteRun(cmdCtx command.Context) error {
 	return nil
 }
 
+func EnvListCmd() command.Command {
+	return command.New(
+		"List environments",
+		envListRun,
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(timeZoneFlagMap()),
+	)
+}
+
+func envListRun(cmdCtx command.Context) error {
+
+	timezone := cmdCtx.Flags["--timezone"].(string)
+
+	iesr, err := initEnvService(cmdCtx.Flags)
+	if err != nil {
+		return err
+	}
+	defer iesr.Cancel()
+
+	envs, err := iesr.EnvService.EnvList(iesr.Ctx)
+
+	if err != nil {
+		return err
+	}
+	tableprint.EnvList(cmdCtx.Stdout, envs, tableprint.Timezone(timezone))
+	return nil
+}
+
 func EnvPrintScriptCmd() command.Command {
 	return command.New(
 		"Print export script",

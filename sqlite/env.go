@@ -49,6 +49,27 @@ func (e *EnvService) EnvDelete(ctx context.Context, name string) error {
 	return nil
 }
 
+func (e *EnvService) EnvList(ctx context.Context) ([]domain.Env, error) {
+	queries := sqlcgen.New(e.db)
+
+	sqlcEnvs, err := queries.EnvList(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := []domain.Env{}
+	for _, e := range sqlcEnvs {
+		ret = append(ret, domain.Env{
+			Name:       e.Name,
+			Comment:    e.Comment,
+			CreateTime: domain.StringToTimeMust(e.CreateTime),
+			UpdateTime: domain.StringToTimeMust(e.UpdateTime),
+		})
+	}
+
+	return ret, nil
+}
+
 func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.EnvUpdateArgs) error {
 
 	queries := sqlcgen.New(e.db)

@@ -8,6 +8,26 @@ import (
 	"go.bbkane.com/namedenv/domain"
 )
 
+func EnvList(w io.Writer, envs []domain.Env, timezone Timezone) {
+	t := table.NewWriter()
+	t.SetStyle(table.StyleRounded)
+	t.SetOutputMirror(w)
+
+	if len(envs) > 0 {
+		t.AppendHeader(table.Row{"Name", "Comment", "CreateTime", "UpdateTime"})
+		for _, e := range envs {
+			t.AppendRow(table.Row{
+				e.Name, e.Comment, e.CreateTime, e.UpdateTime,
+			})
+		}
+		t.Render()
+		t.ResetHeaders()
+		t.ResetRows()
+	} else {
+		fmt.Fprintln(w, "no envs found")
+	}
+}
+
 func EnvShowRun(w io.Writer, env domain.Env, localvars []domain.EnvLocalVar, timezone Timezone) {
 
 	t := table.NewWriter()
@@ -35,10 +55,13 @@ func EnvShowRun(w io.Writer, env domain.Env, localvars []domain.EnvLocalVar, tim
 		t.AppendHeader(table.Row{"Name", "Value", "Comment", "CreateTime", "UpdateTime"})
 		for _, e := range localvars {
 			t.AppendRow(table.Row{
-				e.Name, e.Value, e.Comment, e.CreateTime, e.UpdateTime,
+				e.Name,
+				e.Value,
+				e.Comment,
+				formatTime(e.CreateTime, timezone),
+				formatTime(e.UpdateTime, timezone),
 			})
 		}
-
 		t.Render()
 
 		t.ResetHeaders()

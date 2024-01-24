@@ -21,6 +21,7 @@ func buildApp() *warg.App {
 				"Environment commands",
 				section.ExistingCommand("create", cli.EnvCreateCmd()),
 				section.ExistingCommand("delete", cli.EnvDeleteCmd()),
+				section.ExistingCommand("list", cli.EnvListCmd()),
 				section.ExistingCommand("update", cli.EnvUpdateCmd()),
 				section.ExistingCommand("print-script", cli.EnvPrintScriptCmd()),
 				section.ExistingCommand("show", cli.EnvShowCmd()),

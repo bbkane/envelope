@@ -69,6 +69,40 @@ func (q *Queries) EnvFindID(ctx context.Context, name string) (int64, error) {
 	return id, err
 }
 
+const envList = `-- name: EnvList :many
+SELECT id, name, comment, create_time, update_time FROM env
+ORDER BY name ASC
+`
+
+func (q *Queries) EnvList(ctx context.Context) ([]Env, error) {
+	rows, err := q.db.QueryContext(ctx, envList)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Env
+	for rows.Next() {
+		var i Env
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Comment,
+			&i.CreateTime,
+			&i.UpdateTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const envShow = `-- name: EnvShow :one
 SELECT
     name, comment, create_time, update_time

@@ -54,6 +54,15 @@ func TestEnvCreate(t *testing.T) {
 			},
 			expectActionErr: false,
 		},
+		{
+			name: "03_envList",
+			args: []string{
+				"namedenv", "env", "list",
+				"--sqlite-dsn", dbFile.Name(),
+				"--timezone", "utc",
+			},
+			expectActionErr: false,
+		},
 	}
 
 	for _, tt := range tests {

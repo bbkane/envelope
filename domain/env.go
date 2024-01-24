@@ -79,6 +79,7 @@ type KeyringEntryCreateArgs struct {
 type EnvService interface {
 	EnvCreate(ctx context.Context, args EnvCreateArgs) (*Env, error)
 	EnvDelete(ctx context.Context, name string) error
+	EnvList(ctx context.Context) ([]Env, error)
 	EnvUpdate(ctx context.Context, name string, args EnvUpdateArgs) error
 	EnvShow(ctx context.Context, name string) (*Env, error)
 
