@@ -16,7 +16,7 @@ func (e *EnvService) KeyringEntryCreate(ctx context.Context, args domain.Keyring
 
 	// check if the value exists before trying to create it
 	// We assume if the keyring entry is in the db, it's also in the os keyring
-	_, err := queries.FindKeyringID(ctx, args.Name)
+	_, err := queries.KeyringEntryFindID(ctx, args.Name)
 
 	// oops, one exists
 	if err == nil {
@@ -33,7 +33,7 @@ func (e *EnvService) KeyringEntryCreate(ctx context.Context, args domain.Keyring
 		return nil, fmt.Errorf("could not set value in keyring: %w", err)
 	}
 
-	err = queries.CreateKeyringEntry(ctx, sqlcgen.CreateKeyringEntryParams{
+	err = queries.KeyringEntryCreate(ctx, sqlcgen.KeyringEntryCreateParams{
 		Name:       args.Name,
 		Comment:    args.Comment,
 		CreateTime: domain.TimeToString(args.CreateTime),

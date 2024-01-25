@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const createKeyringEntry = `-- name: CreateKeyringEntry :exec
+const keyringEntryCreate = `-- name: KeyringEntryCreate :exec
 INSERT INTO keyring_entry(
     name, comment, create_time, update_time
 ) VALUES (
@@ -17,15 +17,15 @@ INSERT INTO keyring_entry(
 )
 `
 
-type CreateKeyringEntryParams struct {
+type KeyringEntryCreateParams struct {
 	Name       string
 	Comment    string
 	CreateTime string
 	UpdateTime string
 }
 
-func (q *Queries) CreateKeyringEntry(ctx context.Context, arg CreateKeyringEntryParams) error {
-	_, err := q.db.ExecContext(ctx, createKeyringEntry,
+func (q *Queries) KeyringEntryCreate(ctx context.Context, arg KeyringEntryCreateParams) error {
+	_, err := q.db.ExecContext(ctx, keyringEntryCreate,
 		arg.Name,
 		arg.Comment,
 		arg.CreateTime,
@@ -34,13 +34,30 @@ func (q *Queries) CreateKeyringEntry(ctx context.Context, arg CreateKeyringEntry
 	return err
 }
 
-const findKeyringID = `-- name: FindKeyringID :one
+const keyringEntryFindID = `-- name: KeyringEntryFindID :one
 SELECT id from keyring_entry WHERE name = ?
 `
 
-func (q *Queries) FindKeyringID(ctx context.Context, name string) (int64, error) {
-	row := q.db.QueryRowContext(ctx, findKeyringID, name)
+func (q *Queries) KeyringEntryFindID(ctx context.Context, name string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, keyringEntryFindID, name)
 	var id int64
 	err := row.Scan(&id)
 	return id, err
+}
+
+const keyringEntryShow = `-- name: KeyringEntryShow :one
+SELECT id, name, comment, create_time, update_time FROM keyring_entry WHERE name = ?
+`
+
+func (q *Queries) KeyringEntryShow(ctx context.Context, name string) (KeyringEntry, error) {
+	row := q.db.QueryRowContext(ctx, keyringEntryShow, name)
+	var i KeyringEntry
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Comment,
+		&i.CreateTime,
+		&i.UpdateTime,
+	)
+	return i, err
 }
