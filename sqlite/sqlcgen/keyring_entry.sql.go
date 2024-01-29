@@ -34,6 +34,15 @@ func (q *Queries) KeyringEntryCreate(ctx context.Context, arg KeyringEntryCreate
 	return err
 }
 
+const keyringEntryDelete = `-- name: KeyringEntryDelete :exec
+DELETE FROM keyring_entry WHERE name = ?
+`
+
+func (q *Queries) KeyringEntryDelete(ctx context.Context, name string) error {
+	_, err := q.db.ExecContext(ctx, keyringEntryDelete, name)
+	return err
+}
+
 const keyringEntryFindID = `-- name: KeyringEntryFindID :one
 SELECT id from keyring_entry WHERE name = ?
 `
@@ -43,6 +52,40 @@ func (q *Queries) KeyringEntryFindID(ctx context.Context, name string) (int64, e
 	var id int64
 	err := row.Scan(&id)
 	return id, err
+}
+
+const keyringEntryList = `-- name: KeyringEntryList :many
+SELECT id, name, comment, create_time, update_time FROM keyring_entry
+ORDER BY name ASC
+`
+
+func (q *Queries) KeyringEntryList(ctx context.Context) ([]KeyringEntry, error) {
+	rows, err := q.db.QueryContext(ctx, keyringEntryList)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []KeyringEntry
+	for rows.Next() {
+		var i KeyringEntry
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Comment,
+			&i.CreateTime,
+			&i.UpdateTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const keyringEntryShow = `-- name: KeyringEntryShow :one

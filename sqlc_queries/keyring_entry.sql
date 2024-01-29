@@ -5,6 +5,13 @@ INSERT INTO keyring_entry(
     ?   , ?      , ?          , ?
 );
 
+-- name: KeyringEntryDelete :exec
+DELETE FROM keyring_entry WHERE name = ?;
+
+-- name: KeyringEntryList :many
+SELECT * FROM keyring_entry
+ORDER BY name ASC;
+
 -- name: KeyringEntryFindID :one
 SELECT id from keyring_entry WHERE name = ?;
 
