@@ -37,6 +37,7 @@ func buildApp() *warg.App {
 				"keyring",
 				"Work with the OS Keyring",
 				section.ExistingCommand("create", cli.KeyringCreateCmd()),
+				section.ExistingCommand("list", cli.KeyringListCmd()),
 			),
 		),
 		warg.OverrideVersion(version),

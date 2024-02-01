@@ -11,6 +11,8 @@ import (
 	"go.bbkane.com/namedenv/domain"
 	"go.bbkane.com/namedenv/keyring"
 	"go.bbkane.com/namedenv/sqlite"
+	"go.bbkane.com/namedenv/tableprint"
+
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
@@ -83,7 +85,34 @@ func keyringCreateRun(cmdCtx command.Context) error {
 	}
 
 	// TODO: don't print the value?
-	fmt.Fprintf(cmdCtx.Stdout, "Created keyring: %#v\n", entry)
+	fmt.Fprintf(cmdCtx.Stdout, "Created keyring entry: %s\n", entry.Name)
 
+	return nil
+}
+
+func KeyringListCmd() command.Command {
+	return command.New(
+		"List Keyring entries",
+		keyringListRun,
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(timeZoneFlagMap()),
+	)
+}
+
+func keyringListRun(cmdCtx command.Context) error {
+	timezone := cmdCtx.Flags["--timezone"].(string)
+	iesr, err := initEnvService(cmdCtx.Flags)
+	if err != nil {
+		return err
+	}
+	defer iesr.Cancel()
+
+	keyringEntries, errors, err := iesr.EnvService.KeyringEntryList(iesr.Ctx)
+
+	if err != nil {
+		return err
+	}
+	tableprint.KeyringList(cmdCtx.Stdout, keyringEntries, errors, tableprint.Timezone(timezone))
 	return nil
 }

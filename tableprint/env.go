@@ -17,7 +17,10 @@ func EnvList(w io.Writer, envs []domain.Env, timezone Timezone) {
 		t.AppendHeader(table.Row{"Name", "Comment", "CreateTime", "UpdateTime"})
 		for _, e := range envs {
 			t.AppendRow(table.Row{
-				e.Name, e.Comment, e.CreateTime, e.UpdateTime,
+				e.Name,
+				e.Comment,
+				formatTime(e.CreateTime, timezone),
+				formatTime(e.UpdateTime, timezone),
 			})
 		}
 		t.Render()

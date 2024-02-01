@@ -81,21 +81,31 @@ func (e *EnvService) KeyringEntryCreate(ctx context.Context, args domain.Keyring
 
 }
 
-// KeyringEntryLists returns a list of KeyringEntry's and any errors found.
-// errors will never be nil, always a (potentially empty) list
-func (e *EnvService) KeyringEntryList(ctx context.Context) ([]domain.KeyringEntry, []error) {
-	errs := []error{}
+// KeyringEntryLists returns a list of KeyringEntrys, a list of errors when retrieving individual values from the keyring, and an error if the whole operation fails
+func (e *EnvService) KeyringEntryList(ctx context.Context) ([]domain.KeyringEntry, []error, error) {
 
 	queries := sqlcgen.New(e.db)
 
 	sqlcKEs, err := queries.KeyringEntryList(ctx)
 	if err != nil {
-		return nil, errs
+		return nil, nil, err
 	}
-
+	errs := []error{}
 	ret := []domain.KeyringEntry{}
 
 	for _, sqlcKE := range sqlcKEs {
 		// try to find it in the keyring
+		kVal, err := e.keyring.Get(sqlcKE.Name)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("error retriving from keyring: %s: %w", sqlcKE.Name, err))
+		}
+		ret = append(ret, domain.KeyringEntry{
+			Name:       sqlcKE.Name,
+			Comment:    sqlcKE.Comment,
+			CreateTime: domain.StringToTimeMust(sqlcKE.CreateTime),
+			UpdateTime: domain.StringToTimeMust(sqlcKE.UpdateTime),
+			Value:      kVal,
+		})
 	}
+	return ret, errs, err
 }
