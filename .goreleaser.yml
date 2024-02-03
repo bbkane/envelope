@@ -15,7 +15,7 @@ brews:
       See https://www.macworld.com/article/3140183/how-to-install-an-app-in-macos-sierra-thats-not-signed-by-a-developer.html to work around that
     description: Example Go CLI to model tooling
     folder: Formula
-    homepage: https://github.com/bbkane/namedenv
+    homepage: https://github.com/bbkane/envelope
     tap:
       name: homebrew-tap
       owner: bbkane
@@ -50,5 +50,5 @@ scoop:
     owner: bbkane
     token: "{{ .Env.KEY_GITHUB_GORELEASER_TO_HOMEBREW_TAP }}"
   description: Example Go CLI to model tooling
-  homepage: https://github.com/bbkane/namedenv
+  homepage: https://github.com/bbkane/envelope
   license: MIT

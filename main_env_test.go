@@ -17,9 +17,9 @@ func TestBuildApp(t *testing.T) {
 }
 
 func TestEnvCreate(t *testing.T) {
-	updateGolden := os.Getenv("NAMEDENV_TEST_UPDATE_GOLDEN") != ""
+	updateGolden := os.Getenv("envelope_TEST_UPDATE_GOLDEN") != ""
 
-	dbFile, err := os.CreateTemp(os.TempDir(), "namedenv-test-")
+	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
 	require.NoError(t, err)
 	err = dbFile.Close()
 	require.NoError(t, err)
@@ -36,7 +36,7 @@ func TestEnvCreate(t *testing.T) {
 		{
 			name: "01_envCreate",
 			args: []string{
-				"namedenv", "env", "create",
+				"envelope", "env", "create",
 				"--sqlite-dsn", dbFile.Name(),
 				"--name", "env_name",
 				"--create-time", zeroTime,
@@ -47,7 +47,7 @@ func TestEnvCreate(t *testing.T) {
 		{
 			name: "02_envShow",
 			args: []string{
-				"namedenv", "env", "show",
+				"envelope", "env", "show",
 				"--sqlite-dsn", dbFile.Name(),
 				"--name", "env_name",
 				"--timezone", "utc",
@@ -57,7 +57,7 @@ func TestEnvCreate(t *testing.T) {
 		{
 			name: "03_envList",
 			args: []string{
-				"namedenv", "env", "list",
+				"envelope", "env", "list",
 				"--sqlite-dsn", dbFile.Name(),
 				"--timezone", "utc",
 			},
@@ -82,9 +82,9 @@ func TestEnvCreate(t *testing.T) {
 }
 
 func TestEnvDelete(t *testing.T) {
-	updateGolden := os.Getenv("NAMEDENV_TEST_UPDATE_GOLDEN") != ""
+	updateGolden := os.Getenv("envelope_TEST_UPDATE_GOLDEN") != ""
 
-	dbFile, err := os.CreateTemp(os.TempDir(), "namedenv-test-")
+	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
 	require.NoError(t, err)
 	err = dbFile.Close()
 	require.NoError(t, err)
@@ -101,7 +101,7 @@ func TestEnvDelete(t *testing.T) {
 		{
 			name: "01_envCreate",
 			args: []string{
-				"namedenv", "env", "create",
+				"envelope", "env", "create",
 				"--sqlite-dsn", dbFile.Name(),
 				"--name", "env_name",
 				"--create-time", zeroTime,
@@ -112,7 +112,7 @@ func TestEnvDelete(t *testing.T) {
 		{
 			name: "02_envShow",
 			args: []string{
-				"namedenv", "env", "show",
+				"envelope", "env", "show",
 				"--sqlite-dsn", dbFile.Name(),
 				"--name", "env_name",
 				"--timezone", "utc",
@@ -122,7 +122,7 @@ func TestEnvDelete(t *testing.T) {
 		{
 			name: "03_envDelete",
 			args: []string{
-				"namedenv", "env", "delete",
+				"envelope", "env", "delete",
 				"--sqlite-dsn", dbFile.Name(),
 				"--name", "env_name",
 			},
@@ -131,7 +131,7 @@ func TestEnvDelete(t *testing.T) {
 		{
 			name: "04_envShow",
 			args: []string{
-				"namedenv", "env", "show",
+				"envelope", "env", "show",
 				"--sqlite-dsn", dbFile.Name(),
 				"--name", "env_name",
 				"--timezone", "utc",
@@ -157,9 +157,9 @@ func TestEnvDelete(t *testing.T) {
 }
 
 func TestEnvUpdate(t *testing.T) {
-	updateGolden := os.Getenv("NAMEDENV_TEST_UPDATE_GOLDEN") != ""
+	updateGolden := os.Getenv("envelope_TEST_UPDATE_GOLDEN") != ""
 
-	dbFile, err := os.CreateTemp(os.TempDir(), "namedenv-test-")
+	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
 	require.NoError(t, err)
 	err = dbFile.Close()
 	require.NoError(t, err)
@@ -177,7 +177,7 @@ func TestEnvUpdate(t *testing.T) {
 		{
 			name: "01_envCreate",
 			args: []string{
-				"namedenv", "env", "create",
+				"envelope", "env", "create",
 				"--sqlite-dsn", dbFile.Name(),
 				"--name", "env_name",
 				"--create-time", zeroTime,
@@ -188,7 +188,7 @@ func TestEnvUpdate(t *testing.T) {
 		{
 			name: "02_envShow",
 			args: []string{
-				"namedenv", "env", "show",
+				"envelope", "env", "show",
 				"--sqlite-dsn", dbFile.Name(),
 				"--name", "env_name",
 				"--timezone", "utc",
@@ -198,7 +198,7 @@ func TestEnvUpdate(t *testing.T) {
 		{
 			name: "03_envUpdate",
 			args: []string{
-				"namedenv", "env", "update",
+				"envelope", "env", "update",
 				"--sqlite-dsn", dbFile.Name(),
 				"--name", "env_name",
 				"--comment", "a comment",
@@ -211,7 +211,7 @@ func TestEnvUpdate(t *testing.T) {
 		{
 			name: "04_envShow",
 			args: []string{
-				"namedenv", "env", "show",
+				"envelope", "env", "show",
 				"--sqlite-dsn", dbFile.Name(),
 				"--name", "new_name",
 				"--timezone", "utc",

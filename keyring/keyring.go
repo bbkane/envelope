@@ -5,7 +5,7 @@ import (
 	"runtime"
 
 	"github.com/zalando/go-keyring"
-	"go.bbkane.com/namedenv/domain"
+	"go.bbkane.com/envelope/domain"
 )
 
 type OSKeyring struct {

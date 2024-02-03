@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/mitchellh/go-homedir"
-	"go.bbkane.com/namedenv/domain"
-	"go.bbkane.com/namedenv/keyring"
-	"go.bbkane.com/namedenv/sqlite"
+	"go.bbkane.com/envelope/domain"
+	"go.bbkane.com/envelope/keyring"
+	"go.bbkane.com/envelope/sqlite"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 
@@ -60,7 +60,7 @@ func envNameFlag() flag.Flag {
 }
 
 func sqliteDSNFlag() flag.FlagMap {
-	dbPath, err := homedir.Expand("~/.config/namedenv.db")
+	dbPath, err := homedir.Expand("~/.config/envelope.db")
 	if err != nil {
 		panic(err)
 	}

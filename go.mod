@@ -1,4 +1,4 @@
-module go.bbkane.com/namedenv
+module go.bbkane.com/envelope
 
 go 1.21
 

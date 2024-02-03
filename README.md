@@ -1,4 +1,4 @@
-# namedenv
+# envelope
 
 ![./demo.gif](./demo.gif)
 
@@ -11,8 +11,8 @@ Expand details below to see the planned UX
 Not all of these commands are implemented yet (`go run . -h outline` to see what is), but, in general, the UX will look like:
 
 ```bash
-namedenv
-    --database ~/.config/namedenv.db
+envelope
+    --database ~/.config/envelope.db
     env
         create
             --name $PWD
@@ -89,7 +89,7 @@ The process I have to add a new command is:
 - Update `domain.EnvService` with the new method added to `sqlte.EnvService`
 - Update `cli` to call `domain.EnvService`
 - Update `main` to add the new command to the app tree.
-- Update `main_test_<table>.go` to ensure everything works (this generates testdata when `NAMEDENV_TEST_UPDATE_GOLDEN=1 go test ./...` is run)
+- Update `main_test_<table>.go` to ensure everything works (this generates testdata when `envelope_TEST_UPDATE_GOLDEN=1 go test ./...` is run)
 
 Is there a better way to organize this than what I have? Or is this fairly normal?
 
@@ -113,16 +113,16 @@ Thanks again!!
 
 ## Install
 
-- [Homebrew](https://brew.sh/): `brew install bbkane/tap/namedenv`
+- [Homebrew](https://brew.sh/): `brew install bbkane/tap/envelope`
 - [Scoop](https://scoop.sh/):
 
 ```
 scoop bucket add bbkane https://github.com/bbkane/scoop-bucket
-scoop install bbkane/namedenv
+scoop install bbkane/envelope
 ```
 
-- Download Mac/Linux/Windows executable: [GitHub releases](https://github.com/bbkane/namedenv/releases)
-- Go: `go install go.bbkane.com/namedenv@latest`
+- Download Mac/Linux/Windows executable: [GitHub releases](https://github.com/bbkane/envelope/releases)
+- Go: `go install go.bbkane.com/envelope@latest`
 - Build with [goreleaser](https://goreleaser.com/) after cloning: `goreleaser --snapshot --skip-publish --clean`
 
 ## Notes

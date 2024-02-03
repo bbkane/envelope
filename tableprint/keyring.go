@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/jedib0t/go-pretty/v6/table"
-	"go.bbkane.com/namedenv/domain"
+	"go.bbkane.com/envelope/domain"
 )
 
 func KeyringList(w io.Writer, keyringEntries []domain.KeyringEntry, errs []error, timezone Timezone) {

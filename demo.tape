@@ -1,6 +1,6 @@
 # https://github.com/charmbracelet/vhs
 
-Require namedenv
+Require envelope
 
 Output demo.gif
 
@@ -18,22 +18,22 @@ Hide
 Sleep 3s
 Show
 
-Type "namedenv env create --name demo_env"
+Type "envelope env create --name demo_env"
 Sleep 200ms
 Enter
 Sleep 1s
 
-Type "namedenv env localvar create  --env-name demo_env --name MYENVVAR --value 'hello namedenv'"
+Type "envelope env localvar create  --env-name demo_env --name MYENVVAR --value 'hello envelope'"
 Sleep 200ms
 Enter
 Sleep 1s
 
-Type "namedenv env show --name demo_env"
+Type "envelope env show --name demo_env"
 Sleep 200ms
 Enter
 Sleep 1s
 
-Type "source <(namedenv env print-script --name demo_env)"
+Type "source <(envelope env print-script --name demo_env)"
 Sleep 200ms
 Enter
 Sleep 1s

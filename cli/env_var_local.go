@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"go.bbkane.com/namedenv/domain"
-	"go.bbkane.com/namedenv/tableprint"
+	"go.bbkane.com/envelope/domain"
+	"go.bbkane.com/envelope/tableprint"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"

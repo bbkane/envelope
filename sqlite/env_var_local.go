@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"go.bbkane.com/namedenv/domain"
-	"go.bbkane.com/namedenv/sqlite/sqlcgen"
+	"go.bbkane.com/envelope/domain"
+	"go.bbkane.com/envelope/sqlite/sqlcgen"
 )
 
 func (e *EnvService) EnvLocalVarCreate(ctx context.Context, args domain.EnvLocalVarCreateArgs) (*domain.EnvLocalVar, error) {

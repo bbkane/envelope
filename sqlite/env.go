@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"go.bbkane.com/namedenv/domain"
-	"go.bbkane.com/namedenv/sqlite/sqlcgen"
+	"go.bbkane.com/envelope/domain"
+	"go.bbkane.com/envelope/sqlite/sqlcgen"
 )
 
 func mapErrEnvNotFound(e error) error {

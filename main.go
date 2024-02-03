@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go.bbkane.com/namedenv/cli"
+	"go.bbkane.com/envelope/cli"
 	"go.bbkane.com/warg"
 	"go.bbkane.com/warg/section"
 )
@@ -11,7 +11,7 @@ var version string
 func buildApp() *warg.App {
 
 	app := warg.New(
-		"namedenv",
+		"envelope",
 		section.New(
 			"Manage Environmental secrets centrally",
 			section.ExistingCommand("version", warg.VersionCommand()),
