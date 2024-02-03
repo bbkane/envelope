@@ -16,9 +16,9 @@ func wrapErr(err error) error {
 	if err == nil {
 		return nil
 	} else if errors.Is(err, keyring.ErrNotFound) {
-		return domain.ErrNotFound
+		return domain.ErrKeyringSecretNotFound
 	} else if errors.Is(err, keyring.ErrNotFound) {
-		return domain.ErrNotFound
+		return domain.ErrKeyringSecretNotFound
 	} else {
 		return err
 	}

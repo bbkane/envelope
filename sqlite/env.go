@@ -2,11 +2,21 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"go.bbkane.com/namedenv/domain"
 	"go.bbkane.com/namedenv/sqlite/sqlcgen"
 )
+
+func mapErrEnvNotFound(e error) error {
+	if errors.Is(e, sql.ErrNoRows) {
+		return domain.ErrEnvNotFound
+	} else {
+		return e
+	}
+}
 
 func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (*domain.Env, error) {
 	queries := sqlcgen.New(e.db)
@@ -22,20 +32,11 @@ func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (
 		return nil, fmt.Errorf("could not create env in db: %w", err)
 	}
 
-	createTime, err := domain.StringToTime(createdEnvID.CreateTime)
-	if err != nil {
-		panic(err)
-	}
-	updateTime, err := domain.StringToTime(createdEnvID.UpdateTime)
-	if err != nil {
-		panic(err)
-	}
-
 	return &domain.Env{
 		Name:       createdEnvID.Name,
 		Comment:    createdEnvID.Comment,
-		CreateTime: createTime,
-		UpdateTime: updateTime,
+		CreateTime: domain.StringToTimeMust(createdEnvID.CreateTime),
+		UpdateTime: domain.StringToTimeMust(createdEnvID.UpdateTime),
 	}, nil
 }
 
@@ -44,7 +45,7 @@ func (e *EnvService) EnvDelete(ctx context.Context, name string) error {
 
 	err := queries.EnvDelete(ctx, name)
 	if err != nil {
-		return err
+		return mapErrEnvNotFound(err)
 	}
 	return nil
 }
@@ -54,7 +55,7 @@ func (e *EnvService) EnvList(ctx context.Context) ([]domain.Env, error) {
 
 	sqlcEnvs, err := queries.EnvList(ctx)
 	if err != nil {
-		return nil, err
+		return nil, mapErrEnvNotFound(err)
 	}
 
 	ret := []domain.Env{}
@@ -95,7 +96,7 @@ func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.Env
 	})
 
 	if err != nil {
-		return fmt.Errorf("err updating env: %w", err)
+		return fmt.Errorf("err updating env: %w", mapErrEnvNotFound(err))
 	}
 
 	return nil
@@ -107,23 +108,13 @@ func (e *EnvService) EnvShow(ctx context.Context, name string) (*domain.Env, err
 	sqlcEnv, err := queries.EnvShow(ctx, name)
 
 	if err != nil {
-		return nil, fmt.Errorf("could not find env: %s: %w", name, err)
-	}
-
-	createTime, err := domain.StringToTime(sqlcEnv.CreateTime)
-	if err != nil {
-		return nil, fmt.Errorf("bad create_time: %s: %w", name, err)
-	}
-
-	updateTime, err := domain.StringToTime(sqlcEnv.UpdateTime)
-	if err != nil {
-		return nil, fmt.Errorf("bad update_time: %s: %w", name, err)
+		return nil, mapErrEnvNotFound(err)
 	}
 
 	return &domain.Env{
 		Name:       name,
 		Comment:    sqlcEnv.Comment,
-		CreateTime: createTime,
-		UpdateTime: updateTime,
+		CreateTime: domain.StringToTimeMust(sqlcEnv.CreateTime),
+		UpdateTime: domain.StringToTimeMust(sqlcEnv.UpdateTime),
 	}, nil
 }

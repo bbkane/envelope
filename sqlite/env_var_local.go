@@ -13,7 +13,7 @@ func (e *EnvService) EnvLocalVarCreate(ctx context.Context, args domain.EnvLocal
 
 	envID, err := queries.EnvFindID(ctx, args.EnvName)
 	if err != nil {
-		return nil, fmt.Errorf("could not find env with name: %s: %w", args.Name, err)
+		return nil, fmt.Errorf("could not find env with name: %s: %w", args.Name, mapErrEnvNotFound(err))
 	}
 
 	err = queries.EnvLocalVarCreate(ctx, sqlcgen.EnvLocalVarCreateParams{
@@ -43,7 +43,7 @@ func (e *EnvService) EnvLocalVarDelete(ctx context.Context, envName string, name
 
 	envID, err := queries.EnvFindID(ctx, envName)
 	if err != nil {
-		return fmt.Errorf("could not find env with name: %s: %w", envName, err)
+		return fmt.Errorf("could not find env with name: %s: %w", envName, mapErrEnvNotFound(err))
 	}
 
 	err = queries.EnvLocalVarDelete(ctx, sqlcgen.EnvLocalVarDeleteParams{
@@ -61,7 +61,7 @@ func (e *EnvService) EnvLocalVarList(ctx context.Context, envName string) ([]dom
 
 	envID, err := queries.EnvFindID(ctx, envName)
 	if err != nil {
-		return nil, fmt.Errorf("could not find env with name: %s: %w", envName, err)
+		return nil, fmt.Errorf("could not find env with name: %s: %w", envName, mapErrEnvNotFound(err))
 	}
 
 	envs, err := queries.EnvLocalVarList(ctx, envID)
@@ -70,23 +70,12 @@ func (e *EnvService) EnvLocalVarList(ctx context.Context, envName string) ([]dom
 	}
 	var ret []domain.EnvLocalVar
 	for _, sqlcEnv := range envs {
-
-		createTime, err := domain.StringToTime(sqlcEnv.CreateTime)
-		if err != nil {
-			return nil, fmt.Errorf("invalid create time for env_var %s: %w", sqlcEnv.Name, err)
-		}
-
-		updateTime, err := domain.StringToTime(sqlcEnv.UpdateTime)
-		if err != nil {
-			return nil, fmt.Errorf("invalid update time for env_var %s: %w", sqlcEnv.Name, err)
-		}
-
 		ret = append(ret, domain.EnvLocalVar{
 			Name:       sqlcEnv.Name,
 			Comment:    sqlcEnv.Comment,
-			CreateTime: createTime,
+			CreateTime: domain.StringToTimeMust(sqlcEnv.CreateTime),
 			EnvName:    envName,
-			UpdateTime: updateTime,
+			UpdateTime: domain.StringToTimeMust(sqlcEnv.UpdateTime),
 			Value:      sqlcEnv.Value,
 		})
 	}
@@ -99,7 +88,7 @@ func (e *EnvService) EnvLocalVarShow(ctx context.Context, envName string, name s
 
 	envID, err := queries.EnvFindID(ctx, envName)
 	if err != nil {
-		return nil, fmt.Errorf("could not find env with name: %s: %w", envName, err)
+		return nil, fmt.Errorf("could not find env with name: %s: %w", envName, mapErrEnvNotFound(err))
 	}
 
 	sqlEnvLocalVar, err := queries.EnvLocalVarShow(ctx, sqlcgen.EnvLocalVarShowParams{

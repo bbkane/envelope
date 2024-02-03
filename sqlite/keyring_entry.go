@@ -29,7 +29,7 @@ func (e *EnvService) keyringEntryCheckData(ctx context.Context, name string) (bo
 
 	if err == nil {
 		existsInKeyring = true
-	} else if err != domain.ErrNotFound {
+	} else if err != domain.ErrKeyringSecretNotFound {
 		return false, false, err
 	}
 

@@ -52,14 +52,14 @@ type EnvLocalVarCreateArgs struct {
 // -- Keyring
 
 var (
-	// ErrNotFound is the expected error if the secret isn't found in the
+	// ErrKeyringSecretNotFound is the expected error if the secret isn't found in the
 	// keyring.
-	ErrNotFound = errors.New("secret not found in keyring")
-	// ErrSetDataTooBig is returned if `Set` was called with too much data.
+	ErrKeyringSecretNotFound = errors.New("secret not found in keyring")
+	// ErrKeyringSetDataTooBig is returned if `Set` was called with too much data.
 	// On MacOS: The combination of service, username & password should not exceed ~3000 bytes
 	// On Windows: The service is limited to 32KiB while the password is limited to 2560 bytes
 	// On Linux/Unix: There is no theoretical limit but performance suffers with big values (>100KiB)
-	ErrSetDataTooBig = errors.New("data passed to Set was too big")
+	ErrKeyringSetDataTooBig = errors.New("data passed to Set was too big")
 )
 
 // Keyring provides a simple set/get interface for a keyring service.
@@ -87,6 +87,8 @@ type KeyringEntryCreateArgs struct {
 }
 
 // -- interface
+
+var ErrEnvNotFound = errors.New("env not found")
 
 type EnvService interface {
 	EnvCreate(ctx context.Context, args EnvCreateArgs) (*Env, error)
