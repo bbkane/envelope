@@ -123,6 +123,14 @@ func EnvPrintScriptCmd() command.Command {
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlag()),
 		command.Flag(
+			"--no-env-no-problem",
+			"Exit without an error if the environment doesn't exit. Useful when runnng envelop on chpwd",
+			scalar.Bool(
+				scalar.Default(false),
+			),
+			flag.Required(),
+		),
+		command.Flag(
 			"--type",
 			"Type of script",
 			scalar.String(
@@ -137,6 +145,7 @@ func EnvPrintScriptCmd() command.Command {
 func envPrintScriptRun(cmdCtx command.Context) error {
 	name := cmdCtx.Flags["--name"].(string)
 	scriptType := cmdCtx.Flags["--type"].(string)
+	noEnvNoProblem := cmdCtx.Flags["--no-env-no-problem"].(bool)
 
 	iesr, err := initEnvService(cmdCtx.Flags)
 	if err != nil {
@@ -146,6 +155,9 @@ func envPrintScriptRun(cmdCtx command.Context) error {
 
 	envVars, err := iesr.EnvService.EnvLocalVarList(iesr.Ctx, name)
 	if err != nil {
+		if errors.Is(err, domain.ErrEnvNotFound) && noEnvNoProblem {
+			return nil
+		}
 		return fmt.Errorf("could not list env vars: %s: %w", name, err)
 	}
 	if scriptType == "export" {

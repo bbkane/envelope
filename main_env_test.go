@@ -17,7 +17,7 @@ func TestBuildApp(t *testing.T) {
 }
 
 func TestEnvCreate(t *testing.T) {
-	updateGolden := os.Getenv("envelope_TEST_UPDATE_GOLDEN") != ""
+	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
 	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
 	require.NoError(t, err)
@@ -72,7 +72,7 @@ func TestEnvCreate(t *testing.T) {
 				warg.GoldenTestArgs{
 					App:             buildApp(),
 					UpdateGolden:    updateGolden,
-					ExpectActionErr: false,
+					ExpectActionErr: tt.expectActionErr,
 				},
 				warg.OverrideArgs(tt.args),
 				warg.OverrideLookupFunc(warg.LookupMap(nil)),
@@ -82,7 +82,7 @@ func TestEnvCreate(t *testing.T) {
 }
 
 func TestEnvDelete(t *testing.T) {
-	updateGolden := os.Getenv("envelope_TEST_UPDATE_GOLDEN") != ""
+	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
 	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
 	require.NoError(t, err)
@@ -157,7 +157,7 @@ func TestEnvDelete(t *testing.T) {
 }
 
 func TestEnvUpdate(t *testing.T) {
-	updateGolden := os.Getenv("envelope_TEST_UPDATE_GOLDEN") != ""
+	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
 	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
 	require.NoError(t, err)
@@ -227,7 +227,59 @@ func TestEnvUpdate(t *testing.T) {
 				warg.GoldenTestArgs{
 					App:             buildApp(),
 					UpdateGolden:    updateGolden,
-					ExpectActionErr: false,
+					ExpectActionErr: tt.expectActionErr,
+				},
+				warg.OverrideArgs(tt.args),
+				warg.OverrideLookupFunc(warg.LookupMap(nil)),
+			)
+		})
+	}
+}
+
+func TestEnvPrintScript(t *testing.T) {
+	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
+
+	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
+	require.NoError(t, err)
+	err = dbFile.Close()
+	require.NoError(t, err)
+
+	t.Log("dbFile:", dbFile.Name())
+
+	tests := []struct {
+		name            string
+		args            []string
+		expectActionErr bool
+	}{
+		{
+			name: "01_envPrintScript",
+			args: []string{
+				"envelope", "env", "print-script",
+				"--sqlite-dsn", dbFile.Name(),
+				"--name", "non-existent-env",
+			},
+			expectActionErr: true,
+		},
+		{
+			name: "01_envPrintScriptNoEnvNoProblem",
+			args: []string{
+				"envelope", "env", "print-script",
+				"--sqlite-dsn", dbFile.Name(),
+				"--name", "non-existent-env",
+				"--no-env-no-problem", "true",
+			},
+			expectActionErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			warg.GoldenTest(
+				t,
+				warg.GoldenTestArgs{
+					App:             buildApp(),
+					UpdateGolden:    updateGolden,
+					ExpectActionErr: tt.expectActionErr,
 				},
 				warg.OverrideArgs(tt.args),
 				warg.OverrideLookupFunc(warg.LookupMap(nil)),
