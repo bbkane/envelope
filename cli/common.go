@@ -66,12 +66,13 @@ func sqliteDSNFlag() flag.FlagMap {
 	}
 
 	sqliteDSN := flag.FlagMap{
-		"--sqlite-dsn": flag.New(
+		"--db-path": flag.New(
 			"Sqlite DSN. Usually the file name",
 			scalar.String(
 				scalar.Default(dbPath),
 			),
 			flag.Required(),
+			flag.EnvVars("ENVELOPE_DB_PATH"),
 		),
 	}
 	return sqliteDSN
@@ -187,11 +188,11 @@ type initEnvServiceRet struct {
 	EnvService domain.EnvService
 }
 
-// initEnvService reads --sqlite-dsn and --timeout to create a
+// initEnvService reads --db-path and --timeout to create a
 // EnvService. It means I don't have to type these EVERY time
 func initEnvService(passedFlags command.PassedFlags) (*initEnvServiceRet, error) {
 	// common flags
-	sqliteDSN := passedFlags["--sqlite-dsn"].(string)
+	sqliteDSN := passedFlags["--db-path"].(string)
 	timeout := passedFlags["--timeout"].(time.Duration)
 
 	//nolint:govet // we don't need the cancel if we err out

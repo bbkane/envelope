@@ -29,7 +29,7 @@ func TestEnvLocalVarCreate(t *testing.T) {
 			name: "01_envCreate",
 			args: []string{
 				"envelope", "env", "create",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 				"--create-time", zeroTime,
 				"--update-time", zeroTime,
@@ -40,7 +40,7 @@ func TestEnvLocalVarCreate(t *testing.T) {
 			name: "02_envLocalVarCreate",
 			args: []string{
 				"envelope", "env", "localvar", "create",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",
 				"--value", "value",
@@ -53,7 +53,7 @@ func TestEnvLocalVarCreate(t *testing.T) {
 			name: "03_envLocalVarShow",
 			args: []string{
 				"envelope", "env", "localvar", "show",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",
 				"--timezone", "utc",
@@ -64,7 +64,7 @@ func TestEnvLocalVarCreate(t *testing.T) {
 			name: "04_envShow",
 			args: []string{
 				"envelope", "env", "show",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 				"--timezone", "utc",
 			},
@@ -109,7 +109,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 			name: "01_envCreate",
 			args: []string{
 				"envelope", "env", "create",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 				"--create-time", zeroTime,
 				"--update-time", zeroTime,
@@ -120,7 +120,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 			name: "02_envLocalVarCreate",
 			args: []string{
 				"envelope", "env", "localvar", "create",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",
 				"--value", "value",
@@ -133,7 +133,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 			name: "03_envLocalVarShow",
 			args: []string{
 				"envelope", "env", "localvar", "show",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",
 				"--timezone", "utc",
@@ -144,7 +144,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 			name: "04_envLocalVarDelete",
 			args: []string{
 				"envelope", "env", "localvar", "delete",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",
 			},
@@ -154,7 +154,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 			name: "05_envLocalVarShow",
 			args: []string{
 				"envelope", "env", "localvar", "show",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",
 				"--timezone", "utc",

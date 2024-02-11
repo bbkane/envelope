@@ -47,7 +47,7 @@ func KeyringCreateCmd() command.Command {
 
 func keyringCreateRun(cmdCtx command.Context) error {
 	// common flags
-	sqliteDSN := cmdCtx.Flags["--sqlite-dsn"].(string)
+	sqliteDSN := cmdCtx.Flags["--db-path"].(string)
 	timeout := cmdCtx.Flags["--timeout"].(time.Duration)
 
 	// common create Flags

@@ -37,7 +37,7 @@ func TestEnvCreate(t *testing.T) {
 			name: "01_envCreate",
 			args: []string{
 				"envelope", "env", "create",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 				"--create-time", zeroTime,
 				"--update-time", zeroTime,
@@ -48,7 +48,7 @@ func TestEnvCreate(t *testing.T) {
 			name: "02_envShow",
 			args: []string{
 				"envelope", "env", "show",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 				"--timezone", "utc",
 			},
@@ -58,7 +58,7 @@ func TestEnvCreate(t *testing.T) {
 			name: "03_envList",
 			args: []string{
 				"envelope", "env", "list",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--timezone", "utc",
 			},
 			expectActionErr: false,
@@ -102,7 +102,7 @@ func TestEnvDelete(t *testing.T) {
 			name: "01_envCreate",
 			args: []string{
 				"envelope", "env", "create",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 				"--create-time", zeroTime,
 				"--update-time", zeroTime,
@@ -113,7 +113,7 @@ func TestEnvDelete(t *testing.T) {
 			name: "02_envShow",
 			args: []string{
 				"envelope", "env", "show",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 				"--timezone", "utc",
 			},
@@ -123,7 +123,7 @@ func TestEnvDelete(t *testing.T) {
 			name: "03_envDelete",
 			args: []string{
 				"envelope", "env", "delete",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 			},
 			expectActionErr: false,
@@ -132,7 +132,7 @@ func TestEnvDelete(t *testing.T) {
 			name: "04_envShow",
 			args: []string{
 				"envelope", "env", "show",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 				"--timezone", "utc",
 			},
@@ -178,7 +178,7 @@ func TestEnvUpdate(t *testing.T) {
 			name: "01_envCreate",
 			args: []string{
 				"envelope", "env", "create",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 				"--create-time", zeroTime,
 				"--update-time", zeroTime,
@@ -189,7 +189,7 @@ func TestEnvUpdate(t *testing.T) {
 			name: "02_envShow",
 			args: []string{
 				"envelope", "env", "show",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 				"--timezone", "utc",
 			},
@@ -199,7 +199,7 @@ func TestEnvUpdate(t *testing.T) {
 			name: "03_envUpdate",
 			args: []string{
 				"envelope", "env", "update",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "env_name",
 				"--comment", "a comment",
 				"--create-time", oneTime,
@@ -212,7 +212,7 @@ func TestEnvUpdate(t *testing.T) {
 			name: "04_envShow",
 			args: []string{
 				"envelope", "env", "show",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "new_name",
 				"--timezone", "utc",
 			},
@@ -255,7 +255,7 @@ func TestEnvPrintScript(t *testing.T) {
 			name: "01_envPrintScript",
 			args: []string{
 				"envelope", "env", "print-script",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "non-existent-env",
 			},
 			expectActionErr: true,
@@ -264,7 +264,7 @@ func TestEnvPrintScript(t *testing.T) {
 			name: "01_envPrintScriptNoEnvNoProblem",
 			args: []string{
 				"envelope", "env", "print-script",
-				"--sqlite-dsn", dbFile.Name(),
+				"--db-path", dbFile.Name(),
 				"--name", "non-existent-env",
 				"--no-env-no-problem", "true",
 			},
