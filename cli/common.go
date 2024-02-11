@@ -41,6 +41,18 @@ func datetime() contained.TypeInfo[time.Time] {
 	}
 }
 
+func confirmFlag() flag.FlagMap {
+	return flag.FlagMap{
+		"--confirm": flag.New(
+			"Ask for confirmation before running",
+			scalar.Bool(
+				scalar.Default(true),
+			),
+			flag.Required(),
+		),
+	}
+}
+
 func envNameFlag() flag.Flag {
 
 	cwd, err := os.Getwd()

@@ -1,8 +1,11 @@
 package cli
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/alessio/shellescape"
@@ -61,20 +64,47 @@ func EnvDeleteCmd() command.Command {
 		"Delete an environment and associated vars",
 		envDeleteRun,
 		command.ExistingFlag("--name", envNameFlag()),
+		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlag()),
 	)
 }
 
+func askConfirm() (bool, error) {
+	fmt.Print("Type 'yes' to continue: ")
+	reader := bufio.NewReader(os.Stdin)
+	confirmation, err := reader.ReadString('\n')
+	if err != nil {
+		err = fmt.Errorf("confirmation ReadString error: %w", err)
+		return false, err
+	}
+	confirmation = strings.TrimSpace(confirmation)
+	if confirmation != "yes" {
+		return false, nil
+	}
+	return true, nil
+}
+
 func envDeleteRun(cmdCtx command.Context) error {
 
 	name := cmdCtx.Flags["--name"].(string)
+	confirm := cmdCtx.Flags["--confirm"].(bool)
 
 	iesr, err := initEnvService(cmdCtx.Flags)
 	if err != nil {
 		return err
 	}
 	defer iesr.Cancel()
+
+	if confirm {
+		keepGoing, err := askConfirm()
+		if err != nil {
+			panic(err)
+		}
+		if !keepGoing {
+			return errors.New("unconfirmed change")
+		}
+	}
 
 	err = iesr.EnvService.EnvDelete(iesr.Ctx, name)
 
