@@ -11,6 +11,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 - `--sqlite-dsn` -> `--db-path`. Reads from `ENVELOPE_DB_PATH` env var now too
 - made all tests parallel
+- more concise date format
 
 # v0.0.3
 

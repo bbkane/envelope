@@ -10,11 +10,12 @@ const (
 )
 
 func formatTime(t time.Time, timezone Timezone) string {
+	timeFormat := "Mon 2006-01-02"
 	switch timezone {
 	case Timezone_Local:
-		return t.Local().String()
+		return t.Local().Format(timeFormat)
 	case Timezone_UTC:
-		return t.UTC().String()
+		return t.UTC().Format(timeFormat)
 	default:
 		panic("unknown timezone: " + timezone)
 	}

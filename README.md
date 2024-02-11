@@ -89,7 +89,7 @@ The process I have to add a new command is:
 - Update `domain.EnvService` with the new method added to `sqlte.EnvService`
 - Update `cli` to call `domain.EnvService`
 - Update `main` to add the new command to the app tree.
-- Update `main_test_<table>.go` to ensure everything works (this generates testdata when `envelope_TEST_UPDATE_GOLDEN=1 go test ./...` is run)
+- Update `main_test_<table>.go` to ensure everything works (this generates testdata when `ENVELOPE_TEST_UPDATE_GOLDEN=1 go test ./...` is run)
 
 Is there a better way to organize this than what I have? Or is this fairly normal?
 
