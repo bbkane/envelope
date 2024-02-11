@@ -17,5 +17,10 @@ linters:
     - gofmt
     - goimports
     - nonamedreturns
+    - paralleltest
     - predeclared
   fast: false
+linters-settings:
+  paralleltest:
+    ignore-missing: false
+    ignore-missing-subtests: true

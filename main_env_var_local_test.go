@@ -9,6 +9,7 @@ import (
 )
 
 func TestEnvLocalVarCreate(t *testing.T) {
+	t.Parallel()
 	updateGolden := os.Getenv("envelope_TEST_UPDATE_GOLDEN") != ""
 
 	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
@@ -89,6 +90,7 @@ func TestEnvLocalVarCreate(t *testing.T) {
 }
 
 func TestEnvLocalVarDelete(t *testing.T) {
+	t.Parallel()
 	updateGolden := os.Getenv("envelope_TEST_UPDATE_GOLDEN") != ""
 
 	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")

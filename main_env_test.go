@@ -9,6 +9,7 @@ import (
 )
 
 func TestBuildApp(t *testing.T) {
+	t.Parallel()
 	app := buildApp()
 
 	if err := app.Validate(); err != nil {
@@ -17,6 +18,7 @@ func TestBuildApp(t *testing.T) {
 }
 
 func TestEnvCreate(t *testing.T) {
+	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
 	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
@@ -82,6 +84,7 @@ func TestEnvCreate(t *testing.T) {
 }
 
 func TestEnvDelete(t *testing.T) {
+	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
 	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
@@ -157,6 +160,7 @@ func TestEnvDelete(t *testing.T) {
 }
 
 func TestEnvUpdate(t *testing.T) {
+	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
 	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
@@ -237,6 +241,7 @@ func TestEnvUpdate(t *testing.T) {
 }
 
 func TestEnvPrintScript(t *testing.T) {
+	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
 	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
