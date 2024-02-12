@@ -17,4 +17,4 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 ## Added
 
-- `--err-on-missing-env` flag
+- `--no-env-no-problem` flag

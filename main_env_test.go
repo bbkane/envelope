@@ -127,6 +127,7 @@ func TestEnvDelete(t *testing.T) {
 			args: []string{
 				"envelope", "env", "delete",
 				"--db-path", dbFile.Name(),
+				"--confirm", "false",
 				"--name", "env_name",
 			},
 			expectActionErr: false,
