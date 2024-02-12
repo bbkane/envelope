@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -79,6 +80,7 @@ func EnvLocalVarDeleteCmd() command.Command {
 	return command.New(
 		"Delete a variable local to the this env",
 		envLocalVarDeleteRun,
+		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlag()),
 		command.Flag(
@@ -97,7 +99,18 @@ func EnvLocalVarDeleteCmd() command.Command {
 func envLocalVarDeleteRun(cmdCtx command.Context) error {
 	envName := cmdCtx.Flags["--env-name"].(string)
 
+	confirm := cmdCtx.Flags["--confirm"].(bool)
 	name := cmdCtx.Flags["--name"].(string)
+
+	if confirm {
+		keepGoing, err := askConfirm()
+		if err != nil {
+			panic(err)
+		}
+		if !keepGoing {
+			return errors.New("unconfirmed change")
+		}
+	}
 
 	iesr, err := initEnvService(cmdCtx.Flags)
 	if err != nil {

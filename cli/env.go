@@ -90,12 +90,6 @@ func envDeleteRun(cmdCtx command.Context) error {
 	name := cmdCtx.Flags["--name"].(string)
 	confirm := cmdCtx.Flags["--confirm"].(bool)
 
-	iesr, err := initEnvService(cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
-	defer iesr.Cancel()
-
 	if confirm {
 		keepGoing, err := askConfirm()
 		if err != nil {
@@ -105,6 +99,12 @@ func envDeleteRun(cmdCtx command.Context) error {
 			return errors.New("unconfirmed change")
 		}
 	}
+
+	iesr, err := initEnvService(cmdCtx.Flags)
+	if err != nil {
+		return err
+	}
+	defer iesr.Cancel()
 
 	err = iesr.EnvService.EnvDelete(iesr.Ctx, name)
 
@@ -246,6 +246,7 @@ func EnvUpdateCmd() command.Command {
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(confirmFlag()),
 	)
 }
 
@@ -257,7 +258,18 @@ func envUpdateRun(cmdCtx command.Context) error {
 	newName := ptrFromMap[string](cmdCtx.Flags, "--new-name")
 	updateTime := ptrFromMap[time.Time](cmdCtx.Flags, "--update-time")
 
+	confirm := cmdCtx.Flags["--confirm"].(bool)
 	name := cmdCtx.Flags["--name"].(string)
+
+	if confirm {
+		keepGoing, err := askConfirm()
+		if err != nil {
+			panic(err)
+		}
+		if !keepGoing {
+			return errors.New("unconfirmed change")
+		}
+	}
 
 	iesr, err := initEnvService(cmdCtx.Flags)
 	if err != nil {

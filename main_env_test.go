@@ -206,6 +206,7 @@ func TestEnvUpdate(t *testing.T) {
 				"envelope", "env", "update",
 				"--db-path", dbFile.Name(),
 				"--name", "env_name",
+				"--confirm", "false",
 				"--comment", "a comment",
 				"--create-time", oneTime,
 				"--new-name", "new_name",

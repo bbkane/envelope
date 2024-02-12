@@ -146,6 +146,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 			name: "04_envLocalVarDelete",
 			args: []string{
 				"envelope", "env", "localvar", "delete",
+				"--confirm", "false",
 				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",

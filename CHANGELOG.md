@@ -7,6 +7,10 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 # v0.0.4
 
+## Added
+
+- `--confirm` flag to deletes / updates
+
 ## Changed
 
 - `--sqlite-dsn` -> `--db-path`. Reads from `ENVELOPE_DB_PATH` env var now too
