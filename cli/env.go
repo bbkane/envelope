@@ -1,11 +1,8 @@
 package cli
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/alessio/shellescape"
@@ -68,21 +65,6 @@ func EnvDeleteCmd() command.Command {
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlag()),
 	)
-}
-
-func askConfirm() (bool, error) {
-	fmt.Print("Type 'yes' to continue: ")
-	reader := bufio.NewReader(os.Stdin)
-	confirmation, err := reader.ReadString('\n')
-	if err != nil {
-		err = fmt.Errorf("confirmation ReadString error: %w", err)
-		return false, err
-	}
-	confirmation = strings.TrimSpace(confirmation)
-	if confirmation != "yes" {
-		return false, nil
-	}
-	return true, nil
 }
 
 func envDeleteRun(cmdCtx command.Context) error {

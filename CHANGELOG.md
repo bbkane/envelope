@@ -11,6 +11,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 - `--confirm` flag to deletes / updates
 - `envelope env print-script --type unexport`
+- `envelope init`
 
 ## Changed
 

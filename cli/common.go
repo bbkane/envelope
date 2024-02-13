@@ -1,9 +1,11 @@
 package cli
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/mitchellh/go-homedir"
@@ -16,6 +18,21 @@ import (
 	"go.bbkane.com/warg/value/contained"
 	"go.bbkane.com/warg/value/scalar"
 )
+
+func askConfirm() (bool, error) {
+	fmt.Print("Type 'yes' to continue: ")
+	reader := bufio.NewReader(os.Stdin)
+	confirmation, err := reader.ReadString('\n')
+	if err != nil {
+		err = fmt.Errorf("confirmation ReadString error: %w", err)
+		return false, err
+	}
+	confirmation = strings.TrimSpace(confirmation)
+	if confirmation != "yes" {
+		return false, nil
+	}
+	return true, nil
+}
 
 func emptyOrNil[T any](iFace interface{}) (T, error) {
 	under, ok := iFace.(T)
