@@ -190,13 +190,21 @@ func envPrintScriptRun(cmdCtx command.Context) error {
 		}
 		return fmt.Errorf("could not list env vars: %s: %w", name, err)
 	}
-	if scriptType == "export" {
+
+	switch scriptType {
+	case "export":
 		for _, ev := range envVars {
 			fmt.Fprintf(cmdCtx.Stdout, "echo 'Adding:' %s;\n", shellescape.Quote(ev.Name))
 			fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
 		}
-	} else {
+	case "unexport":
+		for _, ev := range envVars {
+			fmt.Fprintf(cmdCtx.Stdout, "echo 'Removing:' %s;\n", shellescape.Quote(ev.Name))
+			fmt.Fprintf(cmdCtx.Stdout, "unset %s;\n", shellescape.Quote(ev.Name))
+		}
+	default:
 		return errors.New("Unimplemented --script-type: " + scriptType)
+
 	}
 
 	return nil
