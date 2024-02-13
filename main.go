@@ -3,6 +3,10 @@ package main
 import (
 	"go.bbkane.com/envelope/cli"
 	"go.bbkane.com/warg"
+	"go.bbkane.com/warg/flag"
+	"go.bbkane.com/warg/help"
+	"go.bbkane.com/warg/help/allcommands"
+	"go.bbkane.com/warg/help/detailed"
 	"go.bbkane.com/warg/section"
 )
 
@@ -40,6 +44,18 @@ func buildApp() *warg.App {
 				section.ExistingCommand("create", cli.KeyringCreateCmd()),
 				section.ExistingCommand("list", cli.KeyringListCmd()),
 			),
+		),
+		warg.OverrideHelpFlag(
+			[]help.HelpFlagMapping{
+				{Name: "detailed", CommandHelp: detailed.DetailedCommandHelp, SectionHelp: detailed.DetailedSectionHelp},
+				{Name: "outline", CommandHelp: help.OutlineCommandHelp, SectionHelp: help.OutlineSectionHelp},
+				// allcommands list child commands, so it doesn't really make sense for a command
+				{Name: "allcommands", CommandHelp: detailed.DetailedCommandHelp, SectionHelp: allcommands.AllCommandsSectionHelp},
+			},
+			"detailed",
+			"--help",
+			"Print help",
+			flag.Alias("-h"),
 		),
 		warg.OverrideVersion(version),
 	)
