@@ -12,6 +12,8 @@ import (
 
 var version string
 
+//go:generate go run github.com/sqlc-dev/sqlc/cmd/sqlc generate
+
 func buildApp() *warg.App {
 
 	app := warg.New(
