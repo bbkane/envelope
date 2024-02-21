@@ -24,6 +24,16 @@ type EnvVarLocal struct {
 	Value      string
 }
 
+type EnvVarRef struct {
+	ID            int64
+	EnvID         int64
+	Name          string
+	Comment       string
+	CreateTime    string
+	UpdateTime    string
+	EnvVarLocalID int64
+}
+
 type EnvVarUniqueName struct {
 	ID    int64
 	EnvID int64

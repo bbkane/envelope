@@ -39,7 +39,7 @@ func (q *Queries) EnvLocalVarCreate(ctx context.Context, arg EnvLocalVarCreatePa
 }
 
 const envLocalVarDelete = `-- name: EnvLocalVarDelete :exec
-DELETE FROM env_var_local WHERE env_id = ? AND  name = ?
+DELETE FROM env_var_local WHERE env_id = ? AND name = ?
 `
 
 type EnvLocalVarDeleteParams struct {
