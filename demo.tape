@@ -23,7 +23,7 @@ Sleep 200ms
 Enter
 Sleep 1s
 
-Type "envelope env localvar create  --env-name demo_env --name MYENVVAR --value 'hello envelope'"
+Type "envelope env var create  --env-name demo_env --name MYENVVAR --value 'hello envelope'"
 Sleep 200ms
 Enter
 Sleep 1s

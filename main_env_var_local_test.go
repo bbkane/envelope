@@ -40,7 +40,7 @@ func TestEnvLocalVarCreate(t *testing.T) {
 		{
 			name: "02_envLocalVarCreate",
 			args: []string{
-				"envelope", "env", "localvar", "create",
+				"envelope", "env", "var", "create",
 				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",
@@ -53,7 +53,7 @@ func TestEnvLocalVarCreate(t *testing.T) {
 		{
 			name: "03_envLocalVarShow",
 			args: []string{
-				"envelope", "env", "localvar", "show",
+				"envelope", "env", "var", "show",
 				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",
@@ -121,7 +121,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 		{
 			name: "02_envLocalVarCreate",
 			args: []string{
-				"envelope", "env", "localvar", "create",
+				"envelope", "env", "var", "create",
 				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",
@@ -134,7 +134,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 		{
 			name: "03_envLocalVarShow",
 			args: []string{
-				"envelope", "env", "localvar", "show",
+				"envelope", "env", "var", "show",
 				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",
@@ -145,7 +145,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 		{
 			name: "04_envLocalVarDelete",
 			args: []string{
-				"envelope", "env", "localvar", "delete",
+				"envelope", "env", "var", "delete",
 				"--confirm", "false",
 				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
@@ -156,7 +156,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 		{
 			name: "05_envLocalVarShow",
 			args: []string{
-				"envelope", "env", "localvar", "show",
+				"envelope", "env", "var", "show",
 				"--db-path", dbFile.Name(),
 				"--env-name", "env_name",
 				"--name", "key",

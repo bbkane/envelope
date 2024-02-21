@@ -33,7 +33,7 @@ func buildApp() *warg.App {
 				section.ExistingCommand("print-script", cli.EnvPrintScriptCmd()),
 				section.ExistingCommand("show", cli.EnvShowCmd()),
 				section.Section(
-					"localvar",
+					"var",
 					"Env vars owned by this environment",
 					section.ExistingCommand("create", cli.EnvLocalVarCreateCmd()),
 					section.ExistingCommand("delete", cli.EnvLocalVarDeleteCmd()),

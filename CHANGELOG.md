@@ -5,6 +5,12 @@ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note the the latest version is usually work in progress and may have not yet been released.
 
+# v0.0.5
+
+## Changed
+
+- `env localvar` commands renamed to `env var`
+
 # v0.0.4
 
 ## Added

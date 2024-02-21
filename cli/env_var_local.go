@@ -128,7 +128,7 @@ func envLocalVarDeleteRun(cmdCtx command.Context) error {
 
 func EnvLocalVarShowCmd() command.Command {
 	return command.New(
-		"Show details for a localvar",
+		"Show details for a local var",
 		envLocalVarShowRun,
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlag()),
