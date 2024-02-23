@@ -7,9 +7,14 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 # v0.0.5
 
+## Added
+
+- `env ref create`
+
 ## Changed
 
 - `env localvar` commands renamed to `env var`
+- Use key-value tables for output
 
 # v0.0.4
 
