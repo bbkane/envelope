@@ -24,8 +24,8 @@ func EnvLocalVarCreateCmd() command.Command {
 			flag.Required(),
 		),
 		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
-		command.ExistingFlags(commonCreateFlag()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
+		command.ExistingFlags(commonCreateFlagMap()),
 		command.Flag(
 			"--name",
 			"Env var name",
@@ -82,7 +82,7 @@ func EnvLocalVarDeleteCmd() command.Command {
 		envLocalVarDeleteRun,
 		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.Flag(
 			"--name",
 			"Env var name",
@@ -131,7 +131,7 @@ func EnvLocalVarShowCmd() command.Command {
 		"Show details for a local var",
 		envLocalVarShowRun,
 		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
 		command.Flag(
 			"--name",

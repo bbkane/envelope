@@ -8,6 +8,8 @@ import (
 
 // -- Env
 
+var ErrEnvNotFound = errors.New("env not found")
+
 type Env struct {
 	Name       string
 	Comment    string
@@ -31,6 +33,8 @@ type EnvUpdateArgs struct {
 
 // -- EnvLocalVar
 
+var ErrEnvLocalVarNotFound = errors.New("local var not found")
+
 type EnvLocalVar struct {
 	EnvName    string
 	Name       string
@@ -47,6 +51,30 @@ type EnvLocalVarCreateArgs struct {
 	CreateTime time.Time
 	UpdateTime time.Time
 	Value      string
+}
+
+// -- EnvLocalRef
+
+var ErrEnvLocalRefNotFound = errors.New("local ref not found")
+
+type EnvLocalRef struct {
+	EnvName    string
+	Name       string
+	Comment    string
+	CreateTime time.Time
+	UpdateTime time.Time
+	RefEnvName string
+	RevVarName string
+}
+
+type EnvLocalRefCreateArgs struct {
+	EnvName    string
+	Name       string
+	Comment    string
+	CreateTime time.Time
+	UpdateTime time.Time
+	RefEnvName string
+	RefVarName string
 }
 
 // -- Keyring
@@ -88,8 +116,6 @@ type KeyringEntryCreateArgs struct {
 
 // -- interface
 
-var ErrEnvNotFound = errors.New("env not found")
-
 type EnvService interface {
 	EnvCreate(ctx context.Context, args EnvCreateArgs) (*Env, error)
 	EnvDelete(ctx context.Context, name string) error
@@ -101,6 +127,8 @@ type EnvService interface {
 	EnvLocalVarDelete(ctx context.Context, envName string, name string) error
 	EnvLocalVarList(ctx context.Context, envName string) ([]EnvLocalVar, error)
 	EnvLocalVarShow(ctx context.Context, envName string, name string) (*EnvLocalVar, error)
+
+	EnvRefCreate(ctx context.Context, args EnvLocalRefCreateArgs) (*EnvLocalRef, error)
 
 	KeyringEntryCreate(ctx context.Context, args KeyringEntryCreateArgs) (*KeyringEntry, error)
 	KeyringEntryList(ctx context.Context) ([]KeyringEntry, []error, error)

@@ -18,10 +18,10 @@ func EnvCreateCmd() command.Command {
 	return command.New(
 		"Create an environment",
 		envCreateRun,
-		command.ExistingFlags(commonCreateFlag()),
+		command.ExistingFlags(commonCreateFlagMap()),
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
 	)
 }
 
@@ -63,7 +63,7 @@ func EnvDeleteCmd() command.Command {
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
 	)
 }
 
@@ -103,7 +103,7 @@ func EnvListCmd() command.Command {
 		"List environments",
 		envListRun,
 		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
 	)
 }
@@ -133,7 +133,7 @@ func EnvPrintScriptCmd() command.Command {
 		envPrintScriptRun,
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.Flag(
 			"--no-env-no-problem",
 			"Exit without an error if the environment doesn't exit. Useful when runnng envelop on chpwd",
@@ -198,7 +198,7 @@ func EnvShowCmd() command.Command {
 		envShowRun,
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
 	)
 }
@@ -235,7 +235,7 @@ func EnvUpdateCmd() command.Command {
 		command.ExistingFlags(commonUpdateFlags()),
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(confirmFlag()),
 	)
 }

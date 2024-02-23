@@ -88,7 +88,7 @@ func envNameFlag() flag.Flag {
 	return envNameFlag
 }
 
-func sqliteDSNFlag() flag.FlagMap {
+func sqliteDSNFlagMap() flag.FlagMap {
 	dbPath, err := homedir.Expand("~/.config/envelope.db")
 	if err != nil {
 		panic(err)
@@ -107,7 +107,7 @@ func sqliteDSNFlag() flag.FlagMap {
 	return sqliteDSN
 }
 
-func commonCreateFlag() flag.FlagMap {
+func commonCreateFlagMap() flag.FlagMap {
 	commonCreateFlags := flag.FlagMap{
 		"--comment": flag.New(
 			"Comment",

@@ -1,6 +1,3 @@
--- forgot this for env_var_local table to speed ops involving env table operations
-CREATE INDEX env_var_local_env_id_idx ON env_var_local(env_id);
-
 CREATE TABLE env_var_ref (
     id INTEGER PRIMARY KEY,
     env_id INTEGER NOT NULL,

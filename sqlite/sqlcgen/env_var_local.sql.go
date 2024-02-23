@@ -52,6 +52,22 @@ func (q *Queries) EnvLocalVarDelete(ctx context.Context, arg EnvLocalVarDeletePa
 	return err
 }
 
+const envLocalVarFindID = `-- name: EnvLocalVarFindID :one
+SELECT id FROM env_var_local WHERE env_id = ? AND name = ?
+`
+
+type EnvLocalVarFindIDParams struct {
+	EnvID int64
+	Name  string
+}
+
+func (q *Queries) EnvLocalVarFindID(ctx context.Context, arg EnvLocalVarFindIDParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, envLocalVarFindID, arg.EnvID, arg.Name)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const envLocalVarList = `-- name: EnvLocalVarList :many
 SELECT id, env_id, name, comment, create_time, update_time, value FROM env_var_local
 WHERE env_id = ?

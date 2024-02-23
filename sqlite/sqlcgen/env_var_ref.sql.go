@@ -51,3 +51,66 @@ func (q *Queries) EnvRefDelete(ctx context.Context, arg EnvRefDeleteParams) erro
 	_, err := q.db.ExecContext(ctx, envRefDelete, arg.EnvID, arg.Name)
 	return err
 }
+
+const envRefList = `-- name: EnvRefList :many
+SELECT id, env_id, name, comment, create_time, update_time, env_var_local_id FROM env_var_ref
+WHERE env_id = ?
+ORDER BY name ASC
+`
+
+func (q *Queries) EnvRefList(ctx context.Context, envID int64) ([]EnvVarRef, error) {
+	rows, err := q.db.QueryContext(ctx, envRefList, envID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EnvVarRef
+	for rows.Next() {
+		var i EnvVarRef
+		if err := rows.Scan(
+			&i.ID,
+			&i.EnvID,
+			&i.Name,
+			&i.Comment,
+			&i.CreateTime,
+			&i.UpdateTime,
+			&i.EnvVarLocalID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const envRefShow = `-- name: EnvRefShow :one
+SELECT id, env_id, name, comment, create_time, update_time, env_var_local_id
+FROM env_var_ref
+WHERE env_id = ? AND name = ?
+`
+
+type EnvRefShowParams struct {
+	EnvID int64
+	Name  string
+}
+
+func (q *Queries) EnvRefShow(ctx context.Context, arg EnvRefShowParams) (EnvVarRef, error) {
+	row := q.db.QueryRowContext(ctx, envRefShow, arg.EnvID, arg.Name)
+	var i EnvVarRef
+	err := row.Scan(
+		&i.ID,
+		&i.EnvID,
+		&i.Name,
+		&i.Comment,
+		&i.CreateTime,
+		&i.UpdateTime,
+		&i.EnvVarLocalID,
+	)
+	return i, err
+}

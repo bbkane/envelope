@@ -33,6 +33,8 @@ CREATE TABLE env_var_local (
     UNIQUE(env_id, name)
 ) STRICT;
 
+CREATE INDEX env_var_local_env_id_idx ON env_var_local(env_id);
+
 CREATE TRIGGER env_var_local_name_insert AFTER INSERT ON env_var_local
 BEGIN
     INSERT INTO env_var_unique_name(env_id, name) VALUES (NEW.env_id, NEW.name);

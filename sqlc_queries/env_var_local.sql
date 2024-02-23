@@ -5,6 +5,9 @@ INSERT INTO env_var_local(
     ?     , ?   , ?      , ?          , ?          , ?
 );
 
+-- name: EnvLocalVarFindID :one
+SELECT id FROM env_var_local WHERE env_id = ? AND name = ?;
+
 -- name: EnvLocalVarDelete :exec
 DELETE FROM env_var_local WHERE env_id = ? AND name = ?;
 

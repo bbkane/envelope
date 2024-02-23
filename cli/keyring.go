@@ -33,7 +33,7 @@ func KeyringCreateCmd() command.Command {
 	return command.New(
 		"Create a keyring entry. Prompts for value instead of using a flag",
 		keyringCreateRun,
-		command.ExistingFlags(commonCreateFlag()),
+		command.ExistingFlags(commonCreateFlagMap()),
 		command.Flag(
 			"--name",
 			"Keyring entry name",
@@ -41,7 +41,7 @@ func KeyringCreateCmd() command.Command {
 			flag.Required(),
 		),
 		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
 	)
 }
 
@@ -95,7 +95,7 @@ func KeyringListCmd() command.Command {
 		"List Keyring entries",
 		keyringListRun,
 		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlag()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
 	)
 }
