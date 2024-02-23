@@ -9,34 +9,43 @@ import (
 )
 
 func KeyringList(w io.Writer, keyringEntries []domain.KeyringEntry, errs []error, timezone Timezone) {
-	t := table.NewWriter()
-	t.SetStyle(table.StyleRounded)
-	t.SetOutputMirror(w)
-
 	if len(keyringEntries) > 0 {
-		t.AppendHeader(table.Row{"Name", "Value", "Comment", "CreateTime", "UpdateTime"})
-		for _, ke := range keyringEntries {
-			t.AppendRow(table.Row{
-				ke.Name,
-				ke.Value,
-				ke.Comment,
-				formatTime(ke.CreateTime, timezone),
-				formatTime(ke.UpdateTime, timezone),
+		fmt.Fprintln(w, "Keyring entries")
+		for _, e := range keyringEntries {
+			printKVTable(w, []kv{
+				{"Name", e.Name},
+				{"Value", e.Value},
+				{"Comment", e.Comment},
+				{"CreateTime", formatTime(e.CreateTime, timezone)},
+				{"UpdateTime", formatTime(e.UpdateTime, timezone)},
 			})
 		}
-		t.Render()
-		t.ResetHeaders()
-		t.ResetRows()
+
 	} else {
 		fmt.Fprintln(w, "no keyring entries found")
 	}
 	if len(errs) > 0 {
+		t := table.NewWriter()
+		t.SetStyle(table.StyleRounded)
+		t.SetOutputMirror(w)
+
 		t.AppendHeader(table.Row{"Error"})
 		for _, e := range errs {
 			t.AppendRow(table.Row{e})
 		}
 		t.Render()
-		t.ResetHeaders()
-		t.ResetRows()
+	}
+
+	if len(errs) > 0 {
+		fmt.Fprintln(w, "Errors")
+		t := table.NewWriter()
+		t.SetStyle(table.StyleRounded)
+		t.SetOutputMirror(w)
+
+		t.AppendHeader(table.Row{"Error"})
+		for _, e := range errs {
+			t.AppendRow(table.Row{e})
+		}
+
 	}
 }

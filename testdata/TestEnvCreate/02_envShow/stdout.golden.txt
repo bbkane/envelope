@@ -1,7 +1,5 @@
 Env
 ╭────────────┬────────────────╮
-│ NAME       │ VALUE          │
-├────────────┼────────────────┤
 │ Name       │ env_name       │
 │ Comment    │                │
 │ CreateTime │ Mon 0001-01-01 │
