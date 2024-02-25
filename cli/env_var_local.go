@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -118,7 +117,7 @@ func envLocalVarDeleteRun(cmdCtx command.Context) error {
 	}
 	defer iesr.Cancel()
 
-	err = iesr.EnvService.EnvLocalVarDelete(context.TODO(), envName, name)
+	err = iesr.EnvService.EnvLocalVarDelete(iesr.Ctx, envName, name)
 	if err != nil {
 		return err
 	}

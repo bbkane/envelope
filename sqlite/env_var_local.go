@@ -8,6 +8,24 @@ import (
 	"go.bbkane.com/envelope/sqlite/sqlcgen"
 )
 
+func (e *EnvService) envLocalVarFindByID(ctx context.Context, envName string, id int64) (*domain.EnvLocalVar, error) {
+	queries := sqlcgen.New(e.db)
+
+	sqlcVar, err := queries.EnvLocalVarFindByID(ctx, id)
+	if err != nil {
+		return nil, domain.ErrEnvLocalVarNotFound
+	}
+
+	return &domain.EnvLocalVar{
+		EnvName:    envName,
+		Name:       sqlcVar.Name,
+		Comment:    sqlcVar.Comment,
+		CreateTime: domain.StringToTimeMust(sqlcVar.CreateTime),
+		UpdateTime: domain.StringToTimeMust(sqlcVar.UpdateTime),
+		Value:      sqlcVar.Value,
+	}, nil
+}
+
 func (e *EnvService) envLocalVarFindID(ctx context.Context, envName string, name string) (int64, error) {
 	queries := sqlcgen.New(e.db)
 

@@ -36,6 +36,8 @@ func buildApp() *warg.App {
 					"ref",
 					"Variable References owned by this environment",
 					section.ExistingCommand("create", cli.EnvRefCreateCmd()),
+					section.ExistingCommand("delete", cli.EnvRefDeleteCmd()),
+					section.ExistingCommand("show", cli.EnvRefShowCmd()),
 				),
 				section.Section(
 					"var",

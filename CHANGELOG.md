@@ -9,7 +9,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 ## Added
 
-- `env ref create`
+- `env ref` commands
 
 ## Changed
 

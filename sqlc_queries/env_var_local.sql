@@ -8,6 +8,9 @@ INSERT INTO env_var_local(
 -- name: EnvLocalVarFindID :one
 SELECT id FROM env_var_local WHERE env_id = ? AND name = ?;
 
+-- name: EnvLocalVarFindByID :one
+SELECT * FROM env_var_local WHERE id = ?;
+
 -- name: EnvLocalVarDelete :exec
 DELETE FROM env_var_local WHERE env_id = ? AND name = ?;
 

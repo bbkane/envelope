@@ -92,6 +92,9 @@ type EnvService interface {
 	EnvLocalVarShow(ctx context.Context, envName string, name string) (*EnvLocalVar, error)
 
 	EnvRefCreate(ctx context.Context, args EnvLocalRefCreateArgs) (*EnvLocalRef, error)
+	EnvRefDelete(ctx context.Context, envName string, name string) error
+	EnvRefList(ctx context.Context, envName string) ([]EnvLocalRef, []EnvLocalVar, error)
+	EnvRefShow(ctx context.Context, envName string, name string) (*EnvLocalRef, *EnvLocalVar, error)
 
 	KeyringEntryCreate(ctx context.Context, args KeyringEntryCreateArgs) (*KeyringEntry, error)
 	KeyringEntryList(ctx context.Context) ([]KeyringEntry, []error, error)
