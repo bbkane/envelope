@@ -62,7 +62,42 @@ func (e *EnvService) EnvRefDelete(ctx context.Context, envName string, name stri
 }
 
 func (e *EnvService) EnvRefList(ctx context.Context, envName string) ([]domain.EnvLocalRef, []domain.EnvLocalVar, error) {
-	panic("TODO")
+	queries := sqlcgen.New(e.db)
+
+	envID, err := queries.EnvFindID(ctx, envName)
+	if err != nil {
+		return nil, nil, fmt.Errorf("could not find env with name: %s: %w", envName, mapErrEnvNotFound(err))
+	}
+
+	sqlcRefs, err := queries.EnvRefList(ctx, envID)
+	if err != nil {
+		return nil, nil, fmt.Errorf("could not list env vars: %s: %w", envName, err)
+	}
+	var refs []domain.EnvLocalRef
+	var vars []domain.EnvLocalVar
+	for _, sqlcRef := range sqlcRefs {
+
+		// classic N+1 query pattern, but luckily SQLite is not really affected by this :)
+		// https://www.sqlite.org/np1queryprob.html
+		// easy to add a join later if I need perf, as this is localized to this package
+
+		localVar, err := e.envLocalVarFindByID(ctx, envName, sqlcRef.EnvVarLocalID)
+		if err != nil {
+			return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.EnvVarLocalID, err)
+		}
+		vars = append(vars, *localVar)
+		refs = append(refs, domain.EnvLocalRef{
+			EnvName:    envName,
+			Name:       sqlcRef.Name,
+			Comment:    sqlcRef.Comment,
+			CreateTime: domain.StringToTimeMust(sqlcRef.CreateTime),
+			UpdateTime: domain.StringToTimeMust(sqlcRef.UpdateTime),
+			RefEnvName: localVar.EnvName,
+			RevVarName: localVar.Name,
+		})
+	}
+
+	return refs, vars, nil
 }
 
 func (e *EnvService) EnvRefShow(ctx context.Context, envName string, name string) (*domain.EnvLocalRef, *domain.EnvLocalVar, error) {
@@ -74,32 +109,32 @@ func (e *EnvService) EnvRefShow(ctx context.Context, envName string, name string
 		return nil, nil, fmt.Errorf("could not find env with name: %s: %w", envName, mapErrEnvNotFound(err))
 	}
 
-	sqlEnvRef, err := queries.EnvRefShow(ctx, sqlcgen.EnvRefShowParams{
+	sqlcRef, err := queries.EnvRefShow(ctx, sqlcgen.EnvRefShowParams{
 		EnvID: envID,
 		Name:  name,
 	})
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not find ref: %s: %s: %w", envName, name, err)
 	}
-	sqlEnvVar, err := e.envLocalVarFindByID(ctx, envName, sqlEnvRef.EnvVarLocalID)
+	sqlcVar, err := e.envLocalVarFindByID(ctx, envName, sqlcRef.EnvVarLocalID)
 	if err != nil {
-		return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlEnvRef.EnvVarLocalID, err)
+		return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.EnvVarLocalID, err)
 	}
 
 	return &domain.EnvLocalRef{
 			EnvName:    envName,
-			Name:       sqlEnvRef.Name,
-			Comment:    sqlEnvRef.Comment,
-			CreateTime: domain.StringToTimeMust(sqlEnvRef.CreateTime),
-			UpdateTime: domain.StringToTimeMust(sqlEnvRef.UpdateTime),
-			RefEnvName: sqlEnvVar.EnvName,
-			RevVarName: sqlEnvVar.Name,
+			Name:       sqlcRef.Name,
+			Comment:    sqlcRef.Comment,
+			CreateTime: domain.StringToTimeMust(sqlcRef.CreateTime),
+			UpdateTime: domain.StringToTimeMust(sqlcRef.UpdateTime),
+			RefEnvName: sqlcVar.EnvName,
+			RevVarName: sqlcVar.Name,
 		}, &domain.EnvLocalVar{
-			EnvName:    sqlEnvVar.EnvName,
-			Name:       sqlEnvVar.Name,
-			Comment:    sqlEnvVar.Comment,
-			CreateTime: sqlEnvVar.CreateTime,
-			UpdateTime: sqlEnvVar.UpdateTime,
-			Value:      sqlEnvVar.Value,
+			EnvName:    sqlcVar.EnvName,
+			Name:       sqlcVar.Name,
+			Comment:    sqlcVar.Comment,
+			CreateTime: sqlcVar.CreateTime,
+			UpdateTime: sqlcVar.UpdateTime,
+			Value:      sqlcVar.Value,
 		}, nil
 }

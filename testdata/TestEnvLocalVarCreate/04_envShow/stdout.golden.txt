@@ -5,11 +5,9 @@ Env
 │ CreateTime │ Mon 0001-01-01 │
 │ UpdateTime │ Mon 0001-01-01 │
 ╰────────────┴────────────────╯
-LocalVars
-╭────────────┬────────────────╮
-│ Name       │ key            │
-│ Value      │ value          │
-│ Comment    │                │
-│ CreateTime │ Mon 0001-01-01 │
-│ UpdateTime │ Mon 0001-01-01 │
-╰────────────┴────────────────╯
+Vars
+╭─────────┬───────╮
+│ Name    │ key   │
+│ Value   │ value │
+│ Comment │       │
+╰─────────┴───────╯

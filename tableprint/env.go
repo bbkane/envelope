@@ -23,7 +23,14 @@ func EnvList(w io.Writer, envs []domain.Env, timezone Timezone) {
 	}
 }
 
-func EnvShowRun(w io.Writer, env domain.Env, localvars []domain.EnvLocalVar, timezone Timezone) {
+func EnvShowRun(
+	w io.Writer,
+	env domain.Env,
+	localvars []domain.EnvLocalVar,
+	refs []domain.EnvLocalRef,
+	referencedVars []domain.EnvLocalVar,
+	timezone Timezone,
+) {
 
 	fmt.Fprintln(w, "Env")
 
@@ -35,15 +42,25 @@ func EnvShowRun(w io.Writer, env domain.Env, localvars []domain.EnvLocalVar, tim
 	})
 
 	if len(localvars) > 0 {
-		fmt.Fprintln(w, "LocalVars")
+		fmt.Fprintln(w, "Vars")
 
 		for _, e := range localvars {
 			printKVTable(w, []kv{
 				{"Name", e.Name},
 				{"Value", e.Value},
 				{"Comment", e.Comment},
-				{"CreateTime", formatTime(e.CreateTime, timezone)},
-				{"UpdateTime", formatTime(e.UpdateTime, timezone)},
+			})
+		}
+	}
+
+	if len(refs) > 0 {
+		fmt.Fprintln(w, "Refs")
+
+		for i := range len(refs) {
+			printKVTable(w, []kv{
+				{"Name", refs[i].Name},
+				{"RefVarValue", referencedVars[i].Value},
+				{"Comment", refs[i].Comment},
 			})
 		}
 	}

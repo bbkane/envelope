@@ -1,6 +1,6 @@
 module go.bbkane.com/envelope
 
-go 1.21
+go 1.22
 
 require (
 	go.bbkane.com/gocolor v0.0.5 // indirect

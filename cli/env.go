@@ -224,7 +224,12 @@ func envShowRun(cmdCtx command.Context) error {
 		return err
 	}
 
-	tableprint.EnvShowRun(cmdCtx.Stdout, *env, localvars, tableprint.Timezone(timezone))
+	refs, referencedVars, err := iesr.EnvService.EnvRefList(iesr.Ctx, name)
+	if err != nil {
+		return err
+	}
+
+	tableprint.EnvShowRun(cmdCtx.Stdout, *env, localvars, refs, referencedVars, tableprint.Timezone(timezone))
 	return nil
 }
 

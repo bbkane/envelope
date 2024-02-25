@@ -15,6 +15,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 - `env localvar` commands renamed to `env var`
 - Use key-value tables for output
+- Show `env ref`s in `env show`
 
 # v0.0.4
 
