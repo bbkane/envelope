@@ -6,7 +6,7 @@ import (
 	"go.bbkane.com/envelope/domain"
 )
 
-func EnvRefShowPrint(w io.Writer, envRef domain.EnvLocalRef, envVar domain.EnvLocalVar, timezone Timezone) {
+func EnvRefShowPrint(w io.Writer, envRef domain.EnvRef, envVar domain.EnvVar, timezone Timezone) {
 	printKVTable(w, []kv{
 		{"EnvName", envRef.EnvName},
 		{"Name", envRef.Name},

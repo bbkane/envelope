@@ -26,9 +26,9 @@ func EnvList(w io.Writer, envs []domain.Env, timezone Timezone) {
 func EnvShowRun(
 	w io.Writer,
 	env domain.Env,
-	localvars []domain.EnvLocalVar,
-	refs []domain.EnvLocalRef,
-	referencedVars []domain.EnvLocalVar,
+	localvars []domain.EnvVar,
+	refs []domain.EnvRef,
+	referencedVars []domain.EnvVar,
 	timezone Timezone,
 ) {
 

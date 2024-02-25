@@ -8,7 +8,7 @@ import (
 	"go.bbkane.com/envelope/sqlite/sqlcgen"
 )
 
-func (e *EnvService) EnvRefCreate(ctx context.Context, args domain.EnvLocalRefCreateArgs) (*domain.EnvLocalRef, error) {
+func (e *EnvService) EnvRefCreate(ctx context.Context, args domain.EnvRefCreateArgs) (*domain.EnvRef, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := queries.EnvFindID(ctx, args.EnvName)
@@ -32,7 +32,7 @@ func (e *EnvService) EnvRefCreate(ctx context.Context, args domain.EnvLocalRefCr
 	if err != nil {
 		return nil, fmt.Errorf("could not create env var ref: %w", err)
 	}
-	return &domain.EnvLocalRef{
+	return &domain.EnvRef{
 		EnvName:    args.EnvName,
 		Name:       args.Name,
 		Comment:    args.Comment,
@@ -61,7 +61,7 @@ func (e *EnvService) EnvRefDelete(ctx context.Context, envName string, name stri
 	return nil
 }
 
-func (e *EnvService) EnvRefList(ctx context.Context, envName string) ([]domain.EnvLocalRef, []domain.EnvLocalVar, error) {
+func (e *EnvService) EnvRefList(ctx context.Context, envName string) ([]domain.EnvRef, []domain.EnvVar, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := queries.EnvFindID(ctx, envName)
@@ -73,8 +73,8 @@ func (e *EnvService) EnvRefList(ctx context.Context, envName string) ([]domain.E
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not list env vars: %s: %w", envName, err)
 	}
-	var refs []domain.EnvLocalRef
-	var vars []domain.EnvLocalVar
+	var refs []domain.EnvRef
+	var vars []domain.EnvVar
 	for _, sqlcRef := range sqlcRefs {
 
 		// classic N+1 query pattern, but luckily SQLite is not really affected by this :)
@@ -86,7 +86,7 @@ func (e *EnvService) EnvRefList(ctx context.Context, envName string) ([]domain.E
 			return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.EnvVarLocalID, err)
 		}
 		vars = append(vars, *localVar)
-		refs = append(refs, domain.EnvLocalRef{
+		refs = append(refs, domain.EnvRef{
 			EnvName:    envName,
 			Name:       sqlcRef.Name,
 			Comment:    sqlcRef.Comment,
@@ -100,7 +100,7 @@ func (e *EnvService) EnvRefList(ctx context.Context, envName string) ([]domain.E
 	return refs, vars, nil
 }
 
-func (e *EnvService) EnvRefShow(ctx context.Context, envName string, name string) (*domain.EnvLocalRef, *domain.EnvLocalVar, error) {
+func (e *EnvService) EnvRefShow(ctx context.Context, envName string, name string) (*domain.EnvRef, *domain.EnvVar, error) {
 
 	queries := sqlcgen.New(e.db)
 
@@ -121,7 +121,7 @@ func (e *EnvService) EnvRefShow(ctx context.Context, envName string, name string
 		return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.EnvVarLocalID, err)
 	}
 
-	return &domain.EnvLocalRef{
+	return &domain.EnvRef{
 			EnvName:    envName,
 			Name:       sqlcRef.Name,
 			Comment:    sqlcRef.Comment,
@@ -129,7 +129,7 @@ func (e *EnvService) EnvRefShow(ctx context.Context, envName string, name string
 			UpdateTime: domain.StringToTimeMust(sqlcRef.UpdateTime),
 			RefEnvName: sqlcVar.EnvName,
 			RevVarName: sqlcVar.Name,
-		}, &domain.EnvLocalVar{
+		}, &domain.EnvVar{
 			EnvName:    sqlcVar.EnvName,
 			Name:       sqlcVar.Name,
 			Comment:    sqlcVar.Comment,

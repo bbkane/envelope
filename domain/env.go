@@ -31,11 +31,11 @@ type EnvUpdateArgs struct {
 	UpdateTime *time.Time
 }
 
-// -- EnvLocalVar
+// -- EnvVar
 
-var ErrEnvLocalVarNotFound = errors.New("local var not found")
+var ErrEnvVarNotFound = errors.New("local var not found")
 
-type EnvLocalVar struct {
+type EnvVar struct {
 	EnvName    string
 	Name       string
 	Comment    string
@@ -44,7 +44,7 @@ type EnvLocalVar struct {
 	Value      string
 }
 
-type EnvLocalVarCreateArgs struct {
+type EnvVarCreateArgs struct {
 	EnvName    string
 	Name       string
 	Comment    string
@@ -55,9 +55,9 @@ type EnvLocalVarCreateArgs struct {
 
 // -- EnvLocalRef
 
-var ErrEnvLocalRefNotFound = errors.New("local ref not found")
+var ErrEnvRefNotFound = errors.New("local ref not found")
 
-type EnvLocalRef struct {
+type EnvRef struct {
 	EnvName    string
 	Name       string
 	Comment    string
@@ -67,7 +67,7 @@ type EnvLocalRef struct {
 	RevVarName string
 }
 
-type EnvLocalRefCreateArgs struct {
+type EnvRefCreateArgs struct {
 	EnvName    string
 	Name       string
 	Comment    string
@@ -86,15 +86,15 @@ type EnvService interface {
 	EnvUpdate(ctx context.Context, name string, args EnvUpdateArgs) error
 	EnvShow(ctx context.Context, name string) (*Env, error)
 
-	EnvLocalVarCreate(ctx context.Context, args EnvLocalVarCreateArgs) (*EnvLocalVar, error)
-	EnvLocalVarDelete(ctx context.Context, envName string, name string) error
-	EnvLocalVarList(ctx context.Context, envName string) ([]EnvLocalVar, error)
-	EnvLocalVarShow(ctx context.Context, envName string, name string) (*EnvLocalVar, error)
+	EnvVarCreate(ctx context.Context, args EnvVarCreateArgs) (*EnvVar, error)
+	EnvVarDelete(ctx context.Context, envName string, name string) error
+	EnvVarList(ctx context.Context, envName string) ([]EnvVar, error)
+	EnvVarShow(ctx context.Context, envName string, name string) (*EnvVar, error)
 
-	EnvRefCreate(ctx context.Context, args EnvLocalRefCreateArgs) (*EnvLocalRef, error)
+	EnvRefCreate(ctx context.Context, args EnvRefCreateArgs) (*EnvRef, error)
 	EnvRefDelete(ctx context.Context, envName string, name string) error
-	EnvRefList(ctx context.Context, envName string) ([]EnvLocalRef, []EnvLocalVar, error)
-	EnvRefShow(ctx context.Context, envName string, name string) (*EnvLocalRef, *EnvLocalVar, error)
+	EnvRefList(ctx context.Context, envName string) ([]EnvRef, []EnvVar, error)
+	EnvRefShow(ctx context.Context, envName string, name string) (*EnvRef, *EnvVar, error)
 
 	KeyringEntryCreate(ctx context.Context, args KeyringEntryCreateArgs) (*KeyringEntry, error)
 	KeyringEntryList(ctx context.Context) ([]KeyringEntry, []error, error)

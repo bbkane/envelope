@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const envLocalVarCreate = `-- name: EnvLocalVarCreate :exec
+const envVarCreate = `-- name: EnvVarCreate :exec
 INSERT INTO env_var_local(
     env_id, name, comment, create_time, update_time, value
 ) VALUES (
@@ -17,7 +17,7 @@ INSERT INTO env_var_local(
 )
 `
 
-type EnvLocalVarCreateParams struct {
+type EnvVarCreateParams struct {
 	EnvID      int64
 	Name       string
 	Comment    string
@@ -26,8 +26,8 @@ type EnvLocalVarCreateParams struct {
 	Value      string
 }
 
-func (q *Queries) EnvLocalVarCreate(ctx context.Context, arg EnvLocalVarCreateParams) error {
-	_, err := q.db.ExecContext(ctx, envLocalVarCreate,
+func (q *Queries) EnvVarCreate(ctx context.Context, arg EnvVarCreateParams) error {
+	_, err := q.db.ExecContext(ctx, envVarCreate,
 		arg.EnvID,
 		arg.Name,
 		arg.Comment,
@@ -38,26 +38,26 @@ func (q *Queries) EnvLocalVarCreate(ctx context.Context, arg EnvLocalVarCreatePa
 	return err
 }
 
-const envLocalVarDelete = `-- name: EnvLocalVarDelete :exec
+const envVarDelete = `-- name: EnvVarDelete :exec
 DELETE FROM env_var_local WHERE env_id = ? AND name = ?
 `
 
-type EnvLocalVarDeleteParams struct {
+type EnvVarDeleteParams struct {
 	EnvID int64
 	Name  string
 }
 
-func (q *Queries) EnvLocalVarDelete(ctx context.Context, arg EnvLocalVarDeleteParams) error {
-	_, err := q.db.ExecContext(ctx, envLocalVarDelete, arg.EnvID, arg.Name)
+func (q *Queries) EnvVarDelete(ctx context.Context, arg EnvVarDeleteParams) error {
+	_, err := q.db.ExecContext(ctx, envVarDelete, arg.EnvID, arg.Name)
 	return err
 }
 
-const envLocalVarFindByID = `-- name: EnvLocalVarFindByID :one
+const envVarFindByID = `-- name: EnvVarFindByID :one
 SELECT id, env_id, name, comment, create_time, update_time, value FROM env_var_local WHERE id = ?
 `
 
-func (q *Queries) EnvLocalVarFindByID(ctx context.Context, id int64) (EnvVarLocal, error) {
-	row := q.db.QueryRowContext(ctx, envLocalVarFindByID, id)
+func (q *Queries) EnvVarFindByID(ctx context.Context, id int64) (EnvVarLocal, error) {
+	row := q.db.QueryRowContext(ctx, envVarFindByID, id)
 	var i EnvVarLocal
 	err := row.Scan(
 		&i.ID,
@@ -71,30 +71,30 @@ func (q *Queries) EnvLocalVarFindByID(ctx context.Context, id int64) (EnvVarLoca
 	return i, err
 }
 
-const envLocalVarFindID = `-- name: EnvLocalVarFindID :one
+const envVarFindID = `-- name: EnvVarFindID :one
 SELECT id FROM env_var_local WHERE env_id = ? AND name = ?
 `
 
-type EnvLocalVarFindIDParams struct {
+type EnvVarFindIDParams struct {
 	EnvID int64
 	Name  string
 }
 
-func (q *Queries) EnvLocalVarFindID(ctx context.Context, arg EnvLocalVarFindIDParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, envLocalVarFindID, arg.EnvID, arg.Name)
+func (q *Queries) EnvVarFindID(ctx context.Context, arg EnvVarFindIDParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, envVarFindID, arg.EnvID, arg.Name)
 	var id int64
 	err := row.Scan(&id)
 	return id, err
 }
 
-const envLocalVarList = `-- name: EnvLocalVarList :many
+const envVarList = `-- name: EnvVarList :many
 SELECT id, env_id, name, comment, create_time, update_time, value FROM env_var_local
 WHERE env_id = ?
 ORDER BY name ASC
 `
 
-func (q *Queries) EnvLocalVarList(ctx context.Context, envID int64) ([]EnvVarLocal, error) {
-	rows, err := q.db.QueryContext(ctx, envLocalVarList, envID)
+func (q *Queries) EnvVarList(ctx context.Context, envID int64) ([]EnvVarLocal, error) {
+	rows, err := q.db.QueryContext(ctx, envVarList, envID)
 	if err != nil {
 		return nil, err
 	}
@@ -124,19 +124,19 @@ func (q *Queries) EnvLocalVarList(ctx context.Context, envID int64) ([]EnvVarLoc
 	return items, nil
 }
 
-const envLocalVarShow = `-- name: EnvLocalVarShow :one
+const envVarShow = `-- name: EnvVarShow :one
 SELECT id, env_id, name, comment, create_time, update_time, value
 FROM env_var_local
 WHERE env_id = ? AND name = ?
 `
 
-type EnvLocalVarShowParams struct {
+type EnvVarShowParams struct {
 	EnvID int64
 	Name  string
 }
 
-func (q *Queries) EnvLocalVarShow(ctx context.Context, arg EnvLocalVarShowParams) (EnvVarLocal, error) {
-	row := q.db.QueryRowContext(ctx, envLocalVarShow, arg.EnvID, arg.Name)
+func (q *Queries) EnvVarShow(ctx context.Context, arg EnvVarShowParams) (EnvVarLocal, error) {
+	row := q.db.QueryRowContext(ctx, envVarShow, arg.EnvID, arg.Name)
 	var i EnvVarLocal
 	err := row.Scan(
 		&i.ID,

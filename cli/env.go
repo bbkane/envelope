@@ -175,7 +175,7 @@ func envPrintScriptRun(cmdCtx command.Context) error {
 	}
 	defer iesr.Cancel()
 
-	envVars, err := iesr.EnvService.EnvLocalVarList(iesr.Ctx, name)
+	envVars, err := iesr.EnvService.EnvVarList(iesr.Ctx, name)
 	if err != nil {
 		if errors.Is(err, domain.ErrEnvNotFound) && noEnvNoProblem {
 			return nil
@@ -252,7 +252,7 @@ func envShowRun(cmdCtx command.Context) error {
 		return fmt.Errorf("could not show env: %s: %w", name, err)
 	}
 
-	localvars, err := iesr.EnvService.EnvLocalVarList(iesr.Ctx, name)
+	localvars, err := iesr.EnvService.EnvVarList(iesr.Ctx, name)
 	if err != nil {
 		return err
 	}

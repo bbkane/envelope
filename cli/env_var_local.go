@@ -56,9 +56,9 @@ func envLocalVarCreateRun(cmdCtx command.Context) error {
 	}
 	defer iesr.Cancel()
 
-	_, err = iesr.EnvService.EnvLocalVarCreate(
+	_, err = iesr.EnvService.EnvVarCreate(
 		iesr.Ctx,
-		domain.EnvLocalVarCreateArgs{
+		domain.EnvVarCreateArgs{
 			EnvName:    envName,
 			Name:       name,
 			Comment:    comment,
@@ -117,7 +117,7 @@ func envLocalVarDeleteRun(cmdCtx command.Context) error {
 	}
 	defer iesr.Cancel()
 
-	err = iesr.EnvService.EnvLocalVarDelete(iesr.Ctx, envName, name)
+	err = iesr.EnvService.EnvVarDelete(iesr.Ctx, envName, name)
 	if err != nil {
 		return err
 	}
@@ -157,7 +157,7 @@ func envLocalVarShowRun(cmdCtx command.Context) error {
 	}
 	defer iesr.Cancel()
 
-	envVar, err := iesr.EnvService.EnvLocalVarShow(iesr.Ctx, envName, name)
+	envVar, err := iesr.EnvService.EnvVarShow(iesr.Ctx, envName, name)
 	if err != nil {
 		return fmt.Errorf("couldn't find env var: %s: %w", name, err)
 	}

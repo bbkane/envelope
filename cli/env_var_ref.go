@@ -64,7 +64,7 @@ func envRefCreateRun(cmdCtx command.Context) error {
 
 	_, err = iesr.EnvService.EnvRefCreate(
 		iesr.Ctx,
-		domain.EnvLocalRefCreateArgs{
+		domain.EnvRefCreateArgs{
 			EnvName:    envName,
 			Name:       name,
 			Comment:    comment,
