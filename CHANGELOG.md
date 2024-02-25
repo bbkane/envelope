@@ -10,12 +10,14 @@ Note the the latest version is usually work in progress and may have not yet bee
 ## Added
 
 - `env ref` commands
+- `print-script --shell` flag
 
 ## Changed
 
 - `env localvar` commands renamed to `env var`
 - Use key-value tables for output
 - Show `env ref`s in `env show`
+- Export `env ref`s in `env export`
 
 # v0.0.4
 

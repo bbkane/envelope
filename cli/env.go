@@ -143,6 +143,15 @@ func EnvPrintScriptCmd() command.Command {
 			flag.Required(),
 		),
 		command.Flag(
+			"--shell",
+			"Shell to print script for",
+			scalar.String(
+				scalar.Choices("zsh"),
+				scalar.Default("zsh"),
+			),
+			flag.Required(),
+		),
+		command.Flag(
 			"--type",
 			"Type of script",
 			scalar.String(
@@ -156,8 +165,9 @@ func EnvPrintScriptCmd() command.Command {
 
 func envPrintScriptRun(cmdCtx command.Context) error {
 	name := cmdCtx.Flags["--name"].(string)
-	scriptType := cmdCtx.Flags["--type"].(string)
 	noEnvNoProblem := cmdCtx.Flags["--no-env-no-problem"].(bool)
+	scriptType := cmdCtx.Flags["--type"].(string)
+	shell := cmdCtx.Flags["--shell"].(string)
 
 	iesr, err := initEnvService(cmdCtx.Flags)
 	if err != nil {
@@ -173,20 +183,43 @@ func envPrintScriptRun(cmdCtx command.Context) error {
 		return fmt.Errorf("could not list env vars: %s: %w", name, err)
 	}
 
-	switch scriptType {
-	case "export":
-		for _, ev := range envVars {
-			fmt.Fprintf(cmdCtx.Stdout, "echo 'Adding:' %s;\n", shellescape.Quote(ev.Name))
-			fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
+	envRefs, envRefVars, err := iesr.EnvService.EnvRefList(iesr.Ctx, name)
+	if err != nil {
+		if errors.Is(err, domain.ErrEnvNotFound) && noEnvNoProblem {
+			return nil
 		}
-	case "unexport":
-		for _, ev := range envVars {
-			fmt.Fprintf(cmdCtx.Stdout, "echo 'Removing:' %s;\n", shellescape.Quote(ev.Name))
-			fmt.Fprintf(cmdCtx.Stdout, "unset %s;\n", shellescape.Quote(ev.Name))
+		return fmt.Errorf("could not list env refs: %s: %w", name, err)
+	}
+
+	switch shell {
+	case "zsh":
+		switch scriptType {
+		case "export":
+			for _, ev := range envVars {
+				fmt.Fprintf(cmdCtx.Stdout, "echo 'Adding:' %s;\n", shellescape.Quote(ev.Name))
+				fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
+			}
+
+			for i := range len(envRefs) {
+				fmt.Fprintf(cmdCtx.Stdout, "echo 'Adding:' %s;\n", shellescape.Quote(envRefs[i].Name))
+				fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(envRefs[i].Name), shellescape.Quote(envRefVars[i].Value))
+			}
+		case "unexport":
+			for _, ev := range envVars {
+				fmt.Fprintf(cmdCtx.Stdout, "echo 'Removing:' %s;\n", shellescape.Quote(ev.Name))
+				fmt.Fprintf(cmdCtx.Stdout, "unset %s;\n", shellescape.Quote(ev.Name))
+			}
+
+			for _, er := range envRefs {
+				fmt.Fprintf(cmdCtx.Stdout, "echo 'Removing:' %s;\n", shellescape.Quote(er.Name))
+				fmt.Fprintf(cmdCtx.Stdout, "unset %s;\n", shellescape.Quote(er.Name))
+			}
+		default:
+			return errors.New("unimplemented --script-type: " + scriptType)
+
 		}
 	default:
-		return errors.New("Unimplemented --script-type: " + scriptType)
-
+		return fmt.Errorf("unimplemented shell: %s", shell)
 	}
 
 	return nil
