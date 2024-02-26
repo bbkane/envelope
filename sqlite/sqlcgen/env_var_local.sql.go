@@ -53,13 +53,28 @@ func (q *Queries) EnvVarDelete(ctx context.Context, arg EnvVarDeleteParams) erro
 }
 
 const envVarFindByID = `-- name: EnvVarFindByID :one
-SELECT id, env_id, name, comment, create_time, update_time, value FROM env_var_local WHERE id = ?
+SELECT env.name AS env_name, env_var_local.id, env_var_local.env_id, env_var_local.name, env_var_local.comment, env_var_local.create_time, env_var_local.update_time, env_var_local.value
+FROM env_var_local
+JOIN env ON env_var_local.env_id = env.id
+WHERE env_var_local.id = ?
 `
 
-func (q *Queries) EnvVarFindByID(ctx context.Context, id int64) (EnvVarLocal, error) {
+type EnvVarFindByIDRow struct {
+	EnvName    string
+	ID         int64
+	EnvID      int64
+	Name       string
+	Comment    string
+	CreateTime string
+	UpdateTime string
+	Value      string
+}
+
+func (q *Queries) EnvVarFindByID(ctx context.Context, id int64) (EnvVarFindByIDRow, error) {
 	row := q.db.QueryRowContext(ctx, envVarFindByID, id)
-	var i EnvVarLocal
+	var i EnvVarFindByIDRow
 	err := row.Scan(
+		&i.EnvName,
 		&i.ID,
 		&i.EnvID,
 		&i.Name,

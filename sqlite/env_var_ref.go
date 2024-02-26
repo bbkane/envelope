@@ -81,7 +81,7 @@ func (e *EnvService) EnvRefList(ctx context.Context, envName string) ([]domain.E
 		// https://www.sqlite.org/np1queryprob.html
 		// easy to add a join later if I need perf, as this is localized to this package
 
-		localVar, err := e.envLocalVarFindByID(ctx, envName, sqlcRef.EnvVarLocalID)
+		localVar, err := e.envLocalVarFindByID(ctx, sqlcRef.EnvVarLocalID)
 		if err != nil {
 			return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.EnvVarLocalID, err)
 		}
@@ -116,7 +116,7 @@ func (e *EnvService) EnvRefShow(ctx context.Context, envName string, name string
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not find ref: %s: %s: %w", envName, name, err)
 	}
-	sqlcVar, err := e.envLocalVarFindByID(ctx, envName, sqlcRef.EnvVarLocalID)
+	sqlcVar, err := e.envLocalVarFindByID(ctx, sqlcRef.EnvVarLocalID)
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.EnvVarLocalID, err)
 	}

@@ -18,6 +18,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 - Use key-value tables for output
 - Show `env ref`s in `env show`
 - Export `env ref`s in `env export`
+- Show `env ref`s in `env var show`
 
 # v0.0.4
 

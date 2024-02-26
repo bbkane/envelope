@@ -17,3 +17,9 @@ ORDER BY name ASC;
 SELECT *
 FROM env_var_ref
 WHERE env_id = ? AND name = ?;
+
+-- name: EnvRefListByEnvVarID :many
+SELECT env.name AS env_name, env_var_ref.* FROM env_var_ref
+JOIN env ON env_var_ref.env_id = env.id
+WHERE env_var_local_id = ?
+ORDER BY env_var_ref.name ASC;

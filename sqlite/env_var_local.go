@@ -2,13 +2,15 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"go.bbkane.com/envelope/domain"
 	"go.bbkane.com/envelope/sqlite/sqlcgen"
 )
 
-func (e *EnvService) envLocalVarFindByID(ctx context.Context, envName string, id int64) (*domain.EnvVar, error) {
+func (e *EnvService) envLocalVarFindByID(ctx context.Context, id int64) (*domain.EnvVar, error) {
 	queries := sqlcgen.New(e.db)
 
 	sqlcVar, err := queries.EnvVarFindByID(ctx, id)
@@ -17,7 +19,7 @@ func (e *EnvService) envLocalVarFindByID(ctx context.Context, envName string, id
 	}
 
 	return &domain.EnvVar{
-		EnvName:    envName,
+		EnvName:    sqlcVar.EnvName,
 		Name:       sqlcVar.Name,
 		Comment:    sqlcVar.Comment,
 		CreateTime: domain.StringToTimeMust(sqlcVar.CreateTime),
@@ -121,12 +123,12 @@ func (e *EnvService) EnvVarList(ctx context.Context, envName string) ([]domain.E
 	return ret, nil
 }
 
-func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string) (*domain.EnvVar, error) {
+func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string) (*domain.EnvVar, []domain.EnvRef, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := queries.EnvFindID(ctx, envName)
 	if err != nil {
-		return nil, fmt.Errorf("could not find env with name: %s: %w", envName, mapErrEnvNotFound(err))
+		return nil, nil, fmt.Errorf("could not find env with name: %s: %w", envName, mapErrEnvNotFound(err))
 	}
 
 	sqlEnvLocalVar, err := queries.EnvVarShow(ctx, sqlcgen.EnvVarShowParams{
@@ -134,8 +136,27 @@ func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string
 		Name:  name,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("could not find env var: %s: %s: %w", envName, name, err)
+		return nil, nil, fmt.Errorf("could not find env var: %s: %s: %w", envName, name, err)
 	}
+
+	envRefs := []domain.EnvRef{}
+	sqlcEnvRefs, err := queries.EnvRefListByEnvVarID(ctx, sqlEnvLocalVar.ID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return nil, nil, err
+	}
+
+	for _, e := range sqlcEnvRefs {
+		envRefs = append(envRefs, domain.EnvRef{
+			EnvName:    e.EnvName,
+			Name:       e.Name,
+			Comment:    e.Comment,
+			CreateTime: domain.StringToTimeMust(e.CreateTime),
+			UpdateTime: domain.StringToTimeMust(e.UpdateTime),
+			RefEnvName: envName,
+			RevVarName: name,
+		})
+	}
+
 	return &domain.EnvVar{
 		EnvName:    envName,
 		Name:       name,
@@ -143,5 +164,5 @@ func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string
 		CreateTime: domain.StringToTimeMust(sqlEnvLocalVar.CreateTime),
 		UpdateTime: domain.StringToTimeMust(sqlEnvLocalVar.UpdateTime),
 		Value:      sqlEnvLocalVar.Value,
-	}, nil
+	}, envRefs, nil
 }

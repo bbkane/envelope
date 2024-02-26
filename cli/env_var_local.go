@@ -157,11 +157,11 @@ func envLocalVarShowRun(cmdCtx command.Context) error {
 	}
 	defer iesr.Cancel()
 
-	envVar, err := iesr.EnvService.EnvVarShow(iesr.Ctx, envName, name)
+	envVar, envRefs, err := iesr.EnvService.EnvVarShow(iesr.Ctx, envName, name)
 	if err != nil {
 		return fmt.Errorf("couldn't find env var: %s: %w", name, err)
 	}
 
-	tableprint.EnvLocalVarShowPrint(cmdCtx.Stdout, *envVar, tableprint.Timezone(timezone))
+	tableprint.EnvLocalVarShowPrint(cmdCtx.Stdout, *envVar, envRefs, tableprint.Timezone(timezone))
 	return nil
 }

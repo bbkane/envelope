@@ -89,6 +89,56 @@ func (q *Queries) EnvRefList(ctx context.Context, envID int64) ([]EnvVarRef, err
 	return items, nil
 }
 
+const envRefListByEnvVarID = `-- name: EnvRefListByEnvVarID :many
+SELECT env.name AS env_name, env_var_ref.id, env_var_ref.env_id, env_var_ref.name, env_var_ref.comment, env_var_ref.create_time, env_var_ref.update_time, env_var_ref.env_var_local_id FROM env_var_ref
+JOIN env ON env_var_ref.env_id = env.id
+WHERE env_var_local_id = ?
+ORDER BY env_var_ref.name ASC
+`
+
+type EnvRefListByEnvVarIDRow struct {
+	EnvName       string
+	ID            int64
+	EnvID         int64
+	Name          string
+	Comment       string
+	CreateTime    string
+	UpdateTime    string
+	EnvVarLocalID int64
+}
+
+func (q *Queries) EnvRefListByEnvVarID(ctx context.Context, envVarLocalID int64) ([]EnvRefListByEnvVarIDRow, error) {
+	rows, err := q.db.QueryContext(ctx, envRefListByEnvVarID, envVarLocalID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EnvRefListByEnvVarIDRow
+	for rows.Next() {
+		var i EnvRefListByEnvVarIDRow
+		if err := rows.Scan(
+			&i.EnvName,
+			&i.ID,
+			&i.EnvID,
+			&i.Name,
+			&i.Comment,
+			&i.CreateTime,
+			&i.UpdateTime,
+			&i.EnvVarLocalID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const envRefShow = `-- name: EnvRefShow :one
 SELECT id, env_id, name, comment, create_time, update_time, env_var_local_id
 FROM env_var_ref

@@ -89,7 +89,7 @@ type EnvService interface {
 	EnvVarCreate(ctx context.Context, args EnvVarCreateArgs) (*EnvVar, error)
 	EnvVarDelete(ctx context.Context, envName string, name string) error
 	EnvVarList(ctx context.Context, envName string) ([]EnvVar, error)
-	EnvVarShow(ctx context.Context, envName string, name string) (*EnvVar, error)
+	EnvVarShow(ctx context.Context, envName string, name string) (*EnvVar, []EnvRef, error)
 
 	EnvRefCreate(ctx context.Context, args EnvRefCreateArgs) (*EnvRef, error)
 	EnvRefDelete(ctx context.Context, envName string, name string) error

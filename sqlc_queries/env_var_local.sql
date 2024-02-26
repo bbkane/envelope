@@ -9,7 +9,10 @@ INSERT INTO env_var_local(
 SELECT id FROM env_var_local WHERE env_id = ? AND name = ?;
 
 -- name: EnvVarFindByID :one
-SELECT * FROM env_var_local WHERE id = ?;
+SELECT env.name AS env_name, env_var_local.*
+FROM env_var_local
+JOIN env ON env_var_local.env_id = env.id
+WHERE env_var_local.id = ?;
 
 -- name: EnvVarDelete :exec
 DELETE FROM env_var_local WHERE env_id = ? AND name = ?;

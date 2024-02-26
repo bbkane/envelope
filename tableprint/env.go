@@ -59,6 +59,8 @@ func EnvShowRun(
 		for i := range len(refs) {
 			printKVTable(w, []kv{
 				{"Name", refs[i].Name},
+				{"RefEnvName", referencedVars[i].EnvName},
+				{"RefVarName", referencedVars[i].Name},
 				{"RefVarValue", referencedVars[i].Value},
 				{"Comment", refs[i].Comment},
 			})
