@@ -7,7 +7,8 @@ import (
 )
 
 func EnvRefShowPrint(w io.Writer, envRef domain.EnvRef, envVar domain.EnvVar, timezone Timezone) {
-	printKVTable(w, []kv{
+	t := tableInit(w)
+	tableAddSection(t, []kv{
 		{"EnvName", envRef.EnvName},
 		{"Name", envRef.Name},
 		{"RefEnvName", envRef.RefEnvName},
@@ -17,4 +18,5 @@ func EnvRefShowPrint(w io.Writer, envRef domain.EnvRef, envVar domain.EnvVar, ti
 		{"CreateTime", formatTime(envRef.CreateTime, timezone)},
 		{"UpdateTime", formatTime(envRef.UpdateTime, timezone)},
 	})
+	t.Render()
 }

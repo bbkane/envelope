@@ -31,18 +31,19 @@ type kv struct {
 	Value string
 }
 
-func printKVTable(w io.Writer, kvs []kv) {
+func tableInit(w io.Writer) table.Writer {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleRounded)
 	t.SetOutputMirror(w)
+	return t
+}
 
+func tableAddSection(t table.Writer, kvs []kv) {
 	for _, e := range kvs {
 		t.AppendRow(table.Row{
 			e.Key,
 			e.Value,
 		})
 	}
-	t.Render()
-	// I don't think I need to call t.ResetHeaders() or t.ResetRows()
-	// as the table ends here...
+	t.AppendSeparator()
 }

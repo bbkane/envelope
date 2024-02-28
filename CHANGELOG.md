@@ -19,6 +19,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 - Show `env ref`s in `env show`
 - Export `env ref`s in `env export`
 - Show `env ref`s in `env var show`
+- When listing the same type of item, print a single table with multiple sections instead of separate tables
 
 # v0.0.4
 

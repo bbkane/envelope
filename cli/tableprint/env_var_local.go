@@ -8,7 +8,8 @@ import (
 )
 
 func EnvLocalVarShowPrint(w io.Writer, envVar domain.EnvVar, envRefs []domain.EnvRef, timezone Timezone) {
-	printKVTable(w, []kv{
+	t := tableInit(w)
+	tableAddSection(t, []kv{
 		{"EnvName", envVar.EnvName},
 		{"Name", envVar.Name},
 		{"Value", envVar.Value},
@@ -16,16 +17,20 @@ func EnvLocalVarShowPrint(w io.Writer, envVar domain.EnvVar, envRefs []domain.En
 		{"CreateTime", formatTime(envVar.CreateTime, timezone)},
 		{"UpdateTime", formatTime(envVar.UpdateTime, timezone)},
 	})
+	t.Render()
 
 	if len(envRefs) > 0 {
 		fmt.Fprintln(w, "EnvRefs")
 
+		t := tableInit(w)
+
 		for _, e := range envRefs {
-			printKVTable(w, []kv{
+			tableAddSection(t, []kv{
 				{"EnvName", e.EnvName},
 				{"Name", e.Name},
 				{"Comment", e.Comment},
 			})
 		}
+		t.Render()
 	}
 }

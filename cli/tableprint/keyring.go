@@ -10,9 +10,9 @@ import (
 
 func KeyringList(w io.Writer, keyringEntries []domain.KeyringEntry, errs []error, timezone Timezone) {
 	if len(keyringEntries) > 0 {
-		fmt.Fprintln(w, "Keyring entries")
+		t := tableInit(w)
 		for _, e := range keyringEntries {
-			printKVTable(w, []kv{
+			tableAddSection(t, []kv{
 				{"Name", e.Name},
 				{"Value", e.Value},
 				{"Comment", e.Comment},
@@ -20,20 +20,10 @@ func KeyringList(w io.Writer, keyringEntries []domain.KeyringEntry, errs []error
 				{"UpdateTime", formatTime(e.UpdateTime, timezone)},
 			})
 		}
+		t.Render()
 
 	} else {
 		fmt.Fprintln(w, "no keyring entries found")
-	}
-	if len(errs) > 0 {
-		t := table.NewWriter()
-		t.SetStyle(table.StyleRounded)
-		t.SetOutputMirror(w)
-
-		t.AppendHeader(table.Row{"Error"})
-		for _, e := range errs {
-			t.AppendRow(table.Row{e})
-		}
-		t.Render()
 	}
 
 	if len(errs) > 0 {
