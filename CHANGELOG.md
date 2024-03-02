@@ -7,6 +7,11 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 # v0.0.6
 
+## Added
+
+- `init` now takes flags to gate stuff to print
+- `init` now adds `export-env` and `unexport-env` to the environment
+
 ## Fixed
 
 - Fixed spelling for `env ref create`
