@@ -23,8 +23,8 @@ func initRun(cmdCtx command.Context) error {
 #
 autoload -Uz add-zsh-hook
 add-zsh-hook -Uz chpwd (){
-    eval $(envelope env print-script --name "$PWD" --no-env-no-problem true --type export)
     eval $(envelope env print-script --name "$OLDPWD" --no-env-no-problem true --type unexport)
+    eval $(envelope env print-script --name "$PWD" --no-env-no-problem true --type export)
 }
 `
 	fmt.Fprintln(cmdCtx.Stdout, script)

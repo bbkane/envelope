@@ -5,6 +5,13 @@ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note the the latest version is usually work in progress and may have not yet been released.
 
+# v0.0.6
+
+## Fixed
+
+- Fixed spelling for `env ref create`
+- Unexport `$OLDPWD` env before exporting `$PWD`, so if they share an export name, the new one isn't deleted
+
 # v0.0.5
 
 ## Added

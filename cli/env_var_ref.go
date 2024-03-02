@@ -76,10 +76,10 @@ func envRefCreateRun(cmdCtx command.Context) error {
 	)
 
 	if err != nil {
-		return fmt.Errorf("couldn't creaate env ref: %s: %w", name, err)
+		return fmt.Errorf("couldn't create env ref: %s: %w", name, err)
 	}
 
-	fmt.Fprintf(cmdCtx.Stdout, "Creeated env ref: %s: %s\n", envName, name)
+	fmt.Fprintf(cmdCtx.Stdout, "Created env ref: %s: %s\n", envName, name)
 	return nil
 }
 
