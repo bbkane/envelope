@@ -11,7 +11,7 @@ require (
 	github.com/alessio/shellescape v1.4.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/sqlc-dev/sqlc v1.25.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/zalando/go-keyring v0.2.3
 	modernc.org/sqlite v1.29.2
 )
