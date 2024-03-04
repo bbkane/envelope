@@ -4,6 +4,10 @@
 
 Store environment variables for projects relationally! UX inspired by the Azure CLI.
 
+## Project Status
+
+I'm using `envelope` personally, but I can't recommend it for anyone else to use until I have more features (update commands, keyringref support) and tab complete/TUI.
+
 Expand details below to see the planned UX
 
 <details>
@@ -37,7 +41,7 @@ envelope
                 --env-name
             show
             update ...
-        localvar
+        var
             --env-name
             create
                 --name bob
@@ -66,50 +70,6 @@ envelope
 ```
 
 </details>
-
-# Questions for Manuel
-
-Thanks for the help!!
-
-## Is the amount of code for this normal?
-
-I've got a "layered" architecture:
-
-- CLI layer that reads os.Args and calls the "domain" layer, then prints it nicely
-- "domain" layer that's basically an interface (maybe I should call it a "storage" or "persistence" layer)
-- "sqlite" layer that implements the "domain" layer interface
-
-I've got gobs of code to translate between all of these layers and I'm like 40% done with commands I need to implement.
-
-The process I have to add a new command is:
-
-- Update these notes to get a CLI I like
-- Update SQL and generate code with [`sqlc`](https://sqlc.dev/).
-- Update `sqlite.EnvService` to use generated code.
-- Update `domain.EnvService` with the new method added to `sqlte.EnvService`
-- Update `cli` to call `domain.EnvService`
-- Update `main` to add the new command to the app tree.
-- Update `main_test_<table>.go` to ensure everything works (this generates testdata when `ENVELOPE_TEST_UPDATE_GOLDEN=1 go test ./...` is run)
-
-Is there a better way to organize this than what I have? Or is this fairly normal?
-
-## My [`EnvService`](./domain/env.go) interface is getting huge
-
-In theory, I'd like to have this much smaller, but in practice, all operations need to touch the same db, and all the tables are connected, and this code gatekeeps access to that db, so maybe it needs a all the methods?
-
-Is there a better way to organize this?
-
-## What do you think of the idea generally?
-
-I think storing env vars in a SQLite DB is a good idea, but I won't *really* know until this is functional enough to use (i.e., keyring support finished and hooked up to environments).
-
-Then I can hook this into `zsh`'s [chpwd](https://stackoverflow.com/a/3964198/2958070) function to automatically add envvars when I enter a directory and remove them when I leave the directory. Similar to `direnv`, but centralized management.
-
-## Any other comments?
-
-Thanks again!!
-
----
 
 ## Install
 
