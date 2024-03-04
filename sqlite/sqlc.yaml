@@ -3,8 +3,8 @@ sql:
     gen:
       go:
         emit_pointers_for_null_types: true
-        out: sqlite/sqlcgen
+        out: sqlcgen
         package: sqlcgen
     queries: sqlc_queries
-    schema: sqlite/connect/embedded_migrations
+    schema: connect/embedded_migrations
 version: "2"
