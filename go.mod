@@ -12,7 +12,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/sqlc-dev/sqlc v1.25.0
 	github.com/stretchr/testify v1.9.0
-	github.com/zalando/go-keyring v0.2.3
+	github.com/zalando/go-keyring v0.2.4
 	modernc.org/sqlite v1.29.5
 )
 
