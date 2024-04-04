@@ -10,7 +10,7 @@ RETURNING name, comment, create_time, update_time;
 DELETE FROM env WHERE name = ?;
 
 -- name: EnvFindID :one
-SELECT id FROM env WHERE name = ?;
+SELECT env_id FROM env WHERE name = ?;
 
 -- name: EnvList :many
 SELECT * FROM env

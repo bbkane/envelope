@@ -140,7 +140,7 @@ func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string
 	}
 
 	envRefs := []domain.EnvRef{}
-	sqlcEnvRefs, err := queries.EnvRefListByEnvVarID(ctx, sqlEnvLocalVar.ID)
+	sqlcEnvRefs, err := queries.EnvRefListByEnvVarID(ctx, sqlEnvLocalVar.EnvVarID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, nil, err
 	}

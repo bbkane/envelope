@@ -13,7 +13,7 @@ SELECT * FROM keyring_entry
 ORDER BY name ASC;
 
 -- name: KeyringEntryFindID :one
-SELECT id from keyring_entry WHERE name = ?;
+SELECT keyring_entry_id from keyring_entry WHERE name = ?;
 
 -- name: KeyringEntryShow :one
 SELECT * FROM keyring_entry WHERE name = ?;

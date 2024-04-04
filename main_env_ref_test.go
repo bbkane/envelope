@@ -81,7 +81,7 @@ func TestEnvRefCreate(t *testing.T) {
 				"--name", "env02",
 				"--timezone", "utc",
 			},
-			expectActionErr: true,
+			expectActionErr: false,
 		},
 	}
 
@@ -92,7 +92,7 @@ func TestEnvRefCreate(t *testing.T) {
 				warg.GoldenTestArgs{
 					App:             buildApp(),
 					UpdateGolden:    updateGolden,
-					ExpectActionErr: false,
+					ExpectActionErr: tt.expectActionErr,
 				},
 				warg.OverrideArgs(tt.args),
 				warg.OverrideLookupFunc(warg.LookupMap(nil)),
