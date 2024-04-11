@@ -14,8 +14,8 @@ import (
 const zeroTime = "0001-01-01T00:00:00Z"
 const oneTime = "0001-01-01T01:00:00Z"
 
-const envName01 = "env_name"
-const envVarName01 = "key"
+const envName01 = "envName01"
+const envVarName01 = "envVarName01"
 
 // const envRefName01 = "envRefName01"
 

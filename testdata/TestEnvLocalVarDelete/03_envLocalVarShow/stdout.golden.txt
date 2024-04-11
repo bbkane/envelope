@@ -1,6 +1,6 @@
 ╭────────────┬────────────────╮
-│ EnvName    │ env_name       │
-│ Name       │ key            │
+│ EnvName    │ envName01      │
+│ Name       │ envVarName01   │
 │ Value      │ value          │
 │ Comment    │                │
 │ CreateTime │ Mon 0001-01-01 │
