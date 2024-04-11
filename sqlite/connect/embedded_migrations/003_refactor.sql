@@ -84,16 +84,29 @@ CREATE INDEX ix_env_ref_env_var_id ON env_ref(env_var_id);
 
 -- DROP VIEW IF EXISTS vw_env_ref_referenced_name;
 CREATE VIEW vw_env_ref_referenced_name AS
-SELECT *,
-	(SELECT name FROM env WHERE env_id = env_ref.env_id) AS env_name,
+SELECT
+    env_ref_id,
+    env_id,
+    (SELECT name FROM env WHERE env_id = env_ref.env_id) AS env_name,
+    name,
+    env_var_id,
     (SELECT name FROM env_var WHERE env_var_id = env_ref.env_var_id) AS ref_var_name,
-    (SELECT env.name FROM env JOIN env_var ON env.env_id = env_var.env_id WHERE env_var.env_var_id = env_ref.env_var_id) AS ref_env_name
+    (SELECT env.name FROM env JOIN env_var ON env.env_id = env_var.env_id WHERE env_var.env_var_id = env_ref.env_var_id) AS ref_env_name,
+    comment,
+    create_time,
+    update_time
 FROM env_ref;
 -- SELECT * FROM vw_env_ref_referenced_name;
 
-
 CREATE VIEW vw_env_var_referenced_name AS
-SELECT *,
-	(SELECT name FROM env WHERE env_id = env_var.env_id) AS env_name
+SELECT
+    env_var_id,
+    env_id,
+	(SELECT name FROM env WHERE env_id = env_var.env_id) AS env_name,
+    name,
+    value,
+    comment,
+    create_time,
+    update_time
 FROM env_var;
-SELECT * FROM vw_env_var_referenced_name;
+-- SELECT * FROM vw_env_var_referenced_name;
