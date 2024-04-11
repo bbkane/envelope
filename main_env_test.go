@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.bbkane.com/warg"
 )
 
 func TestBuildApp(t *testing.T) {
@@ -28,57 +27,29 @@ func TestEnvCreate(t *testing.T) {
 
 	t.Log("dbFile:", dbFile.Name())
 
-	const zeroTime = "0001-01-01T00:00:00Z"
-
-	tests := []struct {
-		name            string
-		args            []string
-		expectActionErr bool
-	}{
+	tests := []testcase{
 		{
-			name: "01_envCreate",
-			args: []string{
-				"envelope", "env", "create",
-				"--db-path", dbFile.Name(),
-				"--name", "env_name",
-				"--create-time", zeroTime,
-				"--update-time", zeroTime,
-			},
+			name:            "01_envCreate",
+			args:            createEnv(dbFile.Name(), envName01),
 			expectActionErr: false,
 		},
 		{
 			name: "02_envShow",
-			args: []string{
-				"envelope", "env", "show",
-				"--db-path", dbFile.Name(),
-				"--name", "env_name",
-				"--timezone", "utc",
-			},
+			args: new(testCmdBuilder).Strs("env", "show").
+				Name(envName01).Tz().Finish(dbFile.Name()),
 			expectActionErr: false,
 		},
 		{
 			name: "03_envList",
-			args: []string{
-				"envelope", "env", "list",
-				"--db-path", dbFile.Name(),
-				"--timezone", "utc",
-			},
+			args: new(testCmdBuilder).Strs("env", "list").
+				Tz().Finish(dbFile.Name()),
 			expectActionErr: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			warg.GoldenTest(
-				t,
-				warg.GoldenTestArgs{
-					App:             buildApp(),
-					UpdateGolden:    updateGolden,
-					ExpectActionErr: tt.expectActionErr,
-				},
-				warg.OverrideArgs(tt.args),
-				warg.OverrideLookupFunc(warg.LookupMap(nil)),
-			)
+			goldenTest(t, tt, updateGolden)
 		})
 	}
 }
@@ -94,68 +65,35 @@ func TestEnvDelete(t *testing.T) {
 
 	t.Log("dbFile:", dbFile.Name())
 
-	const zeroTime = "0001-01-01T00:00:00Z"
-
-	tests := []struct {
-		name            string
-		args            []string
-		expectActionErr bool
-	}{
+	tests := []testcase{
 		{
-			name: "01_envCreate",
-			args: []string{
-				"envelope", "env", "create",
-				"--db-path", dbFile.Name(),
-				"--name", "env_name",
-				"--create-time", zeroTime,
-				"--update-time", zeroTime,
-			},
+			name:            "01_envCreate",
+			args:            createEnv(dbFile.Name(), envName01),
 			expectActionErr: false,
 		},
 		{
 			name: "02_envShow",
-			args: []string{
-				"envelope", "env", "show",
-				"--db-path", dbFile.Name(),
-				"--name", "env_name",
-				"--timezone", "utc",
-			},
+			args: new(testCmdBuilder).Strs("env", "show").
+				Name(envName01).Tz().Finish(dbFile.Name()),
 			expectActionErr: false,
 		},
 		{
 			name: "03_envDelete",
-			args: []string{
-				"envelope", "env", "delete",
-				"--db-path", dbFile.Name(),
-				"--confirm", "false",
-				"--name", "env_name",
-			},
+			args: new(testCmdBuilder).Strs("env", "delete").
+				Confirm(false).Name(envName01).Finish(dbFile.Name()),
 			expectActionErr: false,
 		},
 		{
 			name: "04_envShow",
-			args: []string{
-				"envelope", "env", "show",
-				"--db-path", dbFile.Name(),
-				"--name", "env_name",
-				"--timezone", "utc",
-			},
+			args: new(testCmdBuilder).Strs("env", "show").
+				Name(envName01).Tz().Finish(dbFile.Name()),
 			expectActionErr: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			warg.GoldenTest(
-				t,
-				warg.GoldenTestArgs{
-					App:             buildApp(),
-					UpdateGolden:    updateGolden,
-					ExpectActionErr: tt.expectActionErr,
-				},
-				warg.OverrideArgs(tt.args),
-				warg.OverrideLookupFunc(warg.LookupMap(nil)),
-			)
+			goldenTest(t, tt, updateGolden)
 		})
 	}
 }
@@ -171,73 +109,38 @@ func TestEnvUpdate(t *testing.T) {
 
 	t.Log("dbFile:", dbFile.Name())
 
-	const zeroTime = "0001-01-01T00:00:00Z"
-	const oneTime = "0001-01-01T01:00:00Z"
-
-	tests := []struct {
-		name            string
-		args            []string
-		expectActionErr bool
-	}{
+	tests := []testcase{
 		{
 			name: "01_envCreate",
-			args: []string{
-				"envelope", "env", "create",
-				"--db-path", dbFile.Name(),
-				"--name", "env_name",
-				"--create-time", zeroTime,
-				"--update-time", zeroTime,
-			},
+			args: new(testCmdBuilder).Strs("env", "create").
+				Name(envName01).ZeroTimes().Finish(dbFile.Name()),
 			expectActionErr: false,
 		},
 		{
 			name: "02_envShow",
-			args: []string{
-				"envelope", "env", "show",
-				"--db-path", dbFile.Name(),
-				"--name", "env_name",
-				"--timezone", "utc",
-			},
+			args: new(testCmdBuilder).Strs("env", "show").
+				Name(envName01).Tz().Finish(dbFile.Name()),
 			expectActionErr: false,
 		},
 		{
 			name: "03_envUpdate",
-			args: []string{
-				"envelope", "env", "update",
-				"--db-path", dbFile.Name(),
-				"--name", "env_name",
-				"--confirm", "false",
-				"--comment", "a comment",
-				"--create-time", oneTime,
-				"--new-name", "new_name",
-				"--update-time", oneTime,
-			},
+			args: new(testCmdBuilder).Strs("env", "update").
+				Name(envName01).Confirm(false).Strs("--comment", "a comment").
+				Strs("--create-time", oneTime).Strs("--new-name", "new_name").
+				Strs("--update-time", oneTime).Finish(dbFile.Name()),
 			expectActionErr: false,
 		},
 		{
 			name: "04_envShow",
-			args: []string{
-				"envelope", "env", "show",
-				"--db-path", dbFile.Name(),
-				"--name", "new_name",
-				"--timezone", "utc",
-			},
+			args: new(testCmdBuilder).Strs("env", "show").
+				Name("new_name").Tz().Finish(dbFile.Name()),
 			expectActionErr: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			warg.GoldenTest(
-				t,
-				warg.GoldenTestArgs{
-					App:             buildApp(),
-					UpdateGolden:    updateGolden,
-					ExpectActionErr: tt.expectActionErr,
-				},
-				warg.OverrideArgs(tt.args),
-				warg.OverrideLookupFunc(warg.LookupMap(nil)),
-			)
+			goldenTest(t, tt, updateGolden)
 		})
 	}
 }
@@ -253,44 +156,25 @@ func TestEnvPrintScript(t *testing.T) {
 
 	t.Log("dbFile:", dbFile.Name())
 
-	tests := []struct {
-		name            string
-		args            []string
-		expectActionErr bool
-	}{
+	tests := []testcase{
 		{
 			name: "01_envPrintScript",
-			args: []string{
-				"envelope", "env", "print-script",
-				"--db-path", dbFile.Name(),
-				"--name", "non-existent-env",
-			},
+			args: new(testCmdBuilder).Strs("env", "print-script").
+				Name("non-existent-env").Finish(dbFile.Name()),
 			expectActionErr: true,
 		},
 		{
 			name: "01_envPrintScriptNoEnvNoProblem",
-			args: []string{
-				"envelope", "env", "print-script",
-				"--db-path", dbFile.Name(),
-				"--name", "non-existent-env",
-				"--no-env-no-problem", "true",
-			},
+			args: new(testCmdBuilder).Strs("env", "print-script").
+				Name("non-existent-env").Strs("--no-env-no-problem", "true").
+				Finish(dbFile.Name()),
 			expectActionErr: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			warg.GoldenTest(
-				t,
-				warg.GoldenTestArgs{
-					App:             buildApp(),
-					UpdateGolden:    updateGolden,
-					ExpectActionErr: tt.expectActionErr,
-				},
-				warg.OverrideArgs(tt.args),
-				warg.OverrideLookupFunc(warg.LookupMap(nil)),
-			)
+			goldenTest(t, tt, updateGolden)
 		})
 	}
 }

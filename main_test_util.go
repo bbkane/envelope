@@ -10,6 +10,7 @@ import (
 // tests shorter
 
 const zeroTime = "0001-01-01T00:00:00Z"
+const oneTime = "0001-01-01T01:00:00Z"
 
 const envName01 = "env_name"
 const envVarName01 = "key"
@@ -54,6 +55,14 @@ func (tcb *testCmdBuilder) EnvName(envName string) *testCmdBuilder {
 // Tz adds "--timezone", "utc"
 func (tcb *testCmdBuilder) Tz() *testCmdBuilder {
 	return tcb.Strs("--timezone", "utc")
+}
+
+func (tcb *testCmdBuilder) Confirm(confirm bool) *testCmdBuilder {
+	confirmStr := "false"
+	if confirm {
+		confirmStr = "true"
+	}
+	return tcb.Strs("--confirm", confirmStr)
 }
 
 type testcase struct {

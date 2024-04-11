@@ -86,7 +86,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 		},
 		{
 			name: "04_envLocalVarDelete",
-			args: new(testCmdBuilder).Strs("env", "var", "delete").Strs("--confirm", "false").
+			args: new(testCmdBuilder).Strs("env", "var", "delete").Confirm(false).
 				EnvName(envName01).Name(envVarName01).Finish(dbFile.Name()),
 			expectActionErr: false,
 		},
@@ -116,11 +116,7 @@ func TestEnvNonUniqueNames(t *testing.T) {
 
 	t.Log("dbFile:", dbFile.Name())
 
-	tests := []struct {
-		name            string
-		args            []string
-		expectActionErr bool
-	}{
+	tests := []testcase{
 		{
 			name:            "01_envCreate",
 			args:            createEnv(dbFile.Name(), envName01),
