@@ -15,9 +15,9 @@ const zeroTime = "0001-01-01T00:00:00Z"
 const oneTime = "0001-01-01T01:00:00Z"
 
 const envName01 = "envName01"
+const envName02 = "envName02"
 const envVarName01 = "envVarName01"
-
-// const envRefName01 = "envRefName01"
+const envRefName01 = "envRefName01"
 
 func createTempDB(t *testing.T) string {
 	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
