@@ -3,8 +3,6 @@ package main
 import (
 	"os"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 func TestBuildApp(t *testing.T) {
@@ -20,29 +18,24 @@ func TestEnvCreate(t *testing.T) {
 	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
-	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
-	require.NoError(t, err)
-	err = dbFile.Close()
-	require.NoError(t, err)
-
-	t.Log("dbFile:", dbFile.Name())
+	dbName := createTempDB(t)
 
 	tests := []testcase{
 		{
 			name:            "01_envCreate",
-			args:            createEnv(dbFile.Name(), envName01),
+			args:            createEnv(dbName, envName01),
 			expectActionErr: false,
 		},
 		{
 			name: "02_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName01).Tz().Finish(dbFile.Name()),
+				Name(envName01).Tz().Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "03_envList",
 			args: new(testCmdBuilder).Strs("env", "list").
-				Tz().Finish(dbFile.Name()),
+				Tz().Finish(dbName),
 			expectActionErr: false,
 		},
 	}
@@ -58,35 +51,30 @@ func TestEnvDelete(t *testing.T) {
 	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
-	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
-	require.NoError(t, err)
-	err = dbFile.Close()
-	require.NoError(t, err)
-
-	t.Log("dbFile:", dbFile.Name())
+	dbName := createTempDB(t)
 
 	tests := []testcase{
 		{
 			name:            "01_envCreate",
-			args:            createEnv(dbFile.Name(), envName01),
+			args:            createEnv(dbName, envName01),
 			expectActionErr: false,
 		},
 		{
 			name: "02_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName01).Tz().Finish(dbFile.Name()),
+				Name(envName01).Tz().Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "03_envDelete",
 			args: new(testCmdBuilder).Strs("env", "delete").
-				Confirm(false).Name(envName01).Finish(dbFile.Name()),
+				Confirm(false).Name(envName01).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "04_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName01).Tz().Finish(dbFile.Name()),
+				Name(envName01).Tz().Finish(dbName),
 			expectActionErr: true,
 		},
 	}
@@ -102,24 +90,19 @@ func TestEnvUpdate(t *testing.T) {
 	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
-	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
-	require.NoError(t, err)
-	err = dbFile.Close()
-	require.NoError(t, err)
-
-	t.Log("dbFile:", dbFile.Name())
+	dbName := createTempDB(t)
 
 	tests := []testcase{
 		{
 			name: "01_envCreate",
 			args: new(testCmdBuilder).Strs("env", "create").
-				Name(envName01).ZeroTimes().Finish(dbFile.Name()),
+				Name(envName01).ZeroTimes().Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "02_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName01).Tz().Finish(dbFile.Name()),
+				Name(envName01).Tz().Finish(dbName),
 			expectActionErr: false,
 		},
 		{
@@ -127,13 +110,13 @@ func TestEnvUpdate(t *testing.T) {
 			args: new(testCmdBuilder).Strs("env", "update").
 				Name(envName01).Confirm(false).Strs("--comment", "a comment").
 				Strs("--create-time", oneTime).Strs("--new-name", "new_name").
-				Strs("--update-time", oneTime).Finish(dbFile.Name()),
+				Strs("--update-time", oneTime).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "04_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name("new_name").Tz().Finish(dbFile.Name()),
+				Name("new_name").Tz().Finish(dbName),
 			expectActionErr: false,
 		},
 	}
@@ -149,25 +132,20 @@ func TestEnvPrintScript(t *testing.T) {
 	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
-	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
-	require.NoError(t, err)
-	err = dbFile.Close()
-	require.NoError(t, err)
-
-	t.Log("dbFile:", dbFile.Name())
+	dbName := createTempDB(t)
 
 	tests := []testcase{
 		{
 			name: "01_envPrintScript",
 			args: new(testCmdBuilder).Strs("env", "print-script").
-				Name("non-existent-env").Finish(dbFile.Name()),
+				Name("non-existent-env").Finish(dbName),
 			expectActionErr: true,
 		},
 		{
 			name: "01_envPrintScriptNoEnvNoProblem",
 			args: new(testCmdBuilder).Strs("env", "print-script").
 				Name("non-existent-env").Strs("--no-env-no-problem", "true").
-				Finish(dbFile.Name()),
+				Finish(dbName),
 			expectActionErr: false,
 		},
 	}

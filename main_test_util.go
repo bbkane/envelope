@@ -1,8 +1,10 @@
 package main
 
 import (
+	"os"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	"go.bbkane.com/warg"
 )
 
@@ -16,6 +18,16 @@ const envName01 = "env_name"
 const envVarName01 = "key"
 
 // const envRefName01 = "envRefName01"
+
+func createTempDB(t *testing.T) string {
+	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
+	require.NoError(t, err)
+	err = dbFile.Close()
+	require.NoError(t, err)
+
+	t.Log("dbFile:", dbFile.Name())
+	return dbFile.Name()
+}
 
 func createEnv(dbPath string, envName string) []string {
 	return new(testCmdBuilder).
