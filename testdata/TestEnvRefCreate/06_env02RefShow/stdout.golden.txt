@@ -1,0 +1,10 @@
+╭─────────────┬────────────────╮
+│ EnvName     │ envName02      │
+│ Name        │ envRefName01   │
+│ RefEnvName  │ envName01      │
+│ RefVarName  │ envVarName01   │
+│ RefVarValue │ val01          │
+│ Comment     │                │
+│ CreateTime  │ Thu 2024-04-11 │
+│ UpdateTime  │ Thu 2024-04-11 │
+╰─────────────┴────────────────╯

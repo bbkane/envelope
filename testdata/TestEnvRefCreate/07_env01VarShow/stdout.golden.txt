@@ -1,0 +1,14 @@
+╭────────────┬────────────────╮
+│ EnvName    │ envName01      │
+│ Name       │ envVarName01   │
+│ Value      │ val01          │
+│ Comment    │                │
+│ CreateTime │ Mon 0001-01-01 │
+│ UpdateTime │ Mon 0001-01-01 │
+╰────────────┴────────────────╯
+EnvRefs
+╭─────────┬──────────────╮
+│ EnvName │ envName02    │
+│ Name    │ envRefName01 │
+│ Comment │              │
+╰─────────┴──────────────╯
