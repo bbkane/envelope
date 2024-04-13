@@ -26,33 +26,32 @@ func EnvList(w io.Writer, envs []domain.Env, timezone Timezone) {
 }
 
 func EnvShowRun(
-	w io.Writer,
+	c CommonTablePrintArgs,
 	env domain.Env,
 	localvars []domain.EnvVar,
 	refs []domain.EnvRef,
 	referencedVars []domain.EnvVar,
-	timezone Timezone,
 ) {
 
-	fmt.Fprintln(w, "Env")
+	fmt.Fprintln(c.W, "Env")
 
-	t := tableInit(w)
+	t := tableInit(c.W)
 	tableAddSection(t, []kv{
 		{"Name", env.Name},
 		{"Comment", env.Comment},
-		{"CreateTime", formatTime(env.CreateTime, timezone)},
-		{"UpdateTime", formatTime(env.UpdateTime, timezone)},
+		{"CreateTime", formatTime(env.CreateTime, c.Tz)},
+		{"UpdateTime", formatTime(env.UpdateTime, c.Tz)},
 	})
 	t.Render()
 
 	if len(localvars) > 0 {
-		fmt.Fprintln(w, "Vars")
+		fmt.Fprintln(c.W, "Vars")
 
-		t := tableInit(w)
+		t := tableInit(c.W)
 		for _, e := range localvars {
 			tableAddSection(t, []kv{
 				{"Name", e.Name},
-				{"Value", e.Value},
+				{"Value", mask(c.Mask, e.Value)},
 				{"Comment", e.Comment},
 			})
 		}
@@ -60,15 +59,15 @@ func EnvShowRun(
 	}
 
 	if len(refs) > 0 {
-		fmt.Fprintln(w, "Refs")
-		t := tableInit(w)
+		fmt.Fprintln(c.W, "Refs")
+		t := tableInit(c.W)
 
 		for i := range len(refs) {
 			tableAddSection(t, []kv{
 				{"Name", refs[i].Name},
 				{"RefEnvName", referencedVars[i].EnvName},
 				{"RefVarName", referencedVars[i].Name},
-				{"RefVarValue", referencedVars[i].Value},
+				{"RefVarValue", mask(c.Mask, referencedVars[i].Value)},
 				{"Comment", refs[i].Comment},
 			})
 		}

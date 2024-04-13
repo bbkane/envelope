@@ -29,13 +29,13 @@ func TestEnvCreate(t *testing.T) {
 		{
 			name: "02_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName01).Tz().Finish(dbName),
+				Name(envName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "03_envList",
 			args: new(testCmdBuilder).Strs("env", "list").
-				Tz().Finish(dbName),
+				Strs("--timezone", "utc").Finish(dbName),
 			expectActionErr: false,
 		},
 	}
@@ -62,7 +62,7 @@ func TestEnvDelete(t *testing.T) {
 		{
 			name: "02_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName01).Tz().Finish(dbName),
+				Name(envName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
@@ -74,7 +74,7 @@ func TestEnvDelete(t *testing.T) {
 		{
 			name: "04_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName01).Tz().Finish(dbName),
+				Name(envName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: true,
 		},
 	}
@@ -102,7 +102,7 @@ func TestEnvUpdate(t *testing.T) {
 		{
 			name: "02_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName01).Tz().Finish(dbName),
+				Name(envName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
@@ -116,7 +116,7 @@ func TestEnvUpdate(t *testing.T) {
 		{
 			name: "04_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name("new_name").Tz().Finish(dbName),
+				Name("new_name").Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 	}

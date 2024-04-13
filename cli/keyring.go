@@ -101,14 +101,17 @@ func KeyringListCmd() command.Command {
 }
 
 func keyringListRun(cmdCtx command.Context) error {
-	timezone := cmdCtx.Flags["--timezone"].(string)
-	iesr, err := initEnvService(cmdCtx.Flags)
+	timezone := mustGetTimezoneArg(cmdCtx.Flags)
+
+	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
+	defer cancel()
+
+	es, err := initEnvService(ctx, cmdCtx.Flags)
 	if err != nil {
 		return err
 	}
-	defer iesr.Cancel()
 
-	keyringEntries, errors, err := iesr.EnvService.KeyringEntryList(iesr.Ctx)
+	keyringEntries, errors, err := es.KeyringEntryList(ctx)
 
 	if err != nil {
 		return err
