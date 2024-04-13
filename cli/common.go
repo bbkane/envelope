@@ -211,32 +211,47 @@ func ptrFromMap[T any](m map[string]any, key string) *T {
 	return nil
 }
 
-type initEnvServiceRet struct {
-	Cancel     context.CancelFunc
-	Ctx        context.Context
-	EnvService domain.EnvService
-}
-
-// initEnvService reads --db-path and --timeout to create a
-// EnvService. It means I don't have to type these EVERY time
-func initEnvService(passedFlags command.PassedFlags) (*initEnvServiceRet, error) {
-	// common flags
+func initEnvService(ctx context.Context, passedFlags command.PassedFlags) (domain.EnvService, error) {
 	sqliteDSN := passedFlags["--db-path"].(string)
-	timeout := passedFlags["--timeout"].(time.Duration)
-
-	//nolint:govet // we don't need the cancel if we err out
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-
 	keyring := keyring.NewOSKeyring(sqliteDSN)
-
 	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
 	if err != nil {
 		//nolint:govet // we don't need the cancel if we err out
 		return nil, fmt.Errorf("could not create env service: %w", err)
 	}
-	return &initEnvServiceRet{
-		EnvService: envService,
-		Cancel:     cancel,
-		Ctx:        ctx,
-	}, nil
+	return envService, nil
+}
+
+type commonCreateArgs struct {
+	Comment    string
+	CreateTime time.Time
+	UpdateTime time.Time
+}
+
+func mustGetCommonCreateArgs(pf command.PassedFlags) commonCreateArgs {
+	return commonCreateArgs{
+		Comment:    pf["--comment"].(string),
+		CreateTime: pf["--create-time"].(time.Time),
+		UpdateTime: pf["--update-time"].(time.Time),
+	}
+}
+
+func mustGetConfirmArg(pf command.PassedFlags) bool {
+	return pf["--confirm"].(bool)
+}
+
+func mustGetEnvNameArg(pf command.PassedFlags) string {
+	return pf["--env-name"].(string)
+}
+
+func mustGetNameArg(pf command.PassedFlags) string {
+	return pf["--name"].(string)
+}
+
+func mustGetTimeoutArg(pf command.PassedFlags) time.Duration {
+	return pf["--timeout"].(time.Duration)
+}
+
+func mustGetTimezoneArg(pf command.PassedFlags) string {
+	return pf["--timezone"].(string)
 }

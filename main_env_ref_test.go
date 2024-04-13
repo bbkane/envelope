@@ -34,7 +34,8 @@ func TestEnvRefCreate(t *testing.T) {
 		{
 			name: "04_env02RefCreate",
 			args: new(testCmdBuilder).Strs("env", "ref", "create").
-				EnvName(envName02).Name(envRefName01).Strs("--ref-env-name", envName01).
+				EnvName(envName02).Name(envRefName01).ZeroTimes().
+				Strs("--ref-env-name", envName01).
 				Strs("--ref-var-name", envVarName01).Finish(dbName),
 			expectActionErr: false,
 		},

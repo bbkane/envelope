@@ -1,9 +1,9 @@
 package cli
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"go.bbkane.com/envelope/cli/tableprint"
 	"go.bbkane.com/envelope/domain"
@@ -46,30 +46,30 @@ func EnvRefCreateCmd() command.Command {
 
 func envRefCreateRun(cmdCtx command.Context) error {
 	// common create Flags
-	comment := cmdCtx.Flags["--comment"].(string)
-	createTime := cmdCtx.Flags["--create-time"].(time.Time)
-	updateTime := cmdCtx.Flags["--update-time"].(time.Time)
+	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
 
-	name := cmdCtx.Flags["--name"].(string)
+	name := mustGetNameArg(cmdCtx.Flags)
 	refEnvName := cmdCtx.Flags["--ref-env-name"].(string)
 	refVarName := cmdCtx.Flags["--ref-var-name"].(string)
 
-	envName := cmdCtx.Flags["--env-name"].(string)
+	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
-	iesr, err := initEnvService(cmdCtx.Flags)
+	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
+	defer cancel()
+
+	es, err := initEnvService(ctx, cmdCtx.Flags)
 	if err != nil {
 		return err
 	}
-	defer iesr.Cancel()
 
-	_, err = iesr.EnvService.EnvRefCreate(
-		iesr.Ctx,
+	_, err = es.EnvRefCreate(
+		ctx,
 		domain.EnvRefCreateArgs{
 			EnvName:    envName,
 			Name:       name,
-			Comment:    comment,
-			CreateTime: createTime,
-			UpdateTime: updateTime,
+			Comment:    commonCreateArgs.Comment,
+			CreateTime: commonCreateArgs.CreateTime,
+			UpdateTime: commonCreateArgs.UpdateTime,
 			RefEnvName: refEnvName,
 			RefVarName: refVarName,
 		},
@@ -104,10 +104,10 @@ func EnvRefDeleteCmd() command.Command {
 }
 
 func envRefDeleteRun(cmdCtx command.Context) error {
-	envName := cmdCtx.Flags["--env-name"].(string)
+	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
-	confirm := cmdCtx.Flags["--confirm"].(bool)
-	name := cmdCtx.Flags["--name"].(string)
+	confirm := mustGetConfirmArg(cmdCtx.Flags)
+	name := mustGetNameArg(cmdCtx.Flags)
 
 	if confirm {
 		keepGoing, err := askConfirm()
@@ -119,13 +119,15 @@ func envRefDeleteRun(cmdCtx command.Context) error {
 		}
 	}
 
-	iesr, err := initEnvService(cmdCtx.Flags)
+	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
+	defer cancel()
+
+	es, err := initEnvService(ctx, cmdCtx.Flags)
 	if err != nil {
 		return err
 	}
-	defer iesr.Cancel()
 
-	err = iesr.EnvService.EnvRefDelete(iesr.Ctx, envName, name)
+	err = es.EnvRefDelete(ctx, envName, name)
 	if err != nil {
 		return err
 	}
@@ -154,17 +156,19 @@ func EnvRefShowCmd() command.Command {
 }
 
 func envRefShowRun(cmdCtx command.Context) error {
-	envName := cmdCtx.Flags["--env-name"].(string)
-	name := cmdCtx.Flags["--name"].(string)
-	timezone := cmdCtx.Flags["--timezone"].(string)
+	envName := mustGetEnvNameArg(cmdCtx.Flags)
+	name := mustGetNameArg(cmdCtx.Flags)
+	timezone := mustGetTimezoneArg(cmdCtx.Flags)
 
-	iesr, err := initEnvService(cmdCtx.Flags)
+	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
+	defer cancel()
+
+	es, err := initEnvService(ctx, cmdCtx.Flags)
 	if err != nil {
 		return err
 	}
-	defer iesr.Cancel()
 
-	envRef, envVar, err := iesr.EnvService.EnvRefShow(iesr.Ctx, envName, name)
+	envRef, envVar, err := es.EnvRefShow(ctx, envName, name)
 	if err != nil {
 		return fmt.Errorf("couldn't find env var: %s: %w", name, err)
 	}

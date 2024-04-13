@@ -5,6 +5,6 @@
 │ RefVarName  │ envVarName01   │
 │ RefVarValue │ val01          │
 │ Comment     │                │
-│ CreateTime  │ Thu 2024-04-11 │
-│ UpdateTime  │ Thu 2024-04-11 │
+│ CreateTime  │ Mon 0001-01-01 │
+│ UpdateTime  │ Mon 0001-01-01 │
 ╰─────────────┴────────────────╯
