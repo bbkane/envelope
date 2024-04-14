@@ -14,6 +14,23 @@ const (
 	Timezone_UTC   = "utc"
 )
 
+type CommonTablePrintArgs struct {
+	W    io.Writer
+	Tz   Timezone
+	Mask bool
+}
+
+func mask(mask bool, val string) string {
+	if mask {
+		if len(val) < 2 {
+			return "**"
+		} else {
+			return val[:2] + "****"
+		}
+	}
+	return val
+}
+
 func formatTime(t time.Time, timezone Timezone) string {
 	timeFormat := "Mon 2006-01-02"
 	switch timezone {

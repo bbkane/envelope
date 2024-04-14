@@ -236,6 +236,7 @@ func EnvShowCmd() command.Command {
 		"Print environment details",
 		envShowRun,
 		command.ExistingFlag("--name", envNameFlag()),
+		command.ExistingFlags(maskFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
@@ -244,6 +245,7 @@ func EnvShowCmd() command.Command {
 
 func envShowRun(cmdCtx command.Context) error {
 
+	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
 
@@ -270,7 +272,12 @@ func envShowRun(cmdCtx command.Context) error {
 		return err
 	}
 
-	tableprint.EnvShowRun(cmdCtx.Stdout, *env, localvars, refs, referencedVars, tableprint.Timezone(timezone))
+	c := tableprint.CommonTablePrintArgs{
+		W:    cmdCtx.Stdout,
+		Tz:   tableprint.Timezone(timezone),
+		Mask: mask,
+	}
+	tableprint.EnvShowRun(c, *env, localvars, refs, referencedVars)
 	return nil
 }
 

@@ -42,6 +42,7 @@ func emptyOrNil[T any](iFace interface{}) (T, error) {
 	return under, nil
 }
 
+// datetime is a type for the CLI so I can pass strings in and parse them to dates
 func datetime() contained.TypeInfo[time.Time] {
 	return contained.TypeInfo[time.Time]{
 		Description: "datetime in RFC3339 format",
@@ -62,6 +63,18 @@ func confirmFlag() flag.FlagMap {
 	return flag.FlagMap{
 		"--confirm": flag.New(
 			"Ask for confirmation before running",
+			scalar.Bool(
+				scalar.Default(true),
+			),
+			flag.Required(),
+		),
+	}
+}
+
+func maskFlag() flag.FlagMap {
+	return flag.FlagMap{
+		"--mask": flag.New(
+			"Mask values when printing",
 			scalar.Bool(
 				scalar.Default(true),
 			),
@@ -242,6 +255,10 @@ func mustGetConfirmArg(pf command.PassedFlags) bool {
 
 func mustGetEnvNameArg(pf command.PassedFlags) string {
 	return pf["--env-name"].(string)
+}
+
+func mustGetMaskArg(pf command.PassedFlags) bool {
+	return pf["--mask"].(bool)
 }
 
 func mustGetNameArg(pf command.PassedFlags) string {

@@ -139,6 +139,7 @@ func EnvRefShowCmd() command.Command {
 	return command.New(
 		"Show details for a reference",
 		envRefShowRun,
+		command.ExistingFlags(maskFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
@@ -157,6 +158,7 @@ func EnvRefShowCmd() command.Command {
 
 func envRefShowRun(cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
+	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
 
@@ -172,7 +174,12 @@ func envRefShowRun(cmdCtx command.Context) error {
 	if err != nil {
 		return fmt.Errorf("couldn't find env var: %s: %w", name, err)
 	}
+	c := tableprint.CommonTablePrintArgs{
+		W:    cmdCtx.Stdout,
+		Tz:   tableprint.Timezone(timezone),
+		Mask: mask,
+	}
 
-	tableprint.EnvRefShowPrint(cmdCtx.Stdout, *envRef, *envVar, tableprint.Timezone(timezone))
+	tableprint.EnvRefShowPrint(c, *envRef, *envVar)
 	return nil
 }

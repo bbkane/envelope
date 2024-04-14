@@ -64,9 +64,16 @@ func (tcb *testCmdBuilder) EnvName(envName string) *testCmdBuilder {
 	return tcb.Strs("--env-name", envName)
 }
 
-// Tz adds "--timezone", "utc"
 func (tcb *testCmdBuilder) Tz() *testCmdBuilder {
 	return tcb.Strs("--timezone", "utc")
+}
+
+func (tcb *testCmdBuilder) Mask(mask bool) *testCmdBuilder {
+	maskStr := "false"
+	if mask {
+		maskStr = "true"
+	}
+	return tcb.Strs("--mask", maskStr)
 }
 
 func (tcb *testCmdBuilder) Confirm(confirm bool) *testCmdBuilder {

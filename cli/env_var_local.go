@@ -131,6 +131,7 @@ func EnvLocalVarShowCmd() command.Command {
 	return command.New(
 		"Show details for a local var",
 		envLocalVarShowRun,
+		command.ExistingFlags(maskFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
@@ -149,6 +150,7 @@ func EnvLocalVarShowCmd() command.Command {
 
 func envLocalVarShowRun(cmdCtx command.Context) error {
 
+	mask := mustGetMaskArg(cmdCtx.Flags)
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
@@ -166,6 +168,12 @@ func envLocalVarShowRun(cmdCtx command.Context) error {
 		return fmt.Errorf("couldn't find env var: %s: %w", name, err)
 	}
 
-	tableprint.EnvLocalVarShowPrint(cmdCtx.Stdout, *envVar, envRefs, tableprint.Timezone(timezone))
+	c := tableprint.CommonTablePrintArgs{
+		W:    cmdCtx.Stdout,
+		Tz:   tableprint.Timezone(timezone),
+		Mask: mask,
+	}
+
+	tableprint.EnvLocalVarShowPrint(c, *envVar, envRefs)
 	return nil
 }

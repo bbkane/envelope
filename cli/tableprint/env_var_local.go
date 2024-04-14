@@ -2,27 +2,26 @@ package tableprint
 
 import (
 	"fmt"
-	"io"
 
 	"go.bbkane.com/envelope/domain"
 )
 
-func EnvLocalVarShowPrint(w io.Writer, envVar domain.EnvVar, envRefs []domain.EnvRef, timezone Timezone) {
-	t := tableInit(w)
+func EnvLocalVarShowPrint(c CommonTablePrintArgs, envVar domain.EnvVar, envRefs []domain.EnvRef) {
+	t := tableInit(c.W)
 	tableAddSection(t, []kv{
 		{"EnvName", envVar.EnvName},
 		{"Name", envVar.Name},
 		{"Value", envVar.Value},
 		{"Comment", envVar.Comment},
-		{"CreateTime", formatTime(envVar.CreateTime, timezone)},
-		{"UpdateTime", formatTime(envVar.UpdateTime, timezone)},
+		{"CreateTime", formatTime(envVar.CreateTime, c.Tz)},
+		{"UpdateTime", formatTime(envVar.UpdateTime, c.Tz)},
 	})
 	t.Render()
 
 	if len(envRefs) > 0 {
-		fmt.Fprintln(w, "EnvRefs")
+		fmt.Fprintln(c.W, "EnvRefs")
 
-		t := tableInit(w)
+		t := tableInit(c.W)
 
 		for _, e := range envRefs {
 			tableAddSection(t, []kv{

@@ -27,13 +27,13 @@ func TestEnvLocalVarCreate(t *testing.T) {
 		{
 			name: "03_envLocalVarShow",
 			args: new(testCmdBuilder).Strs("env", "var", "show").
-				EnvName(envName01).Name(envVarName01).Tz().Finish(dbName),
+				EnvName(envName01).Name(envVarName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "04_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName01).Tz().Finish(dbName),
+				Name(envName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 	}
@@ -69,7 +69,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 		{
 			name: "03_envLocalVarShow",
 			args: new(testCmdBuilder).Strs("env", "var", "show").EnvName(envName01).
-				Name(envVarName01).Tz().Finish(dbName),
+				Name(envVarName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
@@ -81,7 +81,7 @@ func TestEnvLocalVarDelete(t *testing.T) {
 		{
 			name: "05_envLocalVarShow",
 			args: new(testCmdBuilder).Strs("env", "var", "show").EnvName(envName01).
-				Name(envVarName01).Tz().Finish(dbName),
+				Name(envVarName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: true,
 		},
 	}

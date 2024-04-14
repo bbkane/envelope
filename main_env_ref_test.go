@@ -42,19 +42,19 @@ func TestEnvRefCreate(t *testing.T) {
 		{
 			name: "05_env02Show",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName02).Tz().Finish(dbName),
+				Name(envName02).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "06_env02RefShow",
 			args: new(testCmdBuilder).Strs("env", "ref", "show").
-				EnvName(envName02).Name(envRefName01).Tz().Finish(dbName),
+				EnvName(envName02).Name(envRefName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "07_env01VarShow",
 			args: new(testCmdBuilder).Strs("env", "var", "show").
-				EnvName(envName01).Name(envVarName01).Tz().Finish(dbName),
+				EnvName(envName01).Name(envVarName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 	}
@@ -95,7 +95,7 @@ func TestEnvRefDelete(t *testing.T) {
 		{
 			name: "04_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName01).Tz().Finish(dbName),
+				Name(envName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
@@ -113,7 +113,7 @@ func TestEnvRefDelete(t *testing.T) {
 		{
 			name: "07_envShow",
 			args: new(testCmdBuilder).Strs("env", "show").
-				Name(envName01).Tz().Finish(dbName),
+				Name(envName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 	}
