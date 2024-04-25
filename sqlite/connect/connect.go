@@ -23,7 +23,7 @@ func Connect(dsn string) (*sql.DB, error) {
 		return nil, fmt.Errorf("foreign keys pragma: %w", err)
 	}
 
-	if err := migrate(db, migrationFS); err != nil {
+	if err := migrate(db, migrationFS, "*/*.sql"); err != nil {
 		return nil, fmt.Errorf("migrate: %w", err)
 	}
 
@@ -38,20 +38,19 @@ func Connect(dsn string) (*sql.DB, error) {
 // Once a migration is run, its name is stored in the 'migrations' table so it
 // is not re-executed. Migrations run in a transaction to prevent partial
 // migrations.
-func migrate(db *sql.DB, migrationFS fs.FS) error {
+func migrate(db *sql.DB, migrationFS fs.ReadFileFS, migrationsGlobPattern string) error {
 	// Ensure the 'migrations' table exists so we don't duplicate migrations.
 	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY);`); err != nil {
 		return fmt.Errorf("cannot create migrations table: %w", err)
 	}
 	// Read migration files from our embedded file system.
 	// This uses Go 1.16's 'embed' package.
-	embeddedMigrationGlob := "embedded_migrations/*.sql" // TODO: I'm already globbing to make the file system, can I just use everything in the file system?
-	names, err := fs.Glob(migrationFS, embeddedMigrationGlob)
+	names, err := fs.Glob(migrationFS, migrationsGlobPattern)
 	if err != nil {
 		return err
 	}
 	if len(names) == 0 {
-		return fmt.Errorf("no files found at: %v", embeddedMigrationGlob)
+		return fmt.Errorf("no files found at: %v", migrationsGlobPattern)
 	}
 	sort.Strings(names)
 	// fmt.Printf("migrations: %v\n", names)
@@ -67,7 +66,7 @@ func migrate(db *sql.DB, migrationFS fs.FS) error {
 
 // migrate runs a single migration file within a transaction. On success, the
 // migration file name is saved to the "migrations" table to prevent re-running.
-func migrateFile(db *sql.DB, migrationFS fs.FS, name string) error {
+func migrateFile(db *sql.DB, migrationFS fs.ReadFileFS, name string) error {
 	err := withTx(
 		db,
 		func(tx *sql.Tx) error {
