@@ -14,10 +14,19 @@ const (
 	Timezone_UTC   = "utc"
 )
 
+// Format for CLI output
+type Format string
+
+const (
+	Format_Table     = "table"
+	Format_ValueOnly = "value-only"
+)
+
 type CommonTablePrintArgs struct {
-	W    io.Writer
-	Tz   Timezone
-	Mask bool
+	Format Format
+	Mask   bool
+	Tz     Timezone
+	W      io.Writer
 }
 
 func mask(mask bool, val string) string {

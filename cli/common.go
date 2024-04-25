@@ -83,6 +83,19 @@ func maskFlag() flag.FlagMap {
 	}
 }
 
+func formatFlag() flag.FlagMap {
+	return flag.FlagMap{
+		"--format": flag.New(
+			"output format",
+			scalar.String(
+				scalar.Choices("table", "value-only"),
+				scalar.Default("table"),
+			),
+			flag.Required(),
+		),
+	}
+}
+
 func envNameFlag() flag.Flag {
 
 	cwd, err := os.Getwd()

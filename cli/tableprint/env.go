@@ -32,47 +32,50 @@ func EnvShowRun(
 	refs []domain.EnvRef,
 	referencedVars []domain.EnvVar,
 ) {
-
-	fmt.Fprintln(c.W, "Env")
-
-	t := tableInit(c.W)
-	tableAddSection(t, []kv{
-		{"Name", env.Name},
-		{"Comment", env.Comment},
-		{"CreateTime", formatTime(env.CreateTime, c.Tz)},
-		{"UpdateTime", formatTime(env.UpdateTime, c.Tz)},
-	})
-	t.Render()
-
-	if len(localvars) > 0 {
-		fmt.Fprintln(c.W, "Vars")
+	switch c.Format {
+	case Format_Table:
+		fmt.Fprintln(c.W, "Env")
 
 		t := tableInit(c.W)
-		for _, e := range localvars {
-			tableAddSection(t, []kv{
-				{"Name", e.Name},
-				{"Value", mask(c.Mask, e.Value)},
-				{"Comment", e.Comment},
-			})
-		}
-		t.Render()
-	}
-
-	if len(refs) > 0 {
-		fmt.Fprintln(c.W, "Refs")
-		t := tableInit(c.W)
-
-		for i := range len(refs) {
-			tableAddSection(t, []kv{
-				{"Name", refs[i].Name},
-				{"RefEnvName", referencedVars[i].EnvName},
-				{"RefVarName", referencedVars[i].Name},
-				{"RefVarValue", mask(c.Mask, referencedVars[i].Value)},
-				{"Comment", refs[i].Comment},
-			})
-		}
+		tableAddSection(t, []kv{
+			{"Name", env.Name},
+			{"Comment", env.Comment},
+			{"CreateTime", formatTime(env.CreateTime, c.Tz)},
+			{"UpdateTime", formatTime(env.UpdateTime, c.Tz)},
+		})
 		t.Render()
 
-	}
+		if len(localvars) > 0 {
+			fmt.Fprintln(c.W, "Vars")
 
+			t := tableInit(c.W)
+			for _, e := range localvars {
+				tableAddSection(t, []kv{
+					{"Name", e.Name},
+					{"Value", mask(c.Mask, e.Value)},
+					{"Comment", e.Comment},
+				})
+			}
+			t.Render()
+		}
+
+		if len(refs) > 0 {
+			fmt.Fprintln(c.W, "Refs")
+			t := tableInit(c.W)
+
+			for i := range len(refs) {
+				tableAddSection(t, []kv{
+					{"Name", refs[i].Name},
+					{"RefEnvName", referencedVars[i].EnvName},
+					{"RefVarName", referencedVars[i].Name},
+					{"RefVarValue", mask(c.Mask, referencedVars[i].Value)},
+					{"Comment", refs[i].Comment},
+				})
+			}
+			t.Render()
+
+		}
+	default:
+		panic("unexpected format: " + string(c.Format))
+	}
 }

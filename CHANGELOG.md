@@ -5,6 +5,16 @@ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note the the latest version is usually work in progress and may have not yet been released.
 
+# v0.0.8
+
+## Added
+
+- `--format` flag to change output format (currently only supports the default (`table` and `value-only` for vars and refs))
+
+## Fixed
+
+- `--mask` flag now hides values in `env var show`
+
 # v0.0.7
 
 ## Added

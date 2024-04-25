@@ -273,9 +273,12 @@ func envShowRun(cmdCtx command.Context) error {
 	}
 
 	c := tableprint.CommonTablePrintArgs{
-		W:    cmdCtx.Stdout,
-		Tz:   tableprint.Timezone(timezone),
-		Mask: mask,
+		// NOTE: since the only two options are value-only and table,
+		// and value-only doesn't make sense here, hardcode Format_Table
+		Format: tableprint.Format_Table,
+		Mask:   mask,
+		Tz:     tableprint.Timezone(timezone),
+		W:      cmdCtx.Stdout,
 	}
 	tableprint.EnvShowRun(c, *env, localvars, refs, referencedVars)
 	return nil
