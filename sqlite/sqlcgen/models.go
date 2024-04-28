@@ -48,23 +48,23 @@ type VwEnvEnvRefEnvVarUniqueName struct {
 type VwEnvRefReferencedName struct {
 	EnvRefID   int64
 	EnvID      int64
+	EnvName    string
 	Name       string
+	EnvVarID   int64
+	RefVarName string
+	RefEnvName string
 	Comment    string
 	CreateTime string
 	UpdateTime string
-	EnvVarID   int64
-	EnvName    string
-	RefVarName string
-	RefEnvName string
 }
 
 type VwEnvVarReferencedName struct {
 	EnvVarID   int64
 	EnvID      int64
+	EnvName    string
 	Name       string
+	Value      string
 	Comment    string
 	CreateTime string
 	UpdateTime string
-	Value      string
-	EnvName    string
 }

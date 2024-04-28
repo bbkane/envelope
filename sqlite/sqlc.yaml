@@ -7,4 +7,7 @@ sql:
         package: sqlcgen
     queries: sqlc_queries
     schema: connect/embedded_migrations
-version: '2'
+# NOTE: the docs represent this as a string, but `yq` wants to double-quote it
+# and yamllint wants it single-quoted so I tested sqlc with this as a number
+# and it seems fine.
+version: 2

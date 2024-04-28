@@ -25,7 +25,7 @@ jobs:
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v3
         with:
-          args: "release --clean --release-notes tmp_release_notes.md"
+          args: release --clean --release-notes tmp_release_notes.md
           version: latest
 name: Release
 on: # yamllint disable-line rule:truthy

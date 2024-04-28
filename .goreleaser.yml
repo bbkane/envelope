@@ -20,7 +20,7 @@ brews:
       name: homebrew-tap
       owner: bbkane
       # Optionally a token can be provided, if it differs from the token provided to GoReleaser
-      token: "{{ .Env.KEY_GITHUB_GORELEASER_TO_HOMEBREW_TAP }}"
+      token: '{{ .Env.KEY_GITHUB_GORELEASER_TO_HOMEBREW_TAP }}'
 builds:
   - env:
       - CGO_ENABLED=0
@@ -38,8 +38,8 @@ builds:
 changelog:
   filters:
     exclude:
-      - "^docs:"
-      - "^test:"
+      - '^docs:'
+      - '^test:'
   sort: asc
 checksum:
   name_template: checksums.txt
@@ -50,4 +50,4 @@ scoops:
     repository:
       name: scoop-bucket
       owner: bbkane
-      token: "{{ .Env.KEY_GITHUB_GORELEASER_TO_HOMEBREW_TAP }}"
+      token: '{{ .Env.KEY_GITHUB_GORELEASER_TO_HOMEBREW_TAP }}'
