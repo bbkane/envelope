@@ -85,6 +85,14 @@ scoop install bbkane/envelope
 - Go: `go install go.bbkane.com/envelope@latest`
 - Build with [goreleaser](https://goreleaser.com/) after cloning: `goreleaser --snapshot --skip-publish --clean`
 
+## Initialize in `~/.zshrc`
+
+> Other shells not yet supported
+
+```bash
+eval "$(envelope init)"
+```
+
 ## Notes
 
 See [Go Project Notes](https://www.bbkane.com/blog/go-project-notes/) for notes on development tooling.
