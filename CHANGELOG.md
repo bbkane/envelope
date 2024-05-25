@@ -7,6 +7,12 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 # v0.0.8
 
+## Changed
+
+- `env var create --value` is optional, and the value is prompted for if not given 
+
+# v0.0.8
+
 ## Added
 
 - `--format` flag to change output format (currently only supports the default (`table` and `value-only` for vars and refs))

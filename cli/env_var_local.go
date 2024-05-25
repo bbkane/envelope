@@ -1,9 +1,11 @@
 package cli
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
+	"os"
 
 	"go.bbkane.com/envelope/cli/tableprint"
 	"go.bbkane.com/envelope/domain"
@@ -20,7 +22,6 @@ func EnvLocalVarCreateCmd() command.Command {
 			"--value",
 			"Value for this local env var",
 			scalar.String(),
-			flag.Required(),
 		),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -44,7 +45,16 @@ func envLocalVarCreateRun(cmdCtx command.Context) error {
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
 
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
-	value := cmdCtx.Flags["--value"].(string)
+	value, exists := cmdCtx.Flags["--value"].(string)
+	if !exists {
+		fmt.Print("Enter value: ")
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+		if scanner.Err() != nil {
+			return fmt.Errorf("couldn't read --value: %w", scanner.Err())
+		}
+		value = scanner.Text()
+	}
 
 	name := mustGetNameArg(cmdCtx.Flags)
 
