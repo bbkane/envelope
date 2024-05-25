@@ -14,10 +14,10 @@ import (
 	"go.bbkane.com/warg/value/scalar"
 )
 
-func EnvLocalVarCreateCmd() command.Command {
+func EnvVarCreateCmd() command.Command {
 	return command.New(
 		"Create a variable local to the this env",
-		envLocalVarCreateRun,
+		envVarCreateRun,
 		command.Flag(
 			"--value",
 			"Value for this local env var",
@@ -39,7 +39,7 @@ func EnvLocalVarCreateCmd() command.Command {
 	)
 }
 
-func envLocalVarCreateRun(cmdCtx command.Context) error {
+func envVarCreateRun(cmdCtx command.Context) error {
 
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
@@ -85,10 +85,10 @@ func envLocalVarCreateRun(cmdCtx command.Context) error {
 	return nil
 }
 
-func EnvLocalVarDeleteCmd() command.Command {
+func EnvVarDeleteCmd() command.Command {
 	return command.New(
 		"Delete a variable local to the this env",
-		envLocalVarDeleteRun,
+		envVarDeleteRun,
 		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -105,7 +105,7 @@ func EnvLocalVarDeleteCmd() command.Command {
 	)
 }
 
-func envLocalVarDeleteRun(cmdCtx command.Context) error {
+func envVarDeleteRun(cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
 	confirm := mustGetConfirmArg(cmdCtx.Flags)
@@ -137,10 +137,10 @@ func envLocalVarDeleteRun(cmdCtx command.Context) error {
 	return nil
 }
 
-func EnvLocalVarShowCmd() command.Command {
+func EnvVarShowCmd() command.Command {
 	return command.New(
 		"Show details for a local var",
-		envLocalVarShowRun,
+		envVarShowRun,
 		command.ExistingFlags(maskFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -159,7 +159,7 @@ func EnvLocalVarShowCmd() command.Command {
 	)
 }
 
-func envLocalVarShowRun(cmdCtx command.Context) error {
+func envVarShowRun(cmdCtx command.Context) error {
 
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	envName := mustGetEnvNameArg(cmdCtx.Flags)

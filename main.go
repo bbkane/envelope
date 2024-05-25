@@ -40,9 +40,9 @@ func buildApp() *warg.App {
 				section.Section(
 					"var",
 					"Env vars owned by this environment",
-					section.ExistingCommand("create", cli.EnvLocalVarCreateCmd()),
-					section.ExistingCommand("delete", cli.EnvLocalVarDeleteCmd()),
-					section.ExistingCommand("show", cli.EnvLocalVarShowCmd()),
+					section.ExistingCommand("create", cli.EnvVarCreateCmd()),
+					section.ExistingCommand("delete", cli.EnvVarDeleteCmd()),
+					section.ExistingCommand("show", cli.EnvVarShowCmd()),
 				),
 			),
 			section.Section(
