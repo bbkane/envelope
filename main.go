@@ -20,7 +20,11 @@ func buildApp() *warg.App {
 			"Manage Environmental secrets centrally",
 			section.ExistingCommand("version", warg.VersionCommand()),
 			section.ExistingFlag("--color", warg.ColorFlag()),
-			section.ExistingCommand("init", cli.InitCmd()),
+			section.Section(
+				"init",
+				"Print script to run envelope when the directory changes",
+				section.ExistingCommand("zsh", cli.InitZshCmd()),
+			),
 			section.Section(
 				"env",
 				"Environment commands",

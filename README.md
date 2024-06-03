@@ -90,7 +90,7 @@ scoop install bbkane/envelope
 > Other shells not yet supported
 
 ```bash
-eval "$(envelope init)"
+eval "$(envelope init zsh)"
 ```
 
 ## Notes

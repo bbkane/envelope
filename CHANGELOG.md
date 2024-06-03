@@ -5,6 +5,16 @@ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note the the latest version is usually work in progress and may have not yet been released.
 
+# v0.0.9
+
+## Added
+
+- `init zsh` has a `--print-autoload` flag now
+
+## Changed
+
+- `init` -> `init zsh` so we can add zsh-specific flags and make subcommands for other shells
+
 # v0.0.8
 
 ## Changed
