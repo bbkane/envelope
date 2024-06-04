@@ -18,6 +18,11 @@ Hide
 Sleep 3s
 Show
 
+Type 'eval "$(envelope init)"  # add this to ~/.zshrc'
+Sleep 200ms
+Enter
+Sleep 1s
+
 Type "envelope env create --name demo_env"
 Sleep 200ms
 Enter
@@ -33,10 +38,11 @@ Sleep 200ms
 Enter
 Sleep 1s
 
-Type "source <(envelope env print-script --name demo_env)"
+Type "export-env demo_env"
 Sleep 200ms
 Enter
 Sleep 1s
+
 
 Type "echo $MYENVVAR"
 Sleep 200ms
