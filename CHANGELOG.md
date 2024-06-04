@@ -13,13 +13,8 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 ## Changed
 
-- `init` -> `init zsh` so we can add zsh-specific flags and make subcommands for other shells
-
-# v0.0.8
-
-## Changed
-
 - `env var create --value` is optional, and the value is prompted for if not given 
+- `init` -> `init zsh` so we can add zsh-specific flags and make subcommands for other shells
 
 # v0.0.8
 
