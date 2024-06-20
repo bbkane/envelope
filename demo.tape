@@ -10,15 +10,10 @@ Set TypingSpeed 75ms
 
 Set FontSize 22
 Set Height 650
-Set Width 1400
-Set Padding 50
+Set Width 1250
+Set Padding 25
 
-# https://github.com/charmbracelet/vhs/issues/39#issuecomment-1296334921
-Hide
-Sleep 3s
-Show
-
-Type 'eval "$(envelope init)"  # add this to ~/.zshrc'
+Type 'eval "$(envelope init zsh)"  # add this to ~/.zshrc'
 Sleep 200ms
 Enter
 Sleep 1s

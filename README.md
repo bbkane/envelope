@@ -2,74 +2,14 @@
 
 ![./demo.gif](./demo.gif)
 
-Store environment variables for projects relationally! UX inspired by the Azure CLI.
+Store environment variables for projects in a central SQLite database!
+
+- Automatically export/unexport environments when entering/leaving directories
+- Need an environment variable in more than one environment? Create a reference to it instead of copying it.
 
 ## Project Status
 
-I'm using `envelope` personally, but I can't recommend it for anyone else to use until I have more features (update commands, keyringref support) and tab complete/TUI.
-
-Expand details below to see the planned UX
-
-<details>
-
-Not all of these commands are implemented yet (`go run . -h outline` to see what is), but, in general, the UX will look like:
-
-```bash
-envelope
-    --database ~/.config/envelope.db
-    env
-        create
-            --name $PWD
-            --comment "blah"
-        delete
-            --name $PWD
-        list
-        print-script
-            --name $PWD
-            --include-parent-dirs true # try to find an env in parent dirs
-            --shell zsh
-            --type export | unexport
-        show --name $PWD  # Also shows all vars that will be exported
-        update ...
-        keyringref
-            --env-name $PWD
-            create
-                --env-ref-name other_env_name
-                --localvar-ref-name envvar_name
-            delete ...
-            list
-                --env-name
-            show
-            update ...
-        var
-            --env-name
-            create
-                --name bob
-                --value bob
-            delete ...
-            list
-                --env-name
-            show
-            update ...
-        localref
-            --env-name $PWD
-            create
-                --env-ref-name other_env_name
-                --localvar-ref-name envvar_name
-            delete ...
-            list
-                --env-name
-            show
-            update ...
-    keyring
-        create --name azure_client_secret ... # prompt for value
-        show --name
-        update --name ...
-        delete --name azure_client_secret
-        list --print-values true
-```
-
-</details>
+I'm using `envelope` personally, but I can't recommend it for anyone else to use until I have more features (update commands, keyringref support) and tab completion. The CLI interface is also not stable.
 
 ## Install
 

@@ -10,6 +10,10 @@ script_dir="${0:A:h}"
 readonly script_dir
 cd "${script_dir}"
 
+# Use a new version of envelope
+go install .
+export PATH="/Users/bbkane/go/bin:$PATH"
+
 export PROMPT='%F{47}$ %f'
 rm -f ./tmp.db
 export ENVELOPE_DB_PATH=./tmp.db
