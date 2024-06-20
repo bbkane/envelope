@@ -10,6 +10,10 @@ import (
 	"go.bbkane.com/envelope/sqlite/sqlcgen"
 )
 
+// mapErrEnvNotFound replaces sql.ErrNoRows with domain.ErrEnvNotFound but otherwise
+// passes it through.
+//
+// Deprecated: I want to replace this with envFindID, but that'll require rewriting some sql
 func mapErrEnvNotFound(e error) error {
 	if errors.Is(e, sql.ErrNoRows) {
 		return domain.ErrEnvNotFound
@@ -18,6 +22,7 @@ func mapErrEnvNotFound(e error) error {
 	}
 }
 
+// envFindID looks for en env's SQLite ID and returns a wrapped ErrEnvNotFound or a sql error
 func (e *EnvService) envFindID(ctx context.Context, envName string) (int64, error) {
 	queries := sqlcgen.New(e.db)
 	envID, err := queries.EnvFindID(ctx, envName)
@@ -67,7 +72,7 @@ func (e *EnvService) EnvList(ctx context.Context) ([]domain.Env, error) {
 
 	sqlcEnvs, err := queries.EnvList(ctx)
 	if err != nil {
-		return nil, mapErrEnvNotFound(err)
+		return nil, err
 	}
 
 	ret := []domain.Env{}

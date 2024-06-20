@@ -51,9 +51,9 @@ func (e *EnvService) envLocalVarFindID(ctx context.Context, envName string, name
 func (e *EnvService) EnvVarCreate(ctx context.Context, args domain.EnvVarCreateArgs) (*domain.EnvVar, error) {
 	queries := sqlcgen.New(e.db)
 
-	envID, err := queries.EnvFindID(ctx, args.EnvName)
+	envID, err := e.envFindID(ctx, args.EnvName)
 	if err != nil {
-		return nil, fmt.Errorf("could not find env with name: %s: %w", args.Name, mapErrEnvNotFound(err))
+		return nil, err
 	}
 
 	err = queries.EnvVarCreate(ctx, sqlcgen.EnvVarCreateParams{
@@ -81,9 +81,9 @@ func (e *EnvService) EnvVarCreate(ctx context.Context, args domain.EnvVarCreateA
 func (e *EnvService) EnvVarDelete(ctx context.Context, envName string, name string) error {
 	queries := sqlcgen.New(e.db)
 
-	envID, err := queries.EnvFindID(ctx, envName)
+	envID, err := e.envFindID(ctx, envName)
 	if err != nil {
-		return fmt.Errorf("could not find env with name: %s: %w", envName, mapErrEnvNotFound(err))
+		return err
 	}
 
 	err = queries.EnvVarDelete(ctx, sqlcgen.EnvVarDeleteParams{
@@ -99,9 +99,9 @@ func (e *EnvService) EnvVarDelete(ctx context.Context, envName string, name stri
 func (e *EnvService) EnvVarList(ctx context.Context, envName string) ([]domain.EnvVar, error) {
 	queries := sqlcgen.New(e.db)
 
-	envID, err := queries.EnvFindID(ctx, envName)
+	envID, err := e.envFindID(ctx, envName)
 	if err != nil {
-		return nil, fmt.Errorf("could not find env with name: %s: %w", envName, mapErrEnvNotFound(err))
+		return nil, err
 	}
 
 	envs, err := queries.EnvVarList(ctx, envID)
@@ -126,9 +126,9 @@ func (e *EnvService) EnvVarList(ctx context.Context, envName string) ([]domain.E
 func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string) (*domain.EnvVar, []domain.EnvRef, error) {
 	queries := sqlcgen.New(e.db)
 
-	envID, err := queries.EnvFindID(ctx, envName)
+	envID, err := e.envFindID(ctx, envName)
 	if err != nil {
-		return nil, nil, fmt.Errorf("could not find env with name: %s: %w", envName, mapErrEnvNotFound(err))
+		return nil, nil, err
 	}
 
 	sqlEnvLocalVar, err := queries.EnvVarShow(ctx, sqlcgen.EnvVarShowParams{
