@@ -31,9 +31,9 @@ func (e *EnvService) envLocalVarFindByID(ctx context.Context, id int64) (*domain
 func (e *EnvService) envLocalVarFindID(ctx context.Context, envName string, name string) (int64, error) {
 	queries := sqlcgen.New(e.db)
 
-	envID, err := queries.EnvFindID(ctx, envName)
+	envID, err := e.envFindID(ctx, envName)
 	if err != nil {
-		return 0, fmt.Errorf("could not find env with name: %s: %w", envName, mapErrEnvNotFound(err))
+		return 0, err
 	}
 
 	id, err := queries.EnvVarFindID(ctx, sqlcgen.EnvVarFindIDParams{
@@ -165,4 +165,8 @@ func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string
 		UpdateTime: domain.StringToTimeMust(sqlEnvLocalVar.UpdateTime),
 		Value:      sqlEnvLocalVar.Value,
 	}, envRefs, nil
+}
+
+func (e *EnvService) EnvVarUpdate(ctx context.Context, envName string, name string, args domain.EnvVarUpdateArgs) error {
+	return errors.New("TODO")
 }

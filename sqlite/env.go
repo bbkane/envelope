@@ -18,6 +18,18 @@ func mapErrEnvNotFound(e error) error {
 	}
 }
 
+func (e *EnvService) envFindID(ctx context.Context, envName string) (int64, error) {
+	queries := sqlcgen.New(e.db)
+	envID, err := queries.EnvFindID(ctx, envName)
+	if errors.Is(err, sql.ErrNoRows) {
+		err = domain.ErrEnvNotFound
+	}
+	if err != nil {
+		return 0, fmt.Errorf("could not find env with name: %s: %w", envName, err)
+	}
+	return envID, nil
+}
+
 func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (*domain.Env, error) {
 	queries := sqlcgen.New(e.db)
 
@@ -75,23 +87,11 @@ func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.Env
 
 	queries := sqlcgen.New(e.db)
 
-	var createTimeStr *string
-	if args.CreateTime != nil {
-		tmp := domain.TimeToString(*args.CreateTime)
-		createTimeStr = &tmp
-	}
-
-	var updateTimeStr *string
-	if args.CreateTime != nil {
-		tmp := domain.TimeToString(*args.UpdateTime)
-		updateTimeStr = &tmp
-	}
-
 	err := queries.EnvUpdate(ctx, sqlcgen.EnvUpdateParams{
-		NewName:    args.NewName,
+		NewName:    args.Name,
 		Comment:    args.Comment,
-		CreateTime: createTimeStr,
-		UpdateTime: updateTimeStr,
+		CreateTime: domain.TimePtrToStringPtr(args.CreateTime),
+		UpdateTime: domain.TimePtrToStringPtr(args.UpdateTime),
 		Name:       name,
 	})
 

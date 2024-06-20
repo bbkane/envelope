@@ -306,6 +306,7 @@ func envUpdateRun(cmdCtx command.Context) error {
 
 	confirm := mustGetConfirmArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
+	timeout := mustGetTimeoutArg(cmdCtx.Flags)
 
 	if confirm {
 		keepGoing, err := askConfirm()
@@ -317,7 +318,7 @@ func envUpdateRun(cmdCtx command.Context) error {
 		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	es, err := initEnvService(ctx, cmdCtx.Flags)
@@ -328,7 +329,7 @@ func envUpdateRun(cmdCtx command.Context) error {
 	err = es.EnvUpdate(ctx, name, domain.EnvUpdateArgs{
 		Comment:    comment,
 		CreateTime: createTime,
-		NewName:    newName,
+		Name:       newName,
 		UpdateTime: updateTime,
 	})
 

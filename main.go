@@ -47,6 +47,7 @@ func buildApp() *warg.App {
 					section.ExistingCommand("create", cli.EnvVarCreateCmd()),
 					section.ExistingCommand("delete", cli.EnvVarDeleteCmd()),
 					section.ExistingCommand("show", cli.EnvVarShowCmd()),
+					section.ExistingCommand("update", cli.EnvVarUpdateCmd()),
 				),
 			),
 			section.Section(

@@ -164,12 +164,6 @@ func commonCreateFlagMap() flag.FlagMap {
 
 func commonUpdateFlags() flag.FlagMap {
 
-	cwd, err := os.Getwd()
-	if err != nil {
-		// I don't know when this could happen?
-		panic(err)
-	}
-
 	commonUpdateFlags := flag.FlagMap{
 		"--comment": flag.New(
 			"Comment",
@@ -183,9 +177,7 @@ func commonUpdateFlags() flag.FlagMap {
 		),
 		"--new-name": flag.New(
 			"New name",
-			scalar.String(
-				scalar.Default(cwd),
-			),
+			scalar.String(),
 		),
 		"--update-time": flag.New(
 			"Update time",
@@ -237,6 +229,9 @@ func ptrFromMap[T any](m map[string]any, key string) *T {
 	return nil
 }
 
+// initEnvService reads the following from the flags:
+//
+// - --db-path
 func initEnvService(ctx context.Context, passedFlags command.PassedFlags) (domain.EnvService, error) {
 	sqliteDSN := passedFlags["--db-path"].(string)
 	keyring := keyring.NewOSKeyring(sqliteDSN)
@@ -259,6 +254,22 @@ func mustGetCommonCreateArgs(pf command.PassedFlags) commonCreateArgs {
 		Comment:    pf["--comment"].(string),
 		CreateTime: pf["--create-time"].(time.Time),
 		UpdateTime: pf["--update-time"].(time.Time),
+	}
+}
+
+type commonUpdateArgs struct {
+	Comment    *string
+	CreateTime *time.Time
+	NewName    *string
+	UpdateTime *time.Time
+}
+
+func getCommonUpdateArgs(pf command.PassedFlags) commonUpdateArgs {
+	return commonUpdateArgs{
+		Comment:    ptrFromMap[string](pf, "--comment"),
+		CreateTime: ptrFromMap[time.Time](pf, "--create-time"),
+		NewName:    ptrFromMap[string](pf, "--new-name"),
+		UpdateTime: ptrFromMap[time.Time](pf, "--update-time"),
 	}
 }
 

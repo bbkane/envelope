@@ -27,7 +27,7 @@ type EnvCreateArgs struct {
 type EnvUpdateArgs struct {
 	Comment    *string
 	CreateTime *time.Time
-	NewName    *string
+	Name       *string
 	UpdateTime *time.Time
 }
 
@@ -51,6 +51,15 @@ type EnvVarCreateArgs struct {
 	CreateTime time.Time
 	UpdateTime time.Time
 	Value      string
+}
+
+type EnvVarUpdateArgs struct {
+	Comment    *string
+	CreateTime *time.Time
+	EnvName    *string
+	Name       *string
+	UpdateTime *time.Time
+	Value      *string
 }
 
 // -- EnvLocalRef
@@ -89,6 +98,7 @@ type EnvService interface {
 	EnvVarCreate(ctx context.Context, args EnvVarCreateArgs) (*EnvVar, error)
 	EnvVarDelete(ctx context.Context, envName string, name string) error
 	EnvVarList(ctx context.Context, envName string) ([]EnvVar, error)
+	EnvVarUpdate(ctx context.Context, envName string, name string, args EnvVarUpdateArgs) error
 	EnvVarShow(ctx context.Context, envName string, name string) (*EnvVar, []EnvRef, error)
 
 	EnvRefCreate(ctx context.Context, args EnvRefCreateArgs) (*EnvRef, error)

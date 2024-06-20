@@ -18,23 +18,23 @@ func EnvVarCreateCmd() command.Command {
 	return command.New(
 		"Create a variable local to the this env",
 		envVarCreateRun,
-		command.Flag(
-			"--value",
-			"Value for this local env var",
-			scalar.String(),
+		command.ExistingFlag(
+			"--env-name",
+			envNameFlag(),
 		),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(commonCreateFlagMap()),
 		command.Flag(
 			"--name",
-			"Env var name",
+			"Existing env var name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.ExistingFlag(
-			"--env-name",
-			envNameFlag(),
+		command.Flag(
+			"--value",
+			"Value for this local env var",
+			scalar.String(),
 		),
 	)
 }
@@ -57,8 +57,9 @@ func envVarCreateRun(cmdCtx command.Context) error {
 	}
 
 	name := mustGetNameArg(cmdCtx.Flags)
+	timeout := mustGetTimeoutArg(cmdCtx.Flags)
 
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	es, err := initEnvService(ctx, cmdCtx.Flags)
@@ -188,5 +189,85 @@ func envVarShowRun(cmdCtx command.Context) error {
 	}
 
 	tableprint.EnvLocalVarShowPrint(c, *envVar, envRefs)
+	return nil
+}
+
+func EnvVarUpdateCmd() command.Command {
+	return command.New(
+		"Update and env var",
+		envVarUpdateRun,
+		command.ExistingFlag("--env-name", envNameFlag()),
+		command.ExistingFlags(commonUpdateFlags()),
+		command.ExistingFlags(timeoutFlagMap()),
+		command.ExistingFlags(sqliteDSNFlagMap()),
+		command.ExistingFlags(confirmFlag()),
+		command.Flag(
+			"--name",
+			"Env var name",
+			scalar.String(),
+			flag.Required(),
+		),
+		command.Flag(
+			"--new-env-name",
+			"New env name",
+			scalar.String(),
+		),
+		command.Flag(
+			"--value",
+			"New value for this env var",
+			scalar.String(),
+		),
+	)
+}
+
+func envVarUpdateRun(cmdCtx command.Context) error {
+	// common update flags
+	commonUpdateArgs := getCommonUpdateArgs(cmdCtx.Flags)
+
+	confirm := mustGetConfirmArg(cmdCtx.Flags)
+	envName := mustGetEnvNameArg(cmdCtx.Flags)
+	name := mustGetNameArg(cmdCtx.Flags)
+	newEnvName := ptrFromMap[string](cmdCtx.Flags, "--new-name")
+	value := ptrFromMap[string](cmdCtx.Flags, "--value")
+	timeout := mustGetTimeoutArg(cmdCtx.Flags)
+
+	if confirm {
+		keepGoing, err := askConfirm()
+		if err != nil {
+			panic(err)
+		}
+		if !keepGoing {
+			return errors.New("unconfirmed change")
+		}
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	es, err := initEnvService(ctx, cmdCtx.Flags)
+	if err != nil {
+		return err
+	}
+	err = es.EnvVarUpdate(ctx, envName, name, domain.EnvVarUpdateArgs{
+		Comment:    commonUpdateArgs.Comment,
+		CreateTime: commonUpdateArgs.CreateTime,
+		EnvName:    newEnvName,
+		Name:       commonUpdateArgs.NewName,
+		UpdateTime: commonUpdateArgs.UpdateTime,
+		Value:      value,
+	})
+
+	if err != nil {
+		return fmt.Errorf("could not update env var: %w", err)
+	}
+	finalName := name
+	if commonUpdateArgs.NewName != nil {
+		finalName = *commonUpdateArgs.NewName
+	}
+	finalEnvName := envName
+	if commonUpdateArgs.NewName != nil {
+		finalEnvName = *commonUpdateArgs.NewName
+	}
+	fmt.Fprintf(cmdCtx.Stdout, "updated env var:  %s: %s\n", finalEnvName, finalName)
 	return nil
 }

@@ -4,6 +4,16 @@ import "time"
 
 // -- Utility function
 
+// TimePtrToStringPtr uses TimeToString to optonally format a string
+func TimePtrToStringPtr(t *time.Time) *string {
+	var s *string
+	if t != nil {
+		tmp := TimeToString(*t)
+		s = &tmp
+	}
+	return s
+}
+
 // TimeToString converts a time to UTC, then formats as RFC3339
 func TimeToString(t time.Time) string {
 
@@ -23,7 +33,7 @@ func StringToTime(s string) (time.Time, error) {
 // I think this is usually acceptable as times are formatted pretty carefully
 // in the db
 func StringToTimeMust(s string) time.Time {
-	t, err := time.Parse(time.RFC3339, s)
+	t, err := StringToTime(s)
 	if err != nil {
 		panic(err)
 	}
