@@ -164,3 +164,37 @@ func (q *Queries) EnvVarShow(ctx context.Context, arg EnvVarShowParams) (EnvVar,
 	)
 	return i, err
 }
+
+const envVarUpdate = `-- name: EnvVarUpdate :exec
+UPDATE env_var SET
+    env_id = COALESCE(?1, env_id),
+    name = COALESCE(?2, name),
+    comment = COALESCE(?3, comment),
+    create_time = COALESCE(?4, create_time),
+    update_time = COALESCE(?5, update_time),
+    value = COALESCE(?6, value)
+WHERE env_var_id = ?7
+`
+
+type EnvVarUpdateParams struct {
+	EnvID      *int64
+	Name       *string
+	Comment    *string
+	CreateTime *string
+	UpdateTime *string
+	Value      *string
+	EnvVarID   int64
+}
+
+func (q *Queries) EnvVarUpdate(ctx context.Context, arg EnvVarUpdateParams) error {
+	_, err := q.db.ExecContext(ctx, envVarUpdate,
+		arg.EnvID,
+		arg.Name,
+		arg.Comment,
+		arg.CreateTime,
+		arg.UpdateTime,
+		arg.Value,
+		arg.EnvVarID,
+	)
+	return err
+}

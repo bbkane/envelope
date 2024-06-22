@@ -168,5 +168,34 @@ func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string
 }
 
 func (e *EnvService) EnvVarUpdate(ctx context.Context, envName string, name string, args domain.EnvVarUpdateArgs) error {
-	return errors.New("TODO")
+	envVarID, err := e.envLocalVarFindID(ctx, envName, name)
+	if err != nil {
+		return err
+	}
+
+	var newEnvID *int64
+	if args.EnvName != nil {
+		tmp, err := e.envFindID(ctx, *args.EnvName)
+		if err != nil {
+			return err
+		}
+		newEnvID = &tmp
+	}
+
+	queries := sqlcgen.New(e.db)
+
+	err = queries.EnvVarUpdate(ctx, sqlcgen.EnvVarUpdateParams{
+		EnvID:      newEnvID,
+		Name:       args.Name,
+		Comment:    args.Comment,
+		CreateTime: domain.TimePtrToStringPtr(args.CreateTime),
+		UpdateTime: domain.TimePtrToStringPtr(args.UpdateTime),
+		Value:      args.Value,
+		EnvVarID:   envVarID,
+	})
+
+	if err != nil {
+		return fmt.Errorf("err updating env var: %w", err)
+	}
+	return nil
 }

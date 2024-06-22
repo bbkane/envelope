@@ -30,4 +30,3 @@ UPDATE env SET
     create_time = COALESCE(sqlc.narg('create_time'), create_time),
     update_time = COALESCE(sqlc.narg('update_time'), update_time)
 WHERE name = sqlc.arg('name');
-

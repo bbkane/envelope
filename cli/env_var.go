@@ -227,7 +227,7 @@ func envVarUpdateRun(cmdCtx command.Context) error {
 	confirm := mustGetConfirmArg(cmdCtx.Flags)
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
-	newEnvName := ptrFromMap[string](cmdCtx.Flags, "--new-name")
+	newEnvName := ptrFromMap[string](cmdCtx.Flags, "--new-env-name")
 	value := ptrFromMap[string](cmdCtx.Flags, "--value")
 	timeout := mustGetTimeoutArg(cmdCtx.Flags)
 
@@ -265,8 +265,8 @@ func envVarUpdateRun(cmdCtx command.Context) error {
 		finalName = *commonUpdateArgs.NewName
 	}
 	finalEnvName := envName
-	if commonUpdateArgs.NewName != nil {
-		finalEnvName = *commonUpdateArgs.NewName
+	if newEnvName != nil {
+		finalEnvName = *newEnvName
 	}
 	fmt.Fprintf(cmdCtx.Stdout, "updated env var:  %s: %s\n", finalEnvName, finalName)
 	return nil

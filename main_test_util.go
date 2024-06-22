@@ -56,6 +56,14 @@ func (tcb *testCmdBuilder) Name(name string) *testCmdBuilder {
 	return tcb.Strs("--name", name)
 }
 
+func (tcb *testCmdBuilder) CreateTime(time string) *testCmdBuilder {
+	return tcb.Strs("--create-time", time)
+}
+
+func (tcb *testCmdBuilder) UpdateTime(time string) *testCmdBuilder {
+	return tcb.Strs("--update-time", time)
+}
+
 func (tcb *testCmdBuilder) ZeroTimes() *testCmdBuilder {
 	return tcb.Strs("--create-time", zeroTime, "--update-time", zeroTime)
 }

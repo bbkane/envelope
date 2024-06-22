@@ -10,6 +10,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 ## Added
 
 - `init zsh` has a `--print-autoload` flag now
+- `env var update` command
 
 ## Changed
 
