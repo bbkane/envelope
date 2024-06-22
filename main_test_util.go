@@ -29,12 +29,24 @@ func createTempDB(t *testing.T) string {
 	return dbFile.Name()
 }
 
-func createEnv(dbPath string, envName string) []string {
+func envCreateTestCmd(dbPath string, envName string) []string {
 	return new(testCmdBuilder).
 		Strs("env", "create").
 		Name(envName).
 		ZeroTimes().
 		Finish(dbPath)
+}
+
+func envShowTestCmd(dbPath string, envName string) []string {
+	return new(testCmdBuilder).
+		Strs("env", "show").
+		Name(envName).Tz().Mask(false).Finish(dbPath)
+}
+
+func envVarCreateTestCmd(dbPath string, envName string, name string, value string) []string {
+	return new(testCmdBuilder).Strs("env", "var", "create").
+		EnvName(envName).Name(name).Strs("--value", value).
+		ZeroTimes().Finish(dbPath)
 }
 
 type testCmdBuilder struct {

@@ -16,7 +16,7 @@ func TestEnvRefCreate(t *testing.T) {
 	tests := []testcase{
 		{
 			name:            "01_env01Create",
-			args:            createEnv(dbName, envName01),
+			args:            envCreateTestCmd(dbName, envName01),
 			expectActionErr: false,
 		},
 		{
@@ -28,7 +28,7 @@ func TestEnvRefCreate(t *testing.T) {
 		},
 		{
 			name:            "03_env02Create",
-			args:            createEnv(dbName, envName02),
+			args:            envCreateTestCmd(dbName, envName02),
 			expectActionErr: false,
 		},
 		{
@@ -75,7 +75,7 @@ func TestEnvRefDelete(t *testing.T) {
 	tests := []testcase{
 		{
 			name:            "01_envCreate",
-			args:            createEnv(dbName, envName01),
+			args:            envCreateTestCmd(dbName, envName01),
 			expectActionErr: false,
 		},
 		{
