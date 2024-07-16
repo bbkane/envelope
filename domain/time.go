@@ -6,12 +6,11 @@ import "time"
 
 // TimePtrToStringPtr uses TimeToString to optonally format a string
 func TimePtrToStringPtr(t *time.Time) *string {
-	var s *string
-	if t != nil {
-		tmp := TimeToString(*t)
-		s = &tmp
+	if t == nil {
+		return nil
 	}
-	return s
+	s := TimeToString(*t)
+	return &s
 }
 
 // TimeToString converts a time to UTC, then formats as RFC3339
