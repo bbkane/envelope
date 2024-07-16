@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"go.bbkane.com/envelope/domain"
-	"go.bbkane.com/envelope/sqlite/sqlcgen"
+	"go.bbkane.com/envelope/sqlite/sqlite/sqlcgen"
 )
 
 // keyringEntryCheckData checks whether the keyring exists in both the db, and the keychain

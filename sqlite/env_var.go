@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"go.bbkane.com/envelope/domain"
-	"go.bbkane.com/envelope/sqlite/sqlcgen"
+	"go.bbkane.com/envelope/sqlite/sqlite/sqlcgen"
 )
 
 func (e *EnvService) envLocalVarFindByID(ctx context.Context, id int64) (*domain.EnvVar, error) {
