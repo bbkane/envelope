@@ -1,4 +1,4 @@
-package connect
+package sqlite
 
 import (
 	"database/sql"
@@ -10,7 +10,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-//go:embed embedded_migrations/*.sql
+//go:embed migrations/*.sql
 var migrationFS embed.FS
 
 func Connect(dsn string) (*sql.DB, error) {

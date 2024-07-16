@@ -5,8 +5,8 @@ sql:
         emit_pointers_for_null_types: true
         out: sqlcgen
         package: sqlcgen
-    queries: sqlc_queries
-    schema: connect/embedded_migrations
+    queries: queries
+    schema: migrations
 # NOTE: the docs represent this as a string, but `yq` wants to double-quote it
 # and yamllint wants it single-quoted so I tested sqlc with this as a number
 # and it seems fine.
