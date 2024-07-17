@@ -7,7 +7,6 @@ sql:
         package: sqlcgen
     queries: queries
     schema: migrations
-# NOTE: the docs represent this as a string, but `yq` wants to double-quote it
-# and yamllint wants it single-quoted so I tested sqlc with this as a number
-# and it seems fine.
-version: 2
+# yq wants to double quote "2", but yamllint wants it single-quoted
+# yamllint disable-line rule:quoted-strings
+version: "2"
