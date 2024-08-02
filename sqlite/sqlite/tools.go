@@ -3,7 +3,7 @@
 
 // https://www.jvt.me/posts/2022/06/15/go-tools-dependency-management/
 
-package main
+package sqlite
 
 import (
 	_ "github.com/sqlc-dev/sqlc/cmd/sqlc"
