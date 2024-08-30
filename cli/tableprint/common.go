@@ -64,12 +64,15 @@ func tableInit(w io.Writer) table.Writer {
 	return t
 }
 
+// tableAddSection adds a section to the table with the given key-value pairs and then a separator. If a value is empty, the row is not added.
 func tableAddSection(t table.Writer, kvs []kv) {
 	for _, e := range kvs {
-		t.AppendRow(table.Row{
-			e.Key,
-			e.Value,
-		})
+		if e.Value != "" {
+			t.AppendRow(table.Row{
+				e.Key,
+				e.Value,
+			})
+		}
 	}
 	t.AppendSeparator()
 }

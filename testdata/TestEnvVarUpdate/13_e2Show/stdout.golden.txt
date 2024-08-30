@@ -1,7 +1,6 @@
 Env
 ╭────────────┬────────────────╮
 │ Name       │ e2             │
-│ Comment    │                │
 │ CreateTime │ Mon 0001-01-01 │
 │ UpdateTime │ Mon 0001-01-01 │
 ╰────────────┴────────────────╯
@@ -13,9 +12,7 @@ Vars
 ├─────────┼─────┤
 │ Name    │ v2  │
 │ Value   │ val │
-│ Comment │     │
 ├─────────┼─────┤
 │ Name    │ v3  │
 │ Value   │ val │
-│ Comment │     │
 ╰─────────┴─────╯
