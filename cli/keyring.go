@@ -97,11 +97,13 @@ func KeyringListCmd() command.Command {
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
+		command.ExistingFlags(widthFlag()),
 	)
 }
 
 func keyringListRun(cmdCtx command.Context) error {
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
+	width := mustGetWidthArg(cmdCtx.Flags)
 
 	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
 	defer cancel()
@@ -116,6 +118,15 @@ func keyringListRun(cmdCtx command.Context) error {
 	if err != nil {
 		return err
 	}
-	tableprint.KeyringList(cmdCtx.Stdout, keyringEntries, errors, tableprint.Timezone(timezone))
+
+	c := tableprint.CommonTablePrintArgs{
+		Format:          tableprint.Format_Table,
+		Mask:            false,
+		Tz:              tableprint.Timezone(timezone),
+		W:               cmdCtx.Stdout,
+		DesiredMaxWidth: width,
+	}
+
+	tableprint.KeyringList(c, keyringEntries, errors)
 	return nil
 }

@@ -2,18 +2,17 @@ package tableprint
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"go.bbkane.com/envelope/domain"
 )
 
-func KeyringList(w io.Writer, keyringEntries []domain.KeyringEntry, errs []error, timezone Timezone) {
+func KeyringList(c CommonTablePrintArgs, keyringEntries []domain.KeyringEntry, errs []error) {
 	if len(keyringEntries) > 0 {
-		t := newKeyValueTable(w, 0, 0)
+		t := newKeyValueTable(c.W, c.DesiredMaxWidth, len("CreateTime"))
 		for _, e := range keyringEntries {
-			createTime := formatTime(e.CreateTime, timezone)
-			updateTime := formatTime(e.UpdateTime, timezone)
+			createTime := formatTime(e.CreateTime, c.Tz)
+			updateTime := formatTime(e.UpdateTime, c.Tz)
 			t.Section(
 				newRow("Name", e.Name),
 				newRow("Value", e.Value),
@@ -25,14 +24,14 @@ func KeyringList(w io.Writer, keyringEntries []domain.KeyringEntry, errs []error
 		t.Render()
 
 	} else {
-		fmt.Fprintln(w, "no keyring entries found")
+		fmt.Fprintln(c.W, "no keyring entries found")
 	}
 
 	if len(errs) > 0 {
-		fmt.Fprintln(w, "Errors")
+		fmt.Fprintln(c.W, "Errors")
 		t := table.NewWriter()
 		t.SetStyle(table.StyleRounded)
-		t.SetOutputMirror(w)
+		t.SetOutputMirror(c.W)
 
 		t.AppendHeader(table.Row{"Error"})
 		for _, e := range errs {

@@ -96,6 +96,18 @@ func formatFlag() flag.FlagMap {
 	}
 }
 
+func widthFlag() flag.FlagMap {
+	return flag.FlagMap{
+		"--width": flag.New(
+			"Width of the table. 0 means no limit",
+			scalar.Int(
+				scalar.Default(0),
+			),
+			flag.Required(),
+		),
+	}
+}
+
 func envNameFlag() flag.Flag {
 
 	cwd, err := os.Getwd()
@@ -295,4 +307,8 @@ func mustGetTimeoutArg(pf command.PassedFlags) time.Duration {
 
 func mustGetTimezoneArg(pf command.PassedFlags) string {
 	return pf["--timezone"].(string)
+}
+
+func mustGetWidthArg(pf command.PassedFlags) int {
+	return pf["--width"].(int)
 }

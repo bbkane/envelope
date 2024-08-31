@@ -147,6 +147,7 @@ func EnvVarShowCmd() command.Command {
 		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
 		command.ExistingFlags(formatFlag()),
+		command.ExistingFlags(widthFlag()),
 		command.Flag(
 			"--name",
 			"Env var name",
@@ -167,6 +168,7 @@ func envVarShowRun(cmdCtx command.Context) error {
 	name := mustGetNameArg(cmdCtx.Flags)
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
 	format := cmdCtx.Flags["--format"].(string)
+	width := mustGetWidthArg(cmdCtx.Flags)
 
 	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
 	defer cancel()
@@ -182,10 +184,11 @@ func envVarShowRun(cmdCtx command.Context) error {
 	}
 
 	c := tableprint.CommonTablePrintArgs{
-		Format: tableprint.Format(format),
-		Mask:   mask,
-		Tz:     tableprint.Timezone(timezone),
-		W:      cmdCtx.Stdout,
+		Format:          tableprint.Format(format),
+		Mask:            mask,
+		Tz:              tableprint.Timezone(timezone),
+		W:               cmdCtx.Stdout,
+		DesiredMaxWidth: width,
 	}
 
 	tableprint.EnvLocalVarShowPrint(c, *envVar, envRefs)

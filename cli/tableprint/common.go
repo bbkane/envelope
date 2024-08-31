@@ -23,10 +23,11 @@ const (
 )
 
 type CommonTablePrintArgs struct {
-	Format Format
-	Mask   bool
-	Tz     Timezone
-	W      io.Writer
+	Format          Format
+	Mask            bool
+	Tz              Timezone
+	W               io.Writer
+	DesiredMaxWidth int
 }
 
 func mask(mask bool, val string) string {

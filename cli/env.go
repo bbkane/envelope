@@ -107,12 +107,14 @@ func EnvListCmd() command.Command {
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
+		command.ExistingFlags(widthFlag()),
 	)
 }
 
 func envListRun(cmdCtx command.Context) error {
 
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
+	width := mustGetWidthArg(cmdCtx.Flags)
 
 	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
 	defer cancel()
@@ -127,7 +129,15 @@ func envListRun(cmdCtx command.Context) error {
 		return err
 	}
 
-	tableprint.EnvList(cmdCtx.Stdout, envs, tableprint.Timezone(timezone))
+	c := tableprint.CommonTablePrintArgs{
+		Format:          tableprint.Format_Table,
+		Mask:            false,
+		Tz:              tableprint.Timezone(timezone),
+		W:               cmdCtx.Stdout,
+		DesiredMaxWidth: width,
+	}
+
+	tableprint.EnvList(c, envs)
 	return nil
 }
 
@@ -240,6 +250,7 @@ func EnvShowCmd() command.Command {
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
+		command.ExistingFlags(widthFlag()),
 	)
 }
 
@@ -248,6 +259,7 @@ func envShowRun(cmdCtx command.Context) error {
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
+	width := mustGetWidthArg(cmdCtx.Flags)
 
 	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
 	defer cancel()
@@ -275,10 +287,11 @@ func envShowRun(cmdCtx command.Context) error {
 	c := tableprint.CommonTablePrintArgs{
 		// NOTE: since the only two options are value-only and table,
 		// and value-only doesn't make sense here, hardcode Format_Table
-		Format: tableprint.Format_Table,
-		Mask:   mask,
-		Tz:     tableprint.Timezone(timezone),
-		W:      cmdCtx.Stdout,
+		Format:          tableprint.Format_Table,
+		Mask:            mask,
+		Tz:              tableprint.Timezone(timezone),
+		W:               cmdCtx.Stdout,
+		DesiredMaxWidth: width,
 	}
 	tableprint.EnvShowRun(c, *env, localvars, refs, referencedVars)
 	return nil

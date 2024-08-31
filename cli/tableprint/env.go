@@ -2,18 +2,16 @@ package tableprint
 
 import (
 	"fmt"
-	"io"
 
 	"go.bbkane.com/envelope/domain"
 )
 
-func EnvList(w io.Writer, envs []domain.Env, timezone Timezone) {
-
+func EnvList(c CommonTablePrintArgs, envs []domain.Env) {
 	if len(envs) > 0 {
-		t := newKeyValueTable(w, 0, 0)
+		t := newKeyValueTable(c.W, c.DesiredMaxWidth, len("CreateTime"))
 		for _, e := range envs {
-			createTime := formatTime(e.CreateTime, timezone)
-			updateTime := formatTime(e.UpdateTime, timezone)
+			createTime := formatTime(e.CreateTime, c.Tz)
+			updateTime := formatTime(e.UpdateTime, c.Tz)
 			t.Section(
 				newRow("Name", e.Name),
 				newRow("Comment", e.Comment, skipRowIf(e.Comment == "")),
@@ -23,7 +21,7 @@ func EnvList(w io.Writer, envs []domain.Env, timezone Timezone) {
 		}
 		t.Render()
 	} else {
-		fmt.Fprintln(w, "no envs found")
+		fmt.Fprintln(c.W, "no envs found")
 	}
 }
 
@@ -38,7 +36,7 @@ func EnvShowRun(
 	case Format_Table:
 		fmt.Fprintln(c.W, "Env")
 
-		t := newKeyValueTable(c.W, 0, 0)
+		t := newKeyValueTable(c.W, c.DesiredMaxWidth, len("CreateTime"))
 		createTime := formatTime(env.CreateTime, c.Tz)
 		updateTime := formatTime(env.UpdateTime, c.Tz)
 		t.Section(
@@ -52,7 +50,7 @@ func EnvShowRun(
 		if len(localvars) > 0 {
 			fmt.Fprintln(c.W, "Vars")
 
-			t := newKeyValueTable(c.W, 0, 0)
+			t := newKeyValueTable(c.W, c.DesiredMaxWidth, 0)
 			for _, e := range localvars {
 				t.Section(
 					newRow("Name", e.Name),
@@ -65,7 +63,7 @@ func EnvShowRun(
 
 		if len(refs) > 0 {
 			fmt.Fprintln(c.W, "Refs")
-			t := newKeyValueTable(c.W, 0, 0)
+			t := newKeyValueTable(c.W, c.DesiredMaxWidth, len("CreateTime"))
 
 			for i := range len(refs) {
 				t.Section(
