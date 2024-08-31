@@ -40,6 +40,14 @@ func mask(mask bool, val string) string {
 	return val
 }
 
+// truncate truncates a string to max-3 characters and appends "..." if the string is longer than max. As a special case, if max is 0, the original string is returned.
+func truncate(s string, max int) string {
+	if max == 0 || len(s) <= max {
+		return s
+	}
+	return s[:max-3] + "..."
+}
+
 func formatTime(t time.Time, timezone Timezone) string {
 	timeFormat := "Mon 2006-01-02"
 	switch timezone {
@@ -79,55 +87,49 @@ func newRow(key string, value string, opts ...rowOpt) row {
 	return r
 }
 
-type KeyValueTable struct {
+type keyValueTable struct {
 	t               table.Writer
-	desiredMaxWidth int
-	maxKeyWidth     int
+	truncationWidth int
 }
 
-func NewKeyValueTable(w io.Writer, desiredMaxWidth int, maxKeyWidth int) *KeyValueTable {
+// newKeyValueTable creates a new table and tries to fit it into desiredMaxWidth
+// desiredMaxWidth is ignored if it == 0, or if it is less than the minimum width possible
+//
+//	width = len(key) + len(truncated_value) + len(padding)
+//
+// if desiredMaxWidth < len(key) + len(truncated_value) + len(padding) , it is ignored.
+func newKeyValueTable(w io.Writer, desiredMaxWidth int, maxKeyWidth int) *keyValueTable {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleRounded)
 	t.SetOutputMirror(w)
-	return &KeyValueTable{
+
+	// ╭─────────┬───────────╮
+	// 12--key--345--value--67
+	// ╰─────────┴───────────╯
+	const tablePadding = 7
+
+	truncationWidth := desiredMaxWidth - maxKeyWidth - tablePadding
+	if truncationWidth < 0 || desiredMaxWidth == 0 {
+		truncationWidth = 0
+	}
+	return &keyValueTable{
 		t:               t,
-		desiredMaxWidth: desiredMaxWidth,
-		maxKeyWidth:     maxKeyWidth,
+		truncationWidth: truncationWidth,
 	}
 }
 
-func (k *KeyValueTable) Section(rows ...row) {
+func (k *keyValueTable) Section(rows ...row) {
 	for _, e := range rows {
 		if !e.Skip {
 			k.t.AppendRow(table.Row{
 				e.Key,
-				e.Value,
+				truncate(e.Value, k.truncationWidth),
 			})
 		}
 	}
 	k.t.AppendSeparator()
 }
 
-func (k *KeyValueTable) Render() {
+func (k *keyValueTable) Render() {
 	k.t.Render()
 }
-
-// func tableInit(w io.Writer) table.Writer {
-// 	t := table.NewWriter()
-// 	t.SetStyle(table.StyleRounded)
-// 	t.SetOutputMirror(w)
-// 	return t
-// }
-
-// // tableAddSection adds a section to the table with the given key-value pairs and then a separator. If a value is empty, the row is not added.
-// func tableAddSection(t table.Writer, rows []row) {
-// 	for _, e := range rows {
-// 		if !e.Skip {
-// 			t.AppendRow(table.Row{
-// 				e.Key,
-// 				e.Value,
-// 			})
-// 		}
-// 	}
-// 	t.AppendSeparator()
-// }

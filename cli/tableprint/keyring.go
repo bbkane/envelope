@@ -10,7 +10,7 @@ import (
 
 func KeyringList(w io.Writer, keyringEntries []domain.KeyringEntry, errs []error, timezone Timezone) {
 	if len(keyringEntries) > 0 {
-		t := NewKeyValueTable(w, 0, 0)
+		t := newKeyValueTable(w, 0, 0)
 		for _, e := range keyringEntries {
 			createTime := formatTime(e.CreateTime, timezone)
 			updateTime := formatTime(e.UpdateTime, timezone)

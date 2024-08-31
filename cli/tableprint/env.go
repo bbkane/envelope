@@ -10,7 +10,7 @@ import (
 func EnvList(w io.Writer, envs []domain.Env, timezone Timezone) {
 
 	if len(envs) > 0 {
-		t := NewKeyValueTable(w, 0, 0)
+		t := newKeyValueTable(w, 0, 0)
 		for _, e := range envs {
 			createTime := formatTime(e.CreateTime, timezone)
 			updateTime := formatTime(e.UpdateTime, timezone)
@@ -38,7 +38,7 @@ func EnvShowRun(
 	case Format_Table:
 		fmt.Fprintln(c.W, "Env")
 
-		t := NewKeyValueTable(c.W, 0, 0)
+		t := newKeyValueTable(c.W, 0, 0)
 		createTime := formatTime(env.CreateTime, c.Tz)
 		updateTime := formatTime(env.UpdateTime, c.Tz)
 		t.Section(
@@ -52,7 +52,7 @@ func EnvShowRun(
 		if len(localvars) > 0 {
 			fmt.Fprintln(c.W, "Vars")
 
-			t := NewKeyValueTable(c.W, 0, 0)
+			t := newKeyValueTable(c.W, 0, 0)
 			for _, e := range localvars {
 				t.Section(
 					newRow("Name", e.Name),
@@ -65,7 +65,7 @@ func EnvShowRun(
 
 		if len(refs) > 0 {
 			fmt.Fprintln(c.W, "Refs")
-			t := NewKeyValueTable(c.W, 0, 0)
+			t := newKeyValueTable(c.W, 0, 0)
 
 			for i := range len(refs) {
 				t.Section(
