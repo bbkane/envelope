@@ -12,12 +12,14 @@ func KeyringList(w io.Writer, keyringEntries []domain.KeyringEntry, errs []error
 	if len(keyringEntries) > 0 {
 		t := tableInit(w)
 		for _, e := range keyringEntries {
-			tableAddSection(t, []kv{
-				{"Name", e.Name},
-				{"Value", e.Value},
-				{"Comment", e.Comment},
-				{"CreateTime", formatTime(e.CreateTime, timezone)},
-				{"UpdateTime", formatTime(e.UpdateTime, timezone)},
+			createTime := formatTime(e.CreateTime, timezone)
+			updateTime := formatTime(e.UpdateTime, timezone)
+			tableAddSection(t, []row{
+				newRow("Name", e.Name),
+				newRow("Value", e.Value),
+				newRow("Comment", e.Comment, skipRowIf(e.Comment == "")),
+				newRow("CreateTime", createTime),
+				newRow("UpdateTime", updateTime),
 			})
 		}
 		t.Render()

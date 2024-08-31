@@ -12,11 +12,11 @@ func EnvList(w io.Writer, envs []domain.Env, timezone Timezone) {
 	if len(envs) > 0 {
 		t := tableInit(w)
 		for _, e := range envs {
-			tableAddSection(t, []kv{
-				{"Name", e.Name},
-				{"Comment", e.Comment},
-				{"CreateTime", formatTime(e.CreateTime, timezone)},
-				{"UpdateTime", formatTime(e.UpdateTime, timezone)},
+			tableAddSection(t, []row{
+				newRow("Name", e.Name),
+				newRow("Comment", e.Comment, skipRowIf(e.Comment == "")),
+				newRow("CreateTime", formatTime(e.CreateTime, timezone)),
+				newRow("UpdateTime", formatTime(e.UpdateTime, timezone)),
 			})
 		}
 		t.Render()
@@ -37,11 +37,11 @@ func EnvShowRun(
 		fmt.Fprintln(c.W, "Env")
 
 		t := tableInit(c.W)
-		tableAddSection(t, []kv{
-			{"Name", env.Name},
-			{"Comment", env.Comment},
-			{"CreateTime", formatTime(env.CreateTime, c.Tz)},
-			{"UpdateTime", formatTime(env.UpdateTime, c.Tz)},
+		tableAddSection(t, []row{
+			newRow("Name", env.Name),
+			newRow("Comment", env.Comment, skipRowIf(env.Comment == "")),
+			newRow("CreateTime", formatTime(env.CreateTime, c.Tz)),
+			newRow("UpdateTime", formatTime(env.UpdateTime, c.Tz)),
 		})
 		t.Render()
 
@@ -50,10 +50,10 @@ func EnvShowRun(
 
 			t := tableInit(c.W)
 			for _, e := range localvars {
-				tableAddSection(t, []kv{
-					{"Name", e.Name},
-					{"Value", mask(c.Mask, e.Value)},
-					{"Comment", e.Comment},
+				tableAddSection(t, []row{
+					newRow("Name", e.Name),
+					newRow("Value", mask(c.Mask, e.Value)),
+					newRow("Comment", e.Comment, skipRowIf(e.Comment == "")),
 				})
 			}
 			t.Render()
@@ -64,12 +64,12 @@ func EnvShowRun(
 			t := tableInit(c.W)
 
 			for i := range len(refs) {
-				tableAddSection(t, []kv{
-					{"Name", refs[i].Name},
-					{"RefEnvName", referencedVars[i].EnvName},
-					{"RefVarName", referencedVars[i].Name},
-					{"RefVarValue", mask(c.Mask, referencedVars[i].Value)},
-					{"Comment", refs[i].Comment},
+				tableAddSection(t, []row{
+					newRow("Name", refs[i].Name),
+					newRow("RefEnvName", referencedVars[i].EnvName),
+					newRow("RefVarName", referencedVars[i].Name),
+					newRow("RefVarValue", mask(c.Mask, referencedVars[i].Value)),
+					newRow("Comment", refs[i].Comment, skipRowIf(refs[i].Comment == "")),
 				})
 			}
 			t.Render()

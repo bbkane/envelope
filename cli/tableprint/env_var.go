@@ -11,13 +11,13 @@ func EnvLocalVarShowPrint(c CommonTablePrintArgs, envVar domain.EnvVar, envRefs 
 	switch c.Format {
 	case Format_Table:
 		t := tableInit(c.W)
-		tableAddSection(t, []kv{
-			{"EnvName", envVar.EnvName},
-			{"Name", envVar.Name},
-			{"Value", mask(c.Mask, envVar.Value)},
-			{"Comment", envVar.Comment},
-			{"CreateTime", formatTime(envVar.CreateTime, c.Tz)},
-			{"UpdateTime", formatTime(envVar.UpdateTime, c.Tz)},
+		tableAddSection(t, []row{
+			newRow("EnvName", envVar.EnvName),
+			newRow("Name", envVar.Name),
+			newRow("Value", mask(c.Mask, envVar.Value)),
+			newRow("Comment", envVar.Comment, skipRowIf(envVar.Comment == "")),
+			newRow("CreateTime", formatTime(envVar.CreateTime, c.Tz)),
+			newRow("UpdateTime", formatTime(envVar.UpdateTime, c.Tz)),
 		})
 		t.Render()
 
@@ -27,10 +27,10 @@ func EnvLocalVarShowPrint(c CommonTablePrintArgs, envVar domain.EnvVar, envRefs 
 			t := tableInit(c.W)
 
 			for _, e := range envRefs {
-				tableAddSection(t, []kv{
-					{"EnvName", e.EnvName},
-					{"Name", e.Name},
-					{"Comment", e.Comment},
+				tableAddSection(t, []row{
+					newRow("EnvName", e.EnvName),
+					newRow("Name", e.Name),
+					newRow("Comment", e.Comment, skipRowIf(e.Comment == "")),
 				})
 			}
 			t.Render()

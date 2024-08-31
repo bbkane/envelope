@@ -52,9 +52,31 @@ func formatTime(t time.Time, timezone Timezone) string {
 	}
 }
 
-type kv struct {
+type row struct {
 	Key   string
 	Value string
+	Skip  bool
+}
+
+type rowOpt func(*row)
+
+func skipRowIf(skip bool) rowOpt {
+	return func(r *row) {
+		r.Skip = skip
+	}
+}
+
+func newRow(key string, value string, opts ...rowOpt) row {
+
+	r := row{
+		Key:   key,
+		Value: value,
+		Skip:  false,
+	}
+	for _, opt := range opts {
+		opt(&r)
+	}
+	return r
 }
 
 func tableInit(w io.Writer) table.Writer {
@@ -65,9 +87,9 @@ func tableInit(w io.Writer) table.Writer {
 }
 
 // tableAddSection adds a section to the table with the given key-value pairs and then a separator. If a value is empty, the row is not added.
-func tableAddSection(t table.Writer, kvs []kv) {
-	for _, e := range kvs {
-		if e.Value != "" {
+func tableAddSection(t table.Writer, rows []row) {
+	for _, e := range rows {
+		if !e.Skip {
 			t.AppendRow(table.Row{
 				e.Key,
 				e.Value,
