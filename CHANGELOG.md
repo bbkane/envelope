@@ -7,6 +7,10 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 # v0.0.10
 
+## Added
+
+- `--width` flag for output using tables
+
 ## Changed
 
 - Skip printing Comment if it's blank
