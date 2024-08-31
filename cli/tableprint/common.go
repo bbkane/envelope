@@ -79,22 +79,55 @@ func newRow(key string, value string, opts ...rowOpt) row {
 	return r
 }
 
-func tableInit(w io.Writer) table.Writer {
+type KeyValueTable struct {
+	t               table.Writer
+	desiredMaxWidth int
+	maxKeyWidth     int
+}
+
+func NewKeyValueTable(w io.Writer, desiredMaxWidth int, maxKeyWidth int) *KeyValueTable {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleRounded)
 	t.SetOutputMirror(w)
-	return t
+	return &KeyValueTable{
+		t:               t,
+		desiredMaxWidth: desiredMaxWidth,
+		maxKeyWidth:     maxKeyWidth,
+	}
 }
 
-// tableAddSection adds a section to the table with the given key-value pairs and then a separator. If a value is empty, the row is not added.
-func tableAddSection(t table.Writer, rows []row) {
+func (k *KeyValueTable) Section(rows ...row) {
 	for _, e := range rows {
 		if !e.Skip {
-			t.AppendRow(table.Row{
+			k.t.AppendRow(table.Row{
 				e.Key,
 				e.Value,
 			})
 		}
 	}
-	t.AppendSeparator()
+	k.t.AppendSeparator()
 }
+
+func (k *KeyValueTable) Render() {
+	k.t.Render()
+}
+
+// func tableInit(w io.Writer) table.Writer {
+// 	t := table.NewWriter()
+// 	t.SetStyle(table.StyleRounded)
+// 	t.SetOutputMirror(w)
+// 	return t
+// }
+
+// // tableAddSection adds a section to the table with the given key-value pairs and then a separator. If a value is empty, the row is not added.
+// func tableAddSection(t table.Writer, rows []row) {
+// 	for _, e := range rows {
+// 		if !e.Skip {
+// 			t.AppendRow(table.Row{
+// 				e.Key,
+// 				e.Value,
+// 			})
+// 		}
+// 	}
+// 	t.AppendSeparator()
+// }

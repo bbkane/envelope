@@ -10,30 +10,29 @@ func EnvLocalVarShowPrint(c CommonTablePrintArgs, envVar domain.EnvVar, envRefs 
 
 	switch c.Format {
 	case Format_Table:
-		t := tableInit(c.W)
+		t := NewKeyValueTable(c.W, 0, 0)
 		createTime := formatTime(envVar.CreateTime, c.Tz)
 		updateTime := formatTime(envVar.UpdateTime, c.Tz)
-		tableAddSection(t, []row{
+		t.Section(
 			newRow("EnvName", envVar.EnvName),
 			newRow("Name", envVar.Name),
 			newRow("Value", mask(c.Mask, envVar.Value)),
 			newRow("Comment", envVar.Comment, skipRowIf(envVar.Comment == "")),
 			newRow("CreateTime", createTime),
 			newRow("UpdateTime", updateTime, skipRowIf(envVar.CreateTime == envVar.UpdateTime)),
-		})
+		)
 		t.Render()
 
 		if len(envRefs) > 0 {
 			fmt.Fprintln(c.W, "EnvRefs")
 
-			t := tableInit(c.W)
-
+			t := NewKeyValueTable(c.W, 0, 0)
 			for _, e := range envRefs {
-				tableAddSection(t, []row{
+				t.Section(
 					newRow("EnvName", e.EnvName),
 					newRow("Name", e.Name),
 					newRow("Comment", e.Comment, skipRowIf(e.Comment == "")),
-				})
+				)
 			}
 			t.Render()
 		}

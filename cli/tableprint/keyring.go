@@ -10,17 +10,17 @@ import (
 
 func KeyringList(w io.Writer, keyringEntries []domain.KeyringEntry, errs []error, timezone Timezone) {
 	if len(keyringEntries) > 0 {
-		t := tableInit(w)
+		t := NewKeyValueTable(w, 0, 0)
 		for _, e := range keyringEntries {
 			createTime := formatTime(e.CreateTime, timezone)
 			updateTime := formatTime(e.UpdateTime, timezone)
-			tableAddSection(t, []row{
+			t.Section(
 				newRow("Name", e.Name),
 				newRow("Value", e.Value),
 				newRow("Comment", e.Comment, skipRowIf(e.Comment == "")),
 				newRow("CreateTime", createTime),
 				newRow("UpdateTime", updateTime, skipRowIf(e.CreateTime == e.UpdateTime)),
-			})
+			)
 		}
 		t.Render()
 

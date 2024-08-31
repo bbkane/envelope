@@ -10,10 +10,10 @@ func EnvRefShowPrint(c CommonTablePrintArgs, envRef domain.EnvRef, envVar domain
 
 	switch c.Format {
 	case Format_Table:
-		t := tableInit(c.W)
+		t := NewKeyValueTable(c.W, 0, 0)
 		createTime := formatTime(envRef.CreateTime, c.Tz)
 		updateTime := formatTime(envRef.UpdateTime, c.Tz)
-		tableAddSection(t, []row{
+		t.Section(
 			newRow("EnvName", envRef.EnvName),
 			newRow("Name", envRef.Name),
 			newRow("RefEnvName", envRef.RefEnvName),
@@ -22,7 +22,7 @@ func EnvRefShowPrint(c CommonTablePrintArgs, envRef domain.EnvRef, envVar domain
 			newRow("Comment", envRef.Comment, skipRowIf(envRef.Comment == "")),
 			newRow("CreateTime", createTime),
 			newRow("UpdateTime", updateTime, skipRowIf(envRef.CreateTime == envRef.UpdateTime)),
-		})
+		)
 		t.Render()
 	case Format_ValueOnly:
 		fmt.Print(envVar.Value)
