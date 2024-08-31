@@ -11,13 +11,15 @@ func EnvLocalVarShowPrint(c CommonTablePrintArgs, envVar domain.EnvVar, envRefs 
 	switch c.Format {
 	case Format_Table:
 		t := tableInit(c.W)
+		createTime := formatTime(envVar.CreateTime, c.Tz)
+		updateTime := formatTime(envVar.UpdateTime, c.Tz)
 		tableAddSection(t, []row{
 			newRow("EnvName", envVar.EnvName),
 			newRow("Name", envVar.Name),
 			newRow("Value", mask(c.Mask, envVar.Value)),
 			newRow("Comment", envVar.Comment, skipRowIf(envVar.Comment == "")),
-			newRow("CreateTime", formatTime(envVar.CreateTime, c.Tz)),
-			newRow("UpdateTime", formatTime(envVar.UpdateTime, c.Tz)),
+			newRow("CreateTime", createTime),
+			newRow("UpdateTime", updateTime, skipRowIf(envVar.CreateTime == envVar.UpdateTime)),
 		})
 		t.Render()
 

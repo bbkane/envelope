@@ -12,11 +12,13 @@ func EnvList(w io.Writer, envs []domain.Env, timezone Timezone) {
 	if len(envs) > 0 {
 		t := tableInit(w)
 		for _, e := range envs {
+			createTime := formatTime(e.CreateTime, timezone)
+			updateTime := formatTime(e.UpdateTime, timezone)
 			tableAddSection(t, []row{
 				newRow("Name", e.Name),
 				newRow("Comment", e.Comment, skipRowIf(e.Comment == "")),
-				newRow("CreateTime", formatTime(e.CreateTime, timezone)),
-				newRow("UpdateTime", formatTime(e.UpdateTime, timezone)),
+				newRow("CreateTime", createTime),
+				newRow("UpdateTime", updateTime, skipRowIf(e.CreateTime == e.UpdateTime)),
 			})
 		}
 		t.Render()
@@ -37,11 +39,13 @@ func EnvShowRun(
 		fmt.Fprintln(c.W, "Env")
 
 		t := tableInit(c.W)
+		createTime := formatTime(env.CreateTime, c.Tz)
+		updateTime := formatTime(env.UpdateTime, c.Tz)
 		tableAddSection(t, []row{
 			newRow("Name", env.Name),
 			newRow("Comment", env.Comment, skipRowIf(env.Comment == "")),
-			newRow("CreateTime", formatTime(env.CreateTime, c.Tz)),
-			newRow("UpdateTime", formatTime(env.UpdateTime, c.Tz)),
+			newRow("CreateTime", createTime),
+			newRow("UpdateTime", updateTime, skipRowIf(env.CreateTime == env.UpdateTime)),
 		})
 		t.Render()
 

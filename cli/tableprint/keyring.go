@@ -19,7 +19,7 @@ func KeyringList(w io.Writer, keyringEntries []domain.KeyringEntry, errs []error
 				newRow("Value", e.Value),
 				newRow("Comment", e.Comment, skipRowIf(e.Comment == "")),
 				newRow("CreateTime", createTime),
-				newRow("UpdateTime", updateTime),
+				newRow("UpdateTime", updateTime, skipRowIf(e.CreateTime == e.UpdateTime)),
 			})
 		}
 		t.Render()
