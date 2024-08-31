@@ -40,9 +40,9 @@ func mask(mask bool, val string) string {
 	return val
 }
 
-// truncate truncates a string to max-3 characters and appends "..." if the string is longer than max. As a special case, if max is 0, the original string is returned.
+// truncate truncates a string to max-3 characters and appends "..." if the string is longer than max. If max < 3, it returns the original string.
 func truncate(s string, max int) string {
-	if max == 0 || len(s) <= max {
+	if max < 3 || len(s) <= max {
 		return s
 	}
 	return s[:max-3] + "..."
