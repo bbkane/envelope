@@ -9,7 +9,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 ## Added
 
-- `--width` flag for output using tables
+- `--width` flag for output using tables. Defaults to the current terminal width.
 
 ## Changed
 

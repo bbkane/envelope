@@ -14,6 +14,7 @@ import (
 	"go.bbkane.com/envelope/sqlite"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
+	"golang.org/x/term"
 
 	"go.bbkane.com/warg/value/contained"
 	"go.bbkane.com/warg/value/scalar"
@@ -97,11 +98,21 @@ func formatFlag() flag.FlagMap {
 }
 
 func widthFlag() flag.FlagMap {
+
+	// TODO: figure out a good way to cache this for all width flags
+	width := 0
+	if term.IsTerminal(0) {
+		termWidth, _, err := term.GetSize(0)
+		if err == nil { // if there's not an error
+			width = termWidth
+		}
+	}
+
 	return flag.FlagMap{
 		"--width": flag.New(
 			"Width of the table. 0 means no limit",
 			scalar.Int(
-				scalar.Default(0),
+				scalar.Default(width),
 			),
 			flag.Required(),
 		),
@@ -146,6 +157,7 @@ func sqliteDSNFlagMap() flag.FlagMap {
 }
 
 func commonCreateFlagMap() flag.FlagMap {
+	now := time.Now()
 	commonCreateFlags := flag.FlagMap{
 		"--comment": flag.New(
 			"Comment",
@@ -158,7 +170,7 @@ func commonCreateFlagMap() flag.FlagMap {
 			"Create time",
 			scalar.New(
 				datetime(),
-				scalar.Default(time.Now()),
+				scalar.Default(now),
 			),
 			flag.Required(),
 		),
@@ -166,7 +178,7 @@ func commonCreateFlagMap() flag.FlagMap {
 			"Update time",
 			scalar.New(
 				datetime(),
-				scalar.Default(time.Now()),
+				scalar.Default(now),
 			),
 			flag.Required(),
 		),
