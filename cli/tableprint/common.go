@@ -42,11 +42,11 @@ func mask(mask bool, val string) string {
 }
 
 // truncate truncates a string to max-3 characters and appends "..." if the string is longer than max. If max < 3, it returns the original string.
-func truncate(s string, max int) string {
-	if max < 3 || len(s) <= max {
+func truncate(s string, maxWidth int) string {
+	if maxWidth < 3 || len(s) <= maxWidth {
 		return s
 	}
-	return s[:max-3] + "..."
+	return s[:maxWidth-3] + "..."
 }
 
 func formatTime(t time.Time, timezone Timezone) string {
