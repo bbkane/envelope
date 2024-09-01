@@ -3,12 +3,15 @@ package sqlite
 import (
 	"database/sql"
 	"embed"
+	"errors"
 	"fmt"
 	"io/fs"
 	"sort"
 
 	_ "modernc.org/sqlite"
 )
+
+// NOTE: most of this is heavily inspired by https://github.com/benbjohnson/wtf/blob/05bc90c940d5f9e2490fc93cf467d9e8aa48ad63/sqlite/sqlite.go
 
 //go:embed migrations/*.sql
 var migrationFS embed.FS
@@ -39,6 +42,13 @@ func Connect(dsn string) (*sql.DB, error) {
 // is not re-executed. Migrations run in a transaction to prevent partial
 // migrations.
 func migrate(db *sql.DB, migrationFS fs.ReadFileFS, migrationsGlobPattern string) error {
+
+	// TODO: uncomment once I finish this.
+	// err := migrateMigrationTable(db)
+	// if err != nil {
+	// 	return fmt.Errorf("migrate migration table err: %w", err)
+	// }
+
 	// Ensure the 'migrations' table exists so we don't duplicate migrations.
 	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY);`); err != nil {
 		return fmt.Errorf("cannot create migrations table: %w", err)
@@ -61,6 +71,61 @@ func migrate(db *sql.DB, migrationFS fs.ReadFileFS, migrationsGlobPattern string
 			return fmt.Errorf("migration error: name=%q err=%w", name, err)
 		}
 	}
+	return nil
+}
+
+// migrateMigrationTable creates the migrations table if it does not exist, and updates it if we have an old version of the table. This is a special table that tracks updates to the rest of the db, so we have to pudate it separately
+func migrateMigrationTable(db *sql.DB) error {
+	err := withTx(
+		db,
+		func(tx *sql.Tx) error {
+
+			// Check if the migrations table exists
+			migrationsTableCount := false
+			if err := tx.QueryRow(`SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='migrations';`).Scan(&migrationsTableCount); err != nil {
+				return fmt.Errorf("check if migrations table exists err: %w", err)
+			}
+
+			migrationV2TableCount := false
+			if err := tx.QueryRow(`SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='migration_v2';`).Scan(&migrationV2TableCount); err != nil {
+				return fmt.Errorf("check if migration_v2 table exists err: %w", err)
+			}
+
+			migrationV2Create := `
+CREATE TABLE migration_v2 (
+	id INTEGER PRIMARY KEY,
+	file_name TEXT NOT NULL,
+	migrate_time TEXT NOT NULL,
+	UNIQUE(file_name)
+) STRICT;
+`
+
+			switch {
+			case migrationsTableCount && migrationV2TableCount:
+				// this should never happen
+				return errors.New("both migrations and migration_v2 tables exist")
+			case migrationsTableCount && !migrationV2TableCount:
+				if _, err := db.Exec(migrationV2Create); err != nil {
+					return fmt.Errorf("cannot create migration_v2 table: %w", err)
+				}
+				// TODO: copy data from migrations to migration_v2 and convert filenames to the new format
+
+				return nil
+			case !migrationsTableCount && migrationV2TableCount:
+				return nil
+			case !migrationsTableCount && !migrationV2TableCount:
+				if _, err := db.Exec(migrationV2Create); err != nil {
+					return fmt.Errorf("cannot create migration_v2 table: %w", err)
+				}
+				return nil
+			}
+			return nil
+		})
+
+	if err != nil {
+		return fmt.Errorf("migrate migration table err: %w", err)
+	}
+
 	return nil
 }
 
