@@ -8,10 +8,10 @@ import (
 	"go.bbkane.com/warg/value/scalar"
 )
 
-func InitZshCmd() command.Command {
+func ShellZshInitCmd() command.Command {
 	return command.New(
-		"Print zsh",
-		initZshRun,
+		"Prints the zsh initialization script",
+		shellZshInitRun,
 		command.Flag(
 			"--print-autoload",
 			"Include autoload -Uz add-zsh-hook line (might not be needed if you already autoloaded it)",
@@ -39,7 +39,7 @@ func InitZshCmd() command.Command {
 	)
 }
 
-func initZshRun(cmdCtx command.Context) error {
+func shellZshInitRun(cmdCtx command.Context) error {
 
 	printAutoload := cmdCtx.Flags["--print-autoload"].(bool)
 	printChpwdHook := cmdCtx.Flags["--print-chpwd-hook"].(bool)
@@ -50,7 +50,7 @@ func initZshRun(cmdCtx command.Context) error {
 #
 # To initialize envelope, add this to your configuration (usually ~/.zshrc):
 #
-# eval "$(envelope init)"
+# eval "$(envelope shell zsh init)"
 #
 `
 	fmt.Fprint(cmdCtx.Stdout, prelude)

@@ -21,11 +21,6 @@ func buildApp() *warg.App {
 			section.ExistingCommand("version", warg.VersionCommand()),
 			section.ExistingFlag("--color", warg.ColorFlag()),
 			section.Section(
-				"init",
-				"Print script to run envelope when the directory changes",
-				section.ExistingCommand("zsh", cli.InitZshCmd()),
-			),
-			section.Section(
 				"env",
 				"Environment commands",
 				section.ExistingCommand("create", cli.EnvCreateCmd()),
@@ -55,6 +50,15 @@ func buildApp() *warg.App {
 				"Work with the OS Keyring",
 				section.ExistingCommand("create", cli.KeyringCreateCmd()),
 				section.ExistingCommand("list", cli.KeyringListCmd()),
+			),
+			section.Section(
+				"shell",
+				"Manipulate the current shell",
+				section.Section(
+					"zsh",
+					"Zsh-specific commands",
+					section.ExistingCommand("init", cli.ShellZshInitCmd()),
+				),
 			),
 		),
 		warg.OverrideHelpFlag(

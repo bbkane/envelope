@@ -15,6 +15,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 - Skip printing Comment if it's blank
 - Skip printing UpdateTime if it equals CreateTime
+- Moved `init zsh` to `shell zsh init`
 
 # v0.0.9
 
