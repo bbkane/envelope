@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"path/filepath"
 	"sort"
+	"time"
 
 	_ "modernc.org/sqlite"
 )
@@ -27,7 +29,7 @@ func Connect(dsn string) (*sql.DB, error) {
 	}
 
 	if err := migrate(db, migrationFS, "*/*.sql"); err != nil {
-		return nil, fmt.Errorf("migrate: %w", err)
+		return nil, fmt.Errorf("migrate connect error: %w", err)
 	}
 
 	return db, nil
@@ -43,16 +45,11 @@ func Connect(dsn string) (*sql.DB, error) {
 // migrations.
 func migrate(db *sql.DB, migrationFS fs.ReadFileFS, migrationsGlobPattern string) error {
 
-	// TODO: uncomment once I finish this.
-	// err := migrateMigrationTable(db)
-	// if err != nil {
-	// 	return fmt.Errorf("migrate migration table err: %w", err)
-	// }
-
-	// Ensure the 'migrations' table exists so we don't duplicate migrations.
-	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY);`); err != nil {
-		return fmt.Errorf("cannot create migrations table: %w", err)
+	err := migrateMigrationTable(db)
+	if err != nil {
+		return fmt.Errorf("migrate migration table err: %w", err)
 	}
+
 	// Read migration files from our embedded file system.
 	// This uses Go 1.16's 'embed' package.
 	names, err := fs.Glob(migrationFS, migrationsGlobPattern)
@@ -93,7 +90,7 @@ func migrateMigrationTable(db *sql.DB) error {
 
 			migrationV2Create := `
 CREATE TABLE migration_v2 (
-	id INTEGER PRIMARY KEY,
+	migration_v2_id INTEGER PRIMARY KEY,
 	file_name TEXT NOT NULL,
 	migrate_time TEXT NOT NULL,
 	UNIQUE(file_name)
@@ -104,22 +101,41 @@ CREATE TABLE migration_v2 (
 			case migrationsTableCount && migrationV2TableCount:
 				// this should never happen
 				return errors.New("both migrations and migration_v2 tables exist")
+
 			case migrationsTableCount && !migrationV2TableCount:
-				if _, err := db.Exec(migrationV2Create); err != nil {
+				if _, err := tx.Exec(migrationV2Create); err != nil {
 					return fmt.Errorf("cannot create migration_v2 table: %w", err)
 				}
-				// TODO: copy data from migrations to migration_v2 and convert filenames to the new format
+				// NOTE: this relies on the embedded file system using '/' as the path separator. I think that's ok?
+				insertIntoMigrationV2 := `
+INSERT INTO migration_v2 (file_name, migrate_time)
+SELECT replace(name, 'embedded_migrations/', '') AS file_name, ?
+FROM migrations
+ORDER BY name;
+`
+				now := time.Now().Round(0).UTC().Format(time.RFC3339)
+				if _, err := tx.Exec(insertIntoMigrationV2, now); err != nil {
+					return fmt.Errorf("cannot copy data from migrations to migration_v2: %w", err)
+				}
+
+				if _, err := tx.Exec(`DROP TABLE migrations;`); err != nil {
+					return fmt.Errorf("cannot drop migrations table: %w", err)
+				}
 
 				return nil
+
 			case !migrationsTableCount && migrationV2TableCount:
 				return nil
+
 			case !migrationsTableCount && !migrationV2TableCount:
-				if _, err := db.Exec(migrationV2Create); err != nil {
+				if _, err := tx.Exec(migrationV2Create); err != nil {
 					return fmt.Errorf("cannot create migration_v2 table: %w", err)
 				}
+
 				return nil
 			}
-			return nil
+
+			return errors.New("unreachable")
 		})
 
 	if err != nil {
@@ -135,9 +151,11 @@ func migrateFile(db *sql.DB, migrationFS fs.ReadFileFS, name string) error {
 	err := withTx(
 		db,
 		func(tx *sql.Tx) error {
+
+			fileName := filepath.Base(name)
 			// Ensure migration has not already been run.
 			var n int
-			if err := tx.QueryRow(`SELECT COUNT(*) FROM migrations WHERE name = ?`, name).Scan(&n); err != nil {
+			if err := tx.QueryRow(`SELECT COUNT(*) FROM migration_v2 WHERE file_name = ?`, fileName).Scan(&n); err != nil {
 				return err
 			} else if n != 0 {
 				return nil // already run migration, skip
@@ -150,8 +168,9 @@ func migrateFile(db *sql.DB, migrationFS fs.ReadFileFS, name string) error {
 				return err
 			}
 
+			now := time.Now().Round(0).UTC().Format(time.RFC3339)
 			// Insert record into migrations to prevent re-running migration.
-			if _, err := tx.Exec(`INSERT INTO migrations (name) VALUES (?)`, name); err != nil {
+			if _, err := tx.Exec(`INSERT INTO migration_v2 (file_name, migrate_time) VALUES (?, ?)`, fileName, now); err != nil {
 				return err
 			}
 			return nil
