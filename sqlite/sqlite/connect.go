@@ -45,9 +45,9 @@ func Connect(dsn string) (*sql.DB, error) {
 // migrations.
 func migrate(db *sql.DB, migrationFS fs.ReadFileFS, migrationsGlobPattern string) error {
 
-	err := migrateMigrationTable(db)
-	if err != nil {
-		return fmt.Errorf("migrate migration table err: %w", err)
+	// Create or update the migration table. Wouldn't need this if I was starting from scratch :D
+	if err := withTx(db, migrateMigrationTable); err != nil {
+		return fmt.Errorf("could not migrate migration table: %w", err)
 	}
 
 	// Read migration files from our embedded file system.
@@ -72,23 +72,20 @@ func migrate(db *sql.DB, migrationFS fs.ReadFileFS, migrationsGlobPattern string
 }
 
 // migrateMigrationTable creates the migrations table if it does not exist, and updates it if we have an old version of the table. This is a special table that tracks updates to the rest of the db, so we have to pudate it separately
-func migrateMigrationTable(db *sql.DB) error {
-	err := withTx(
-		db,
-		func(tx *sql.Tx) error {
+func migrateMigrationTable(tx *sql.Tx) error {
 
-			// Check if the migrations table exists
-			migrationsTableCount := false
-			if err := tx.QueryRow(`SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='migrations';`).Scan(&migrationsTableCount); err != nil {
-				return fmt.Errorf("check if migrations table exists err: %w", err)
-			}
+	// Check if the migrations table exists
+	migrationsTableCount := false
+	if err := tx.QueryRow(`SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='migrations';`).Scan(&migrationsTableCount); err != nil {
+		return fmt.Errorf("check if migrations table exists err: %w", err)
+	}
 
-			migrationV2TableCount := false
-			if err := tx.QueryRow(`SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='migration_v2';`).Scan(&migrationV2TableCount); err != nil {
-				return fmt.Errorf("check if migration_v2 table exists err: %w", err)
-			}
+	migrationV2TableCount := false
+	if err := tx.QueryRow(`SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='migration_v2';`).Scan(&migrationV2TableCount); err != nil {
+		return fmt.Errorf("check if migration_v2 table exists err: %w", err)
+	}
 
-			migrationV2Create := `
+	migrationV2Create := `
 CREATE TABLE migration_v2 (
 	migration_v2_id INTEGER PRIMARY KEY,
 	file_name TEXT NOT NULL,
@@ -97,52 +94,45 @@ CREATE TABLE migration_v2 (
 ) STRICT;
 `
 
-			switch {
-			case migrationsTableCount && migrationV2TableCount:
-				// this should never happen
-				return errors.New("both migrations and migration_v2 tables exist")
+	switch {
+	case migrationsTableCount && migrationV2TableCount:
+		// this should never happen
+		return errors.New("both migrations and migration_v2 tables exist")
 
-			case migrationsTableCount && !migrationV2TableCount:
-				if _, err := tx.Exec(migrationV2Create); err != nil {
-					return fmt.Errorf("cannot create migration_v2 table: %w", err)
-				}
-				// NOTE: this relies on the embedded file system using '/' as the path separator. I think that's ok?
-				insertIntoMigrationV2 := `
+	case migrationsTableCount && !migrationV2TableCount:
+		if _, err := tx.Exec(migrationV2Create); err != nil {
+			return fmt.Errorf("cannot create migration_v2 table: %w", err)
+		}
+		// NOTE: this relies on the embedded file system using '/' as the path separator. I think that's ok?
+		insertIntoMigrationV2 := `
 INSERT INTO migration_v2 (file_name, migrate_time)
 SELECT replace(name, 'embedded_migrations/', '') AS file_name, ?
 FROM migrations
 ORDER BY name;
 `
-				now := time.Now().Round(0).UTC().Format(time.RFC3339)
-				if _, err := tx.Exec(insertIntoMigrationV2, now); err != nil {
-					return fmt.Errorf("cannot copy data from migrations to migration_v2: %w", err)
-				}
+		now := time.Now().Round(0).UTC().Format(time.RFC3339)
+		if _, err := tx.Exec(insertIntoMigrationV2, now); err != nil {
+			return fmt.Errorf("cannot copy data from migrations to migration_v2: %w", err)
+		}
 
-				if _, err := tx.Exec(`DROP TABLE migrations;`); err != nil {
-					return fmt.Errorf("cannot drop migrations table: %w", err)
-				}
+		if _, err := tx.Exec(`DROP TABLE migrations;`); err != nil {
+			return fmt.Errorf("cannot drop migrations table: %w", err)
+		}
 
-				return nil
+		return nil
 
-			case !migrationsTableCount && migrationV2TableCount:
-				return nil
+	case !migrationsTableCount && migrationV2TableCount:
+		return nil
 
-			case !migrationsTableCount && !migrationV2TableCount:
-				if _, err := tx.Exec(migrationV2Create); err != nil {
-					return fmt.Errorf("cannot create migration_v2 table: %w", err)
-				}
+	case !migrationsTableCount && !migrationV2TableCount:
+		if _, err := tx.Exec(migrationV2Create); err != nil {
+			return fmt.Errorf("cannot create migration_v2 table: %w", err)
+		}
 
-				return nil
-			}
-
-			return errors.New("unreachable")
-		})
-
-	if err != nil {
-		return fmt.Errorf("migrate migration table err: %w", err)
+		return nil
 	}
 
-	return nil
+	return errors.New("unreachable")
 }
 
 // migrate runs a single migration file within a transaction. On success, the
