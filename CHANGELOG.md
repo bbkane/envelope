@@ -5,6 +5,13 @@ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note the the latest version is usually work in progress and may have not yet been released.
 
+# v0.0.11
+
+## Fixed
+
+- `--width` flag for `env var show` and `env show`
+
+
 # v0.0.10
 
 ## Added

@@ -26,7 +26,7 @@ func EnvLocalVarShowPrint(c CommonTablePrintArgs, envVar domain.EnvVar, envRefs 
 		if len(envRefs) > 0 {
 			fmt.Fprintln(c.W, "EnvRefs")
 
-			t := newKeyValueTable(c.W, c.DesiredMaxWidth, 0)
+			t := newKeyValueTable(c.W, c.DesiredMaxWidth, len("Comment"))
 			for _, e := range envRefs {
 				t.Section(
 					newRow("EnvName", e.EnvName),

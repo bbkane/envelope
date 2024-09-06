@@ -50,7 +50,7 @@ func EnvShowRun(
 		if len(localvars) > 0 {
 			fmt.Fprintln(c.W, "Vars")
 
-			t := newKeyValueTable(c.W, c.DesiredMaxWidth, 0)
+			t := newKeyValueTable(c.W, c.DesiredMaxWidth, len("Comment"))
 			for _, e := range localvars {
 				t.Section(
 					newRow("Name", e.Name),
