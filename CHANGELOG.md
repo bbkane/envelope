@@ -7,6 +7,10 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 # v0.0.11
 
+## Changed
+
+- print-script output
+
 ## Fixed
 
 - `--width` flag for `env var show` and `env show`

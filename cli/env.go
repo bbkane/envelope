@@ -211,24 +211,33 @@ func envPrintScriptRun(cmdCtx command.Context) error {
 	case "zsh":
 		switch scriptType {
 		case "export":
-			for _, ev := range envVars {
-				fmt.Fprintf(cmdCtx.Stdout, "echo 'Adding:' %s;\n", shellescape.Quote(ev.Name))
-				fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
+			if len(envVars)+len(envRefs) > 0 {
+				fmt.Fprintf(cmdCtx.Stdout, "printf '%s:';\n", cmdCtx.AppName)
+				for _, ev := range envVars {
+					fmt.Fprintf(cmdCtx.Stdout, "printf ' +%s';\n", shellescape.Quote(ev.Name))
+					fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
+				}
+
+				for i := range len(envRefs) {
+					fmt.Fprintf(cmdCtx.Stdout, "printf ' +%s';\n", shellescape.Quote(envRefs[i].Name))
+					fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(envRefs[i].Name), shellescape.Quote(envRefVars[i].Value))
+				}
+				fmt.Fprintf(cmdCtx.Stdout, "echo;\n")
 			}
 
-			for i := range len(envRefs) {
-				fmt.Fprintf(cmdCtx.Stdout, "echo 'Adding:' %s;\n", shellescape.Quote(envRefs[i].Name))
-				fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(envRefs[i].Name), shellescape.Quote(envRefVars[i].Value))
-			}
 		case "unexport":
-			for _, ev := range envVars {
-				fmt.Fprintf(cmdCtx.Stdout, "echo 'Removing:' %s;\n", shellescape.Quote(ev.Name))
-				fmt.Fprintf(cmdCtx.Stdout, "unset %s;\n", shellescape.Quote(ev.Name))
-			}
+			if len(envVars)+len(envRefs) > 0 {
+				fmt.Fprintf(cmdCtx.Stdout, "printf '%s:';\n", cmdCtx.AppName)
+				for _, ev := range envVars {
+					fmt.Fprintf(cmdCtx.Stdout, "printf ' -%s';\n", shellescape.Quote(ev.Name))
+					fmt.Fprintf(cmdCtx.Stdout, "unset %s;\n", shellescape.Quote(ev.Name))
+				}
 
-			for _, er := range envRefs {
-				fmt.Fprintf(cmdCtx.Stdout, "echo 'Removing:' %s;\n", shellescape.Quote(er.Name))
-				fmt.Fprintf(cmdCtx.Stdout, "unset %s;\n", shellescape.Quote(er.Name))
+				for _, er := range envRefs {
+					fmt.Fprintf(cmdCtx.Stdout, "printf ' -%s';\n", shellescape.Quote(er.Name))
+					fmt.Fprintf(cmdCtx.Stdout, "unset %s;\n", shellescape.Quote(er.Name))
+				}
+				fmt.Fprintf(cmdCtx.Stdout, "echo;\n")
 			}
 		default:
 			return errors.New("unimplemented --script-type: " + scriptType)
