@@ -15,6 +15,9 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 - `--width` flag for `env var show` and `env show`
 
+## Removed
+
+- Removed `keyring` commands in favor of planned `secret` commands using age + the existing db
 
 # v0.0.10
 

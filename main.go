@@ -46,12 +46,6 @@ func buildApp() *warg.App {
 				),
 			),
 			section.Section(
-				"keyring",
-				"Work with the OS Keyring",
-				section.ExistingCommand("create", cli.KeyringCreateCmd()),
-				section.ExistingCommand("list", cli.KeyringListCmd()),
-			),
-			section.Section(
 				"shell",
 				"Manipulate the current shell",
 				section.Section(

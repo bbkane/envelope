@@ -10,7 +10,6 @@ import (
 
 	"github.com/mitchellh/go-homedir"
 	"go.bbkane.com/envelope/domain"
-	"go.bbkane.com/envelope/keyring"
 	"go.bbkane.com/envelope/sqlite"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
@@ -258,8 +257,7 @@ func ptrFromMap[T any](m map[string]any, key string) *T {
 // - --db-path
 func initEnvService(ctx context.Context, passedFlags command.PassedFlags) (domain.EnvService, error) {
 	sqliteDSN := passedFlags["--db-path"].(string)
-	keyring := keyring.NewOSKeyring(sqliteDSN)
-	envService, err := sqlite.NewEnvService(ctx, sqliteDSN, keyring)
+	envService, err := sqlite.NewEnvService(ctx, sqliteDSN)
 	if err != nil {
 		//nolint:govet // we don't need the cancel if we err out
 		return nil, fmt.Errorf("could not create env service: %w", err)

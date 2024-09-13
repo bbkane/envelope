@@ -1,0 +1,1 @@
+DROP TABLE keyring_entry;

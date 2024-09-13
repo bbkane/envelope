@@ -32,14 +32,6 @@ type EnvVar struct {
 	Value      string
 }
 
-type KeyringEntry struct {
-	KeyringEntryID int64
-	Name           string
-	Comment        string
-	CreateTime     string
-	UpdateTime     string
-}
-
 type VwEnvEnvRefEnvVarUniqueName struct {
 	EnvID int64
 	Name  string
