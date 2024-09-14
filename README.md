@@ -9,7 +9,7 @@ Store environment variables for projects in a central SQLite database!
 
 ## Project Status
 
-I'm using `envelope` personally, but I can't recommend it for anyone else to use until I have more features (update commands, keyringref support) and tab completion. The CLI interface is also not stable.
+I'm using `envelope` personally, but I can't recommend it for anyone else to use until I have more features and tab completion. The CLI interface is also not stable.
 
 ## Install
 
@@ -30,9 +30,32 @@ scoop install bbkane/envelope
 > Other shells not yet supported
 
 ```bash
-eval "$(envelope init zsh)"
+eval "$(envelope shell zsh init)"
 ```
 
-## Notes
+## Dev Notes
 
-See [Go Project Notes](https://www.bbkane.com/blog/go-project-notes/) for notes on development tooling.
+### Generate [./sqlite/sqlite/sqlcgen](./sqlite/sqlite/sqlcgen)
+
+```bash
+go generate ./...
+```
+
+See [Go Project Notes](https://www.bbkane.com/blog/go-project-notes/) for notes on development tooling and CI/CD setup.
+
+### Generate [`./dbdoc`](./dbdoc) with [tbls](https://github.com/k1LoW/tbls)
+
+Install:
+
+```bash
+brew install k1LoW/tap/tbls
+```
+
+Run:
+
+```bash
+# get a fresh db
+envelope env list --db-path tmp.db
+tbls doc --rm-dist
+```
+

@@ -1,0 +1,4 @@
+dsn: sqlite://./tmp.db
+er:
+  format: mermaid
+  hideDef: true
