@@ -1,4 +1,5 @@
 dsn: sqlite://./tmp.db
 er:
-  format: mermaid
+  format: svg
   hideDef: true
+name: Envelope Database Schema

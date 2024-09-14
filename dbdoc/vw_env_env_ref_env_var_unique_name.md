@@ -33,15 +33,7 @@ FROM env e JOIN env_var ev ON e.env_id = ev.env_id
 
 ## Relations
 
-```mermaid
-erDiagram
-
-
-"vw_env_env_ref_env_var_unique_name" {
-  INTEGER env_id
-  TEXT name
-}
-```
+![er](vw_env_env_ref_env_var_unique_name.svg)
 
 ---
 

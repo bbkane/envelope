@@ -35,13 +35,7 @@ eval "$(envelope shell zsh init)"
 
 ## Dev Notes
 
-### Generate [./sqlite/sqlite/sqlcgen](./sqlite/sqlite/sqlcgen)
-
-```bash
-go generate ./...
-```
-
-See [Go Project Notes](https://www.bbkane.com/blog/go-project-notes/) for notes on development tooling and CI/CD setup.
+See [Go Project Notes](https://www.bbkane.com/blog/go-project-notes/) for notes on development tooling and CI/CD setup (including demo gif generation)
 
 ### Generate [`./dbdoc`](./dbdoc) with [tbls](https://github.com/k1LoW/tbls)
 
@@ -57,5 +51,11 @@ Run:
 # get a fresh db
 envelope env list --db-path tmp.db
 tbls doc --rm-dist
+```
+
+### Generate [./sqlite/sqlite/sqlcgen](./sqlite/sqlite/sqlcgen)
+
+```bash
+go generate ./...
 ```
 

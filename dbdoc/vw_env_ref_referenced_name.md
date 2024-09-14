@@ -48,23 +48,7 @@ FROM env_ref
 
 ## Relations
 
-```mermaid
-erDiagram
-
-
-"vw_env_ref_referenced_name" {
-  INTEGER env_ref_id
-  INTEGER env_id
-  TEXT env_name
-  TEXT name
-  INTEGER env_var_id
-  TEXT ref_var_name
-  TEXT ref_env_name
-  TEXT comment
-  TEXT create_time
-  TEXT update_time
-}
-```
+![er](vw_env_ref_referenced_name.svg)
 
 ---
 

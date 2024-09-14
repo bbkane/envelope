@@ -1,4 +1,4 @@
-# tmp.db
+# Envelope Database Schema
 
 ## Tables
 
@@ -14,70 +14,7 @@
 
 ## Relations
 
-```mermaid
-erDiagram
-
-"env_var" }o--|| "env" : ""
-"env_ref" }o--|| "env_var" : ""
-"env_ref" }o--|| "env" : ""
-
-"migration_v2" {
-  INTEGER migration_v2_id
-  TEXT file_name
-  TEXT migrate_time
-}
-"env" {
-  INTEGER env_id
-  TEXT name
-  TEXT comment
-  TEXT create_time
-  TEXT update_time
-}
-"env_var" {
-  INTEGER env_var_id
-  INTEGER env_id FK
-  TEXT name
-  TEXT comment
-  TEXT create_time
-  TEXT update_time
-  TEXT value
-}
-"env_ref" {
-  INTEGER env_ref_id
-  INTEGER env_id FK
-  TEXT name
-  TEXT comment
-  TEXT create_time
-  TEXT update_time
-  INTEGER env_var_id FK
-}
-"vw_env_env_ref_env_var_unique_name" {
-  INTEGER env_id
-  TEXT name
-}
-"vw_env_ref_referenced_name" {
-  INTEGER env_ref_id
-  INTEGER env_id
-  TEXT env_name
-  TEXT name
-  INTEGER env_var_id
-  TEXT ref_var_name
-  TEXT ref_env_name
-  TEXT comment
-  TEXT create_time
-  TEXT update_time
-}
-"vw_env_var_referenced_name" {
-  INTEGER env_var_id
-  INTEGER env_id
-  TEXT env_name
-  TEXT name
-  TEXT value
-  TEXT comment
-  TEXT create_time
-  TEXT update_time
-}
-```
+![er](schema.svg)
 
 ---
 

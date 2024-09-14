@@ -60,38 +60,7 @@ CREATE TABLE "env_ref" (
 
 ## Relations
 
-```mermaid
-erDiagram
-
-"env_ref" }o--|| "env" : ""
-"env_ref" }o--|| "env_var" : ""
-
-"env_ref" {
-  INTEGER env_ref_id
-  INTEGER env_id FK
-  TEXT name
-  TEXT comment
-  TEXT create_time
-  TEXT update_time
-  INTEGER env_var_id FK
-}
-"env" {
-  INTEGER env_id
-  TEXT name
-  TEXT comment
-  TEXT create_time
-  TEXT update_time
-}
-"env_var" {
-  INTEGER env_var_id
-  INTEGER env_id FK
-  TEXT name
-  TEXT comment
-  TEXT create_time
-  TEXT update_time
-  TEXT value
-}
-```
+![er](env_ref.svg)
 
 ---
 

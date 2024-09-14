@@ -39,16 +39,7 @@ CREATE TABLE migration_v2 (
 
 ## Relations
 
-```mermaid
-erDiagram
-
-
-"migration_v2" {
-  INTEGER migration_v2_id
-  TEXT file_name
-  TEXT migrate_time
-}
-```
+![er](migration_v2.svg)
 
 ---
 
