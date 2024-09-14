@@ -13,7 +13,7 @@ Set Height 650
 Set Width 1250
 Set Padding 25
 
-Type 'eval "$(envelope init zsh)"  # add this to ~/.zshrc'
+Type 'eval "$(envelope shell zsh init)"  # add this to ~/.zshrc'
 Sleep 200ms
 Enter
 Sleep 1s
@@ -23,7 +23,7 @@ Sleep 200ms
 Enter
 Sleep 1s
 
-Type "envelope env var create  --env-name demo_env --name MYENVVAR --value 'hello envelope'"
+Type "envelope env var create --env-name demo_env --name MYENVVAR --value 'hello envelope'"
 Sleep 200ms
 Enter
 Sleep 1s
