@@ -20,10 +20,8 @@ func TestEnvRefCreate(t *testing.T) {
 			expectActionErr: false,
 		},
 		{
-			name: "02_env01VarCreate",
-			args: new(testCmdBuilder).Strs("env", "var", "create").
-				EnvName(envName01).Name(envVarName01).Strs("--value", "val01").
-				ZeroTimes().Finish(dbName),
+			name:            "02_env01VarCreate",
+			args:            envVarCreateTestCmd(dbName, envName01, envVarName01, "val01"),
 			expectActionErr: false,
 		},
 		{
@@ -79,10 +77,8 @@ func TestEnvRefDelete(t *testing.T) {
 			expectActionErr: false,
 		},
 		{
-			name: "02_envLocalVarCreate",
-			args: new(testCmdBuilder).Strs("env", "var", "create").
-				EnvName(envName01).Name(envVarName01).Strs("--value", "value").
-				ZeroTimes().Finish(dbName),
+			name:            "02_envLocalVarCreate",
+			args:            envVarCreateTestCmd(dbName, envName01, envVarName01, "value"),
 			expectActionErr: false,
 		},
 		{
