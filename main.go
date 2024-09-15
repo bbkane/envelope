@@ -27,7 +27,6 @@ func buildApp() *warg.App {
 				section.ExistingCommand("delete", cli.EnvDeleteCmd()),
 				section.ExistingCommand("list", cli.EnvListCmd()),
 				section.ExistingCommand("update", cli.EnvUpdateCmd()),
-				section.ExistingCommand("print-script", cli.EnvPrintScriptCmd()),
 				section.ExistingCommand("show", cli.EnvShowCmd()),
 				section.Section(
 					"ref",
@@ -52,6 +51,8 @@ func buildApp() *warg.App {
 					"zsh",
 					"Zsh-specific commands",
 					section.ExistingCommand("init", cli.ShellZshInitCmd()),
+					section.ExistingCommand("export", cli.ShellZshExportCmd()),
+					section.ExistingCommand("unexport", cli.ShellZshUnexportCmd()),
 				),
 			),
 		),

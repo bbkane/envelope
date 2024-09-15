@@ -1,0 +1,4 @@
+printf 'envelope:';
+printf ' +envVarName01';
+export envVarName01=envVarValue01;
+echo;

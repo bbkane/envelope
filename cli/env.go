@@ -6,13 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/alessio/shellescape"
 	"go.bbkane.com/envelope/cli/tableprint"
 	"go.bbkane.com/envelope/domain"
 
 	"go.bbkane.com/warg/command"
-	"go.bbkane.com/warg/flag"
-	"go.bbkane.com/warg/value/scalar"
 )
 
 func EnvCreateCmd() command.Command {
@@ -138,115 +135,6 @@ func envListRun(cmdCtx command.Context) error {
 	}
 
 	tableprint.EnvList(c, envs)
-	return nil
-}
-
-func EnvPrintScriptCmd() command.Command {
-	return command.New(
-		"Print export script",
-		envPrintScriptRun,
-		command.ExistingFlag("--name", envNameFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.Flag(
-			"--no-env-no-problem",
-			"Exit without an error if the environment doesn't exit. Useful when runnng envelop on chpwd",
-			scalar.Bool(
-				scalar.Default(false),
-			),
-			flag.Required(),
-		),
-		command.Flag(
-			"--shell",
-			"Shell to print script for",
-			scalar.String(
-				scalar.Choices("zsh"),
-				scalar.Default("zsh"),
-			),
-			flag.Required(),
-		),
-		command.Flag(
-			"--type",
-			"Type of script",
-			scalar.String(
-				scalar.Choices("export", "unexport"),
-				scalar.Default("export"),
-			),
-			flag.Required(),
-		),
-	)
-}
-
-func envPrintScriptRun(cmdCtx command.Context) error {
-	name := mustGetNameArg(cmdCtx.Flags)
-	noEnvNoProblem := cmdCtx.Flags["--no-env-no-problem"].(bool)
-	scriptType := cmdCtx.Flags["--type"].(string)
-	shell := cmdCtx.Flags["--shell"].(string)
-
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
-
-	envVars, err := es.EnvVarList(ctx, name)
-	if err != nil {
-		if errors.Is(err, domain.ErrEnvNotFound) && noEnvNoProblem {
-			return nil
-		}
-		return fmt.Errorf("could not list env vars: %s: %w", name, err)
-	}
-
-	envRefs, envRefVars, err := es.EnvRefList(ctx, name)
-	if err != nil {
-		if errors.Is(err, domain.ErrEnvNotFound) && noEnvNoProblem {
-			return nil
-		}
-		return fmt.Errorf("could not list env refs: %s: %w", name, err)
-	}
-
-	switch shell {
-	case "zsh":
-		switch scriptType {
-		case "export":
-			if len(envVars)+len(envRefs) > 0 {
-				fmt.Fprintf(cmdCtx.Stdout, "printf '%s:';\n", cmdCtx.AppName)
-				for _, ev := range envVars {
-					fmt.Fprintf(cmdCtx.Stdout, "printf ' +%s';\n", shellescape.Quote(ev.Name))
-					fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
-				}
-
-				for i := range len(envRefs) {
-					fmt.Fprintf(cmdCtx.Stdout, "printf ' +%s';\n", shellescape.Quote(envRefs[i].Name))
-					fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(envRefs[i].Name), shellescape.Quote(envRefVars[i].Value))
-				}
-				fmt.Fprintf(cmdCtx.Stdout, "echo;\n")
-			}
-
-		case "unexport":
-			if len(envVars)+len(envRefs) > 0 {
-				fmt.Fprintf(cmdCtx.Stdout, "printf '%s:';\n", cmdCtx.AppName)
-				for _, ev := range envVars {
-					fmt.Fprintf(cmdCtx.Stdout, "printf ' -%s';\n", shellescape.Quote(ev.Name))
-					fmt.Fprintf(cmdCtx.Stdout, "unset %s;\n", shellescape.Quote(ev.Name))
-				}
-
-				for _, er := range envRefs {
-					fmt.Fprintf(cmdCtx.Stdout, "printf ' -%s';\n", shellescape.Quote(er.Name))
-					fmt.Fprintf(cmdCtx.Stdout, "unset %s;\n", shellescape.Quote(er.Name))
-				}
-				fmt.Fprintf(cmdCtx.Stdout, "echo;\n")
-			}
-		default:
-			return errors.New("unimplemented --script-type: " + scriptType)
-
-		}
-	default:
-		return fmt.Errorf("unimplemented shell: %s", shell)
-	}
-
 	return nil
 }
 

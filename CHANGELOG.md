@@ -5,11 +5,18 @@ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note the the latest version is usually work in progress and may have not yet been released.
 
+# v 0.0.12
+
+## Changed
+
+- `env print-script --shell zsh --type export` -> `shell zsh export`
+- `env print-script --shell zsh --type unexport` -> `shell zsh unexport`
+
 # v0.0.11
 
 ## Changed
 
-- print-script output
+- terser print-script output
 
 ## Fixed
 
@@ -40,7 +47,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 ## Changed
 
-- `env var create --value` is optional, and the value is prompted for if not given 
+- `env var create --value` is optional, and the value is prompted for if not given
 - `init` -> `init zsh` so we can add zsh-specific flags and make subcommands for other shells
 
 # v0.0.8

@@ -127,32 +127,3 @@ func TestEnvUpdate(t *testing.T) {
 		})
 	}
 }
-
-func TestEnvPrintScript(t *testing.T) {
-	t.Parallel()
-	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
-
-	dbName := createTempDB(t)
-
-	tests := []testcase{
-		{
-			name: "01_envPrintScript",
-			args: new(testCmdBuilder).Strs("env", "print-script").
-				Name("non-existent-env").Finish(dbName),
-			expectActionErr: true,
-		},
-		{
-			name: "01_envPrintScriptNoEnvNoProblem",
-			args: new(testCmdBuilder).Strs("env", "print-script").
-				Name("non-existent-env").Strs("--no-env-no-problem", "true").
-				Finish(dbName),
-			expectActionErr: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			goldenTest(t, tt, updateGolden)
-		})
-	}
-}
