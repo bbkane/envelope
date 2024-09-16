@@ -68,8 +68,8 @@ autoload -Uz add-zsh-hook
 
 	chpwdHook := `
 add-zsh-hook -Uz chpwd (){
-    eval $(envelope env print-script --name "$OLDPWD" --no-env-no-problem true --type unexport)
-    eval $(envelope env print-script --name "$PWD" --no-env-no-problem true --type export)
+    eval $(envelope shell zsh unexport --env-name "$OLDPWD" --no-env-no-problem true)
+    eval $(envelope shell zsh export --env-name "$PWD" --no-env-no-problem true)
 }
 `
 	if printChpwdHook {
@@ -77,8 +77,8 @@ add-zsh-hook -Uz chpwd (){
 	}
 
 	exportEnv := `
-export-env() { eval $(envelope env print-script --name "$1" --no-env-no-problem true --type export) }
-unexport-env() { eval $(envelope env print-script --name "$1" --no-env-no-problem true --type unexport) }
+export-env() { eval $(envelope shell zsh export --env-name "$1" --no-env-no-problem true) }
+unexport-env() { eval $(envelope shell zsh unexport --env-name "$1" --no-env-no-problem true) }
 `
 	if printExportEnv {
 		fmt.Fprint(cmdCtx.Stdout, exportEnv)
