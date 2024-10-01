@@ -171,12 +171,12 @@ func envShowRun(cmdCtx command.Context) error {
 		return fmt.Errorf("could not show env: %s: %w", name, err)
 	}
 
-	localvars, err := es.EnvVarList(ctx, name)
+	localvars, err := es.VarList(ctx, name)
 	if err != nil {
 		return err
 	}
 
-	refs, referencedVars, err := es.EnvRefList(ctx, name)
+	refs, referencedVars, err := es.VarRefList(ctx, name)
 	if err != nil {
 		return err
 	}

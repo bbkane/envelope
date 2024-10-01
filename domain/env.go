@@ -31,11 +31,11 @@ type EnvUpdateArgs struct {
 	UpdateTime *time.Time
 }
 
-// -- EnvVar
+// -- Var
 
 var ErrEnvVarNotFound = errors.New("local var not found")
 
-type EnvVar struct {
+type Var struct {
 	EnvName    string
 	Name       string
 	Comment    string
@@ -44,7 +44,7 @@ type EnvVar struct {
 	Value      string
 }
 
-type EnvVarCreateArgs struct {
+type VarCreateArgs struct {
 	EnvName    string
 	Name       string
 	Comment    string
@@ -53,7 +53,7 @@ type EnvVarCreateArgs struct {
 	Value      string
 }
 
-type EnvVarUpdateArgs struct {
+type VarUpdateArgs struct {
 	Comment    *string
 	CreateTime *time.Time
 	EnvName    *string
@@ -62,11 +62,11 @@ type EnvVarUpdateArgs struct {
 	Value      *string
 }
 
-// -- EnvLocalRef
+// -- VarRef
 
 var ErrEnvRefNotFound = errors.New("local ref not found")
 
-type EnvRef struct {
+type VarRef struct {
 	EnvName    string
 	Name       string
 	Comment    string
@@ -76,7 +76,7 @@ type EnvRef struct {
 	RevVarName string
 }
 
-type EnvRefCreateArgs struct {
+type VarRefCreateArgs struct {
 	EnvName    string
 	Name       string
 	Comment    string
@@ -95,14 +95,14 @@ type EnvService interface {
 	EnvUpdate(ctx context.Context, name string, args EnvUpdateArgs) error
 	EnvShow(ctx context.Context, name string) (*Env, error)
 
-	EnvVarCreate(ctx context.Context, args EnvVarCreateArgs) (*EnvVar, error)
-	EnvVarDelete(ctx context.Context, envName string, name string) error
-	EnvVarList(ctx context.Context, envName string) ([]EnvVar, error)
-	EnvVarUpdate(ctx context.Context, envName string, name string, args EnvVarUpdateArgs) error
-	EnvVarShow(ctx context.Context, envName string, name string) (*EnvVar, []EnvRef, error)
+	VarCreate(ctx context.Context, args VarCreateArgs) (*Var, error)
+	VarDelete(ctx context.Context, envName string, name string) error
+	VarList(ctx context.Context, envName string) ([]Var, error)
+	VarUpdate(ctx context.Context, envName string, name string, args VarUpdateArgs) error
+	VarShow(ctx context.Context, envName string, name string) (*Var, []VarRef, error)
 
-	EnvRefCreate(ctx context.Context, args EnvRefCreateArgs) (*EnvRef, error)
-	EnvRefDelete(ctx context.Context, envName string, name string) error
-	EnvRefList(ctx context.Context, envName string) ([]EnvRef, []EnvVar, error)
-	EnvRefShow(ctx context.Context, envName string, name string) (*EnvRef, *EnvVar, error)
+	VarRefCreate(ctx context.Context, args VarRefCreateArgs) (*VarRef, error)
+	VarRefDelete(ctx context.Context, envName string, name string) error
+	VarRefList(ctx context.Context, envName string) ([]VarRef, []Var, error)
+	VarRefShow(ctx context.Context, envName string, name string) (*VarRef, *Var, error)
 }

@@ -143,7 +143,7 @@ func shellZshExportUnexport(cmdCtx command.Context, scriptType string) error {
 		return err
 	}
 
-	envVars, err := es.EnvVarList(ctx, envName)
+	envVars, err := es.VarList(ctx, envName)
 	if err != nil {
 		if errors.Is(err, domain.ErrEnvNotFound) && noEnvNoProblem {
 			return nil
@@ -151,7 +151,7 @@ func shellZshExportUnexport(cmdCtx command.Context, scriptType string) error {
 		return fmt.Errorf("could not list env vars: %s: %w", envName, err)
 	}
 
-	envRefs, envRefVars, err := es.EnvRefList(ctx, envName)
+	envRefs, envRefVars, err := es.VarRefList(ctx, envName)
 	if err != nil {
 		if errors.Is(err, domain.ErrEnvNotFound) && noEnvNoProblem {
 			return nil

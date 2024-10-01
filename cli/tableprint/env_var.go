@@ -6,7 +6,7 @@ import (
 	"go.bbkane.com/envelope/domain"
 )
 
-func EnvLocalVarShowPrint(c CommonTablePrintArgs, envVar domain.EnvVar, envRefs []domain.EnvRef) {
+func VarShowPrint(c CommonTablePrintArgs, envVar domain.Var, envRefs []domain.VarRef) {
 
 	switch c.Format {
 	case Format_Table:

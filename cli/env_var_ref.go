@@ -12,10 +12,10 @@ import (
 	"go.bbkane.com/warg/value/scalar"
 )
 
-func RefCreateCmd() command.Command {
+func VarRefCreateCmd() command.Command {
 	return command.New(
 		"Create a reference in this env to a variable in another env",
-		envRefCreateRun,
+		varRefCreateRun,
 		command.Flag(
 			"--name",
 			"Ref name",
@@ -44,7 +44,7 @@ func RefCreateCmd() command.Command {
 	)
 }
 
-func envRefCreateRun(cmdCtx command.Context) error {
+func varRefCreateRun(cmdCtx command.Context) error {
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
 
@@ -62,9 +62,9 @@ func envRefCreateRun(cmdCtx command.Context) error {
 		return err
 	}
 
-	_, err = es.EnvRefCreate(
+	_, err = es.VarRefCreate(
 		ctx,
-		domain.EnvRefCreateArgs{
+		domain.VarRefCreateArgs{
 			EnvName:    envName,
 			Name:       name,
 			Comment:    commonCreateArgs.Comment,
@@ -83,10 +83,10 @@ func envRefCreateRun(cmdCtx command.Context) error {
 	return nil
 }
 
-func RefDeleteCmd() command.Command {
+func VarRefDeleteCmd() command.Command {
 	return command.New(
 		"Delete a reference to a variablea",
-		envRefDeleteRun,
+		varRefDeleteRun,
 		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -103,7 +103,7 @@ func RefDeleteCmd() command.Command {
 	)
 }
 
-func envRefDeleteRun(cmdCtx command.Context) error {
+func varRefDeleteRun(cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
 	confirm := mustGetConfirmArg(cmdCtx.Flags)
@@ -127,7 +127,7 @@ func envRefDeleteRun(cmdCtx command.Context) error {
 		return err
 	}
 
-	err = es.EnvRefDelete(ctx, envName, name)
+	err = es.VarRefDelete(ctx, envName, name)
 	if err != nil {
 		return err
 	}
@@ -135,10 +135,10 @@ func envRefDeleteRun(cmdCtx command.Context) error {
 	return nil
 }
 
-func RefShowCmd() command.Command {
+func VarRefShowCmd() command.Command {
 	return command.New(
 		"Show details for a reference",
-		envRefShowRun,
+		varRefShowRun,
 		command.ExistingFlags(maskFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -158,7 +158,7 @@ func RefShowCmd() command.Command {
 	)
 }
 
-func envRefShowRun(cmdCtx command.Context) error {
+func varRefShowRun(cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
@@ -174,7 +174,7 @@ func envRefShowRun(cmdCtx command.Context) error {
 		return err
 	}
 
-	envRef, envVar, err := es.EnvRefShow(ctx, envName, name)
+	envRef, envVar, err := es.VarRefShow(ctx, envName, name)
 	if err != nil {
 		return fmt.Errorf("couldn't find env var: %s: %w", name, err)
 	}
@@ -186,6 +186,6 @@ func envRefShowRun(cmdCtx command.Context) error {
 		DesiredMaxWidth: width,
 	}
 
-	tableprint.EnvRefShowPrint(c, *envRef, *envVar)
+	tableprint.VarRefShowPrint(c, *envRef, *envVar)
 	return nil
 }

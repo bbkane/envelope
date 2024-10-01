@@ -28,9 +28,9 @@ func EnvList(c CommonTablePrintArgs, envs []domain.Env) {
 func EnvShowRun(
 	c CommonTablePrintArgs,
 	env domain.Env,
-	localvars []domain.EnvVar,
-	refs []domain.EnvRef,
-	referencedVars []domain.EnvVar,
+	localvars []domain.Var,
+	refs []domain.VarRef,
+	referencedVars []domain.Var,
 ) {
 	switch c.Format {
 	case Format_Table:

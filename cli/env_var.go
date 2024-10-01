@@ -17,7 +17,7 @@ import (
 func VarCreateCmd() command.Command {
 	return command.New(
 		"Create a variable local to the this env",
-		envVarCreateRun,
+		varCreateRun,
 		command.ExistingFlag(
 			"--env-name",
 			envNameFlag(),
@@ -39,7 +39,7 @@ func VarCreateCmd() command.Command {
 	)
 }
 
-func envVarCreateRun(cmdCtx command.Context) error {
+func varCreateRun(cmdCtx command.Context) error {
 
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
@@ -67,9 +67,9 @@ func envVarCreateRun(cmdCtx command.Context) error {
 		return err
 	}
 
-	_, err = es.EnvVarCreate(
+	_, err = es.VarCreate(
 		ctx,
-		domain.EnvVarCreateArgs{
+		domain.VarCreateArgs{
 			EnvName:    envName,
 			Name:       name,
 			Comment:    commonCreateArgs.Comment,
@@ -89,7 +89,7 @@ func envVarCreateRun(cmdCtx command.Context) error {
 func VarDeleteCmd() command.Command {
 	return command.New(
 		"Delete a variable local to the this env",
-		envVarDeleteRun,
+		varDeleteRun,
 		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -106,7 +106,7 @@ func VarDeleteCmd() command.Command {
 	)
 }
 
-func envVarDeleteRun(cmdCtx command.Context) error {
+func varDeleteRun(cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
 	confirm := mustGetConfirmArg(cmdCtx.Flags)
@@ -130,7 +130,7 @@ func envVarDeleteRun(cmdCtx command.Context) error {
 		return err
 	}
 
-	err = es.EnvVarDelete(ctx, envName, name)
+	err = es.VarDelete(ctx, envName, name)
 	if err != nil {
 		return err
 	}
@@ -141,7 +141,7 @@ func envVarDeleteRun(cmdCtx command.Context) error {
 func VarShowCmd() command.Command {
 	return command.New(
 		"Show details for a local var",
-		envVarShowRun,
+		varShowRun,
 		command.ExistingFlags(maskFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -161,7 +161,7 @@ func VarShowCmd() command.Command {
 	)
 }
 
-func envVarShowRun(cmdCtx command.Context) error {
+func varShowRun(cmdCtx command.Context) error {
 
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
@@ -178,7 +178,7 @@ func envVarShowRun(cmdCtx command.Context) error {
 		return err
 	}
 
-	envVar, envRefs, err := es.EnvVarShow(ctx, envName, name)
+	envVar, envRefs, err := es.VarShow(ctx, envName, name)
 	if err != nil {
 		return fmt.Errorf("couldn't find env var: %s: %w", name, err)
 	}
@@ -191,14 +191,14 @@ func envVarShowRun(cmdCtx command.Context) error {
 		DesiredMaxWidth: width,
 	}
 
-	tableprint.EnvLocalVarShowPrint(c, *envVar, envRefs)
+	tableprint.VarShowPrint(c, *envVar, envRefs)
 	return nil
 }
 
 func VarUpdateCmd() command.Command {
 	return command.New(
 		"Update and env var",
-		envVarUpdateRun,
+		varUpdateRun,
 		command.ExistingFlag("--env-name", envNameFlag()),
 		command.ExistingFlags(commonUpdateFlags()),
 		command.ExistingFlags(timeoutFlagMap()),
@@ -223,7 +223,7 @@ func VarUpdateCmd() command.Command {
 	)
 }
 
-func envVarUpdateRun(cmdCtx command.Context) error {
+func varUpdateRun(cmdCtx command.Context) error {
 	// common update flags
 	commonUpdateArgs := getCommonUpdateArgs(cmdCtx.Flags)
 
@@ -251,7 +251,7 @@ func envVarUpdateRun(cmdCtx command.Context) error {
 	if err != nil {
 		return err
 	}
-	err = es.EnvVarUpdate(ctx, envName, name, domain.EnvVarUpdateArgs{
+	err = es.VarUpdate(ctx, envName, name, domain.VarUpdateArgs{
 		Comment:    commonUpdateArgs.Comment,
 		CreateTime: commonUpdateArgs.CreateTime,
 		EnvName:    newEnvName,

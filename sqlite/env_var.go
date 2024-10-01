@@ -10,7 +10,7 @@ import (
 	"go.bbkane.com/envelope/sqlite/sqlite/sqlcgen"
 )
 
-func (e *EnvService) envLocalVarFindByID(ctx context.Context, id int64) (*domain.EnvVar, error) {
+func (e *EnvService) varFindByID(ctx context.Context, id int64) (*domain.Var, error) {
 	queries := sqlcgen.New(e.db)
 
 	sqlcVar, err := queries.EnvVarFindByID(ctx, id)
@@ -18,7 +18,7 @@ func (e *EnvService) envLocalVarFindByID(ctx context.Context, id int64) (*domain
 		return nil, domain.ErrEnvVarNotFound
 	}
 
-	return &domain.EnvVar{
+	return &domain.Var{
 		EnvName:    sqlcVar.EnvName,
 		Name:       sqlcVar.Name,
 		Comment:    sqlcVar.Comment,
@@ -28,7 +28,7 @@ func (e *EnvService) envLocalVarFindByID(ctx context.Context, id int64) (*domain
 	}, nil
 }
 
-func (e *EnvService) envLocalVarFindID(ctx context.Context, envName string, name string) (int64, error) {
+func (e *EnvService) varFindID(ctx context.Context, envName string, name string) (int64, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := e.envFindID(ctx, envName)
@@ -48,7 +48,7 @@ func (e *EnvService) envLocalVarFindID(ctx context.Context, envName string, name
 
 }
 
-func (e *EnvService) EnvVarCreate(ctx context.Context, args domain.EnvVarCreateArgs) (*domain.EnvVar, error) {
+func (e *EnvService) VarCreate(ctx context.Context, args domain.VarCreateArgs) (*domain.Var, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := e.envFindID(ctx, args.EnvName)
@@ -68,7 +68,7 @@ func (e *EnvService) EnvVarCreate(ctx context.Context, args domain.EnvVarCreateA
 	if err != nil {
 		return nil, fmt.Errorf("could not create env var: %w", err)
 	}
-	return &domain.EnvVar{
+	return &domain.Var{
 		EnvName:    args.EnvName,
 		Name:       args.Name,
 		Comment:    args.Comment,
@@ -78,7 +78,7 @@ func (e *EnvService) EnvVarCreate(ctx context.Context, args domain.EnvVarCreateA
 	}, nil
 }
 
-func (e *EnvService) EnvVarDelete(ctx context.Context, envName string, name string) error {
+func (e *EnvService) VarDelete(ctx context.Context, envName string, name string) error {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := e.envFindID(ctx, envName)
@@ -96,7 +96,7 @@ func (e *EnvService) EnvVarDelete(ctx context.Context, envName string, name stri
 	return nil
 }
 
-func (e *EnvService) EnvVarList(ctx context.Context, envName string) ([]domain.EnvVar, error) {
+func (e *EnvService) VarList(ctx context.Context, envName string) ([]domain.Var, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := e.envFindID(ctx, envName)
@@ -108,9 +108,9 @@ func (e *EnvService) EnvVarList(ctx context.Context, envName string) ([]domain.E
 	if err != nil {
 		return nil, fmt.Errorf("could not list env vars: %s: %w", envName, err)
 	}
-	var ret []domain.EnvVar
+	var ret []domain.Var
 	for _, sqlcEnv := range envs {
-		ret = append(ret, domain.EnvVar{
+		ret = append(ret, domain.Var{
 			Name:       sqlcEnv.Name,
 			Comment:    sqlcEnv.Comment,
 			CreateTime: domain.StringToTimeMust(sqlcEnv.CreateTime),
@@ -123,7 +123,7 @@ func (e *EnvService) EnvVarList(ctx context.Context, envName string) ([]domain.E
 	return ret, nil
 }
 
-func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string) (*domain.EnvVar, []domain.EnvRef, error) {
+func (e *EnvService) VarShow(ctx context.Context, envName string, name string) (*domain.Var, []domain.VarRef, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := e.envFindID(ctx, envName)
@@ -139,14 +139,14 @@ func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string
 		return nil, nil, fmt.Errorf("could not find env var: %s: %s: %w", envName, name, err)
 	}
 
-	envRefs := []domain.EnvRef{}
+	envRefs := []domain.VarRef{}
 	sqlcEnvRefs, err := queries.EnvRefListByEnvVarID(ctx, sqlEnvLocalVar.EnvVarID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, nil, err
 	}
 
 	for _, e := range sqlcEnvRefs {
-		envRefs = append(envRefs, domain.EnvRef{
+		envRefs = append(envRefs, domain.VarRef{
 			EnvName:    e.EnvName,
 			Name:       e.Name,
 			Comment:    e.Comment,
@@ -157,7 +157,7 @@ func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string
 		})
 	}
 
-	return &domain.EnvVar{
+	return &domain.Var{
 		EnvName:    envName,
 		Name:       name,
 		Comment:    sqlEnvLocalVar.Comment,
@@ -167,8 +167,8 @@ func (e *EnvService) EnvVarShow(ctx context.Context, envName string, name string
 	}, envRefs, nil
 }
 
-func (e *EnvService) EnvVarUpdate(ctx context.Context, envName string, name string, args domain.EnvVarUpdateArgs) error {
-	envVarID, err := e.envLocalVarFindID(ctx, envName, name)
+func (e *EnvService) VarUpdate(ctx context.Context, envName string, name string, args domain.VarUpdateArgs) error {
+	envVarID, err := e.varFindID(ctx, envName, name)
 	if err != nil {
 		return err
 	}
