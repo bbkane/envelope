@@ -5,12 +5,13 @@ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note the the latest version is usually work in progress and may have not yet been released.
 
-# v 0.0.12
+# v0.0.12
 
 ## Changed
 
 - `env print-script --shell zsh --type export` -> `shell zsh export`
 - `env print-script --shell zsh --type unexport` -> `shell zsh unexport`
+- Moved `var` subcommands to toplevel, instead of under `env`. For example, `env var create` becomes `var create`
 
 # v0.0.11
 

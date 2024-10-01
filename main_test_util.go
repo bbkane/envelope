@@ -45,7 +45,7 @@ func envShowTestCmd(dbPath string, envName string) []string {
 }
 
 func envVarCreateTestCmd(dbPath string, envName string, name string, value string) []string {
-	return new(testCmdBuilder).Strs("env", "var", "create").
+	return new(testCmdBuilder).Strs("var", "create").
 		EnvName(envName).Name(name).Strs("--value", value).
 		ZeroTimes().Finish(dbPath)
 }

@@ -24,7 +24,7 @@ func TestEnvLocalVarCreate(t *testing.T) {
 		},
 		{
 			name: "03_envLocalVarShow",
-			args: new(testCmdBuilder).Strs("env", "var", "show").
+			args: new(testCmdBuilder).Strs("var", "show").
 				EnvName(envName01).Name(envVarName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
@@ -63,19 +63,19 @@ func TestEnvLocalVarDelete(t *testing.T) {
 		},
 		{
 			name: "03_envLocalVarShow",
-			args: new(testCmdBuilder).Strs("env", "var", "show").EnvName(envName01).
+			args: new(testCmdBuilder).Strs("var", "show").EnvName(envName01).
 				Name(envVarName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "04_envLocalVarDelete",
-			args: new(testCmdBuilder).Strs("env", "var", "delete").Confirm(false).
+			args: new(testCmdBuilder).Strs("var", "delete").Confirm(false).
 				EnvName(envName01).Name(envVarName01).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "05_envLocalVarShow",
-			args: new(testCmdBuilder).Strs("env", "var", "show").EnvName(envName01).
+			args: new(testCmdBuilder).Strs("var", "show").EnvName(envName01).
 				Name(envVarName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: true,
 		},
@@ -107,7 +107,7 @@ func TestEnvNonUniqueNames(t *testing.T) {
 		},
 		{
 			name: "03_envRefCreateSameName",
-			args: new(testCmdBuilder).Strs("env", "ref", "create").
+			args: new(testCmdBuilder).Strs("var", "ref", "create").
 				EnvName(envName01).Name(envVarName01).Strs("--ref-env-name", envName01).
 				Strs("--ref-var-name", envVarName01).ZeroTimes().Finish(dbName),
 			expectActionErr: true,
@@ -168,27 +168,27 @@ func TestEnvVarUpdate(t *testing.T) {
 		// test updates
 		{
 			name:            "07_nameUpdateConflict",
-			args:            new(testCmdBuilder).Strs("env", "var", "update").Confirm(false).UpdateTime(oneTime).EnvName(e1).Name(v1).Strs("--new-name", v2).Finish(dbName),
+			args:            new(testCmdBuilder).Strs("var", "update").Confirm(false).UpdateTime(oneTime).EnvName(e1).Name(v1).Strs("--new-name", v2).Finish(dbName),
 			expectActionErr: true,
 		},
 		{
 			name:            "08_envUpdateConflict",
-			args:            new(testCmdBuilder).Strs("env", "var", "update").Confirm(false).UpdateTime(oneTime).EnvName(e1).Name(v2).Strs("--new-env-name", e2).Finish(dbName),
+			args:            new(testCmdBuilder).Strs("var", "update").Confirm(false).UpdateTime(oneTime).EnvName(e1).Name(v2).Strs("--new-env-name", e2).Finish(dbName),
 			expectActionErr: true,
 		},
 		{
 			name:            "09_envUpdateNameUpdateConflict",
-			args:            new(testCmdBuilder).Strs("env", "var", "update").Confirm(false).UpdateTime(oneTime).EnvName(e1).Name(v1).Strs("--new-env-name", e2).Strs("--new-name", v3).Finish(dbName),
+			args:            new(testCmdBuilder).Strs("var", "update").Confirm(false).UpdateTime(oneTime).EnvName(e1).Name(v1).Strs("--new-env-name", e2).Strs("--new-name", v3).Finish(dbName),
 			expectActionErr: true,
 		},
 		{
 			name:            "10_emptyUpdate",
-			args:            new(testCmdBuilder).Strs("env", "var", "update").Confirm(false).UpdateTime(oneTime).EnvName(e1).Name(v1).Strs("--new-env-name", e1).Strs("--new-name", v1).Finish(dbName),
+			args:            new(testCmdBuilder).Strs("var", "update").Confirm(false).UpdateTime(oneTime).EnvName(e1).Name(v1).Strs("--new-env-name", e1).Strs("--new-name", v1).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
 			name: "11_updateOtherFields",
-			args: new(testCmdBuilder).Strs("env", "var", "update").
+			args: new(testCmdBuilder).Strs("var", "update").
 				Confirm(false).UpdateTime(oneTime).CreateTime(oneTime).EnvName(e1).Name(v1).
 				Strs("--new-env-name", e2, "--new-name", "NEW", "--comment", "NEW", "--value", "NEW").Finish(dbName),
 			expectActionErr: false,
