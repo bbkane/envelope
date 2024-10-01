@@ -18,12 +18,12 @@ func TestEnvLocalVarCreate(t *testing.T) {
 			expectActionErr: false,
 		},
 		{
-			name:            "02_envLocalVarCreate",
-			args:            envVarCreateTestCmd(dbName, envName01, envVarName01, "value"),
+			name:            "02_varCreate",
+			args:            varCreateTestCmd(dbName, envName01, envVarName01, "value"),
 			expectActionErr: false,
 		},
 		{
-			name: "03_envLocalVarShow",
+			name: "03_varShow",
 			args: new(testCmdBuilder).Strs("var", "show").
 				EnvName(envName01).Name(envVarName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
@@ -57,24 +57,24 @@ func TestEnvLocalVarDelete(t *testing.T) {
 			expectActionErr: false,
 		},
 		{
-			name:            "02_envLocalVarCreate",
-			args:            envVarCreateTestCmd(dbName, envName01, envVarName01, "value"),
+			name:            "02_varCreate",
+			args:            varCreateTestCmd(dbName, envName01, envVarName01, "value"),
 			expectActionErr: false,
 		},
 		{
-			name: "03_envLocalVarShow",
+			name: "03_varShow",
 			args: new(testCmdBuilder).Strs("var", "show").EnvName(envName01).
 				Name(envVarName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
-			name: "04_envLocalVarDelete",
+			name: "04_varDelete",
 			args: new(testCmdBuilder).Strs("var", "delete").Confirm(false).
 				EnvName(envName01).Name(envVarName01).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
-			name: "05_envLocalVarShow",
+			name: "05_varShow",
 			args: new(testCmdBuilder).Strs("var", "show").EnvName(envName01).
 				Name(envVarName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: true,
@@ -101,12 +101,12 @@ func TestEnvNonUniqueNames(t *testing.T) {
 			expectActionErr: false,
 		},
 		{
-			name:            "02_envLocalVarCreate",
-			args:            envVarCreateTestCmd(dbName, envName01, envVarName01, "value"),
+			name:            "02_varCreate",
+			args:            varCreateTestCmd(dbName, envName01, envVarName01, "value"),
 			expectActionErr: false,
 		},
 		{
-			name: "03_envRefCreateSameName",
+			name: "03_varRefCreateSameName",
 			args: new(testCmdBuilder).Strs("var", "ref", "create").
 				EnvName(envName01).Name(envVarName01).Strs("--ref-env-name", envName01).
 				Strs("--ref-var-name", envVarName01).ZeroTimes().Finish(dbName),
@@ -136,33 +136,33 @@ func TestEnvVarUpdate(t *testing.T) {
 	tests := []testcase{
 		// setup
 		{
-			name:            "01_e1Create",
+			name:            "01_envCreateE1",
 			args:            envCreateTestCmd(dbName, e1),
 			expectActionErr: false,
 		},
 		{
-			name:            "02_e2Create",
+			name:            "02_envCreateE2",
 			args:            envCreateTestCmd(dbName, e2),
 			expectActionErr: false,
 		},
 		{
-			name:            "03_e1v1Create",
-			args:            envVarCreateTestCmd(dbName, e1, v1, "val"),
+			name:            "03_varCreateE1V1",
+			args:            varCreateTestCmd(dbName, e1, v1, "val"),
 			expectActionErr: false,
 		},
 		{
-			name:            "04_e1v2Create",
-			args:            envVarCreateTestCmd(dbName, e1, v2, "val"),
+			name:            "04_varCreateE1V2",
+			args:            varCreateTestCmd(dbName, e1, v2, "val"),
 			expectActionErr: false,
 		},
 		{
-			name:            "05_e2v2Create",
-			args:            envVarCreateTestCmd(dbName, e2, v2, "val"),
+			name:            "05_varCreateE2V2",
+			args:            varCreateTestCmd(dbName, e2, v2, "val"),
 			expectActionErr: false,
 		},
 		{
-			name:            "06_e2v3Create",
-			args:            envVarCreateTestCmd(dbName, e2, v3, "val"),
+			name:            "06_varCreateE2V3",
+			args:            varCreateTestCmd(dbName, e2, v3, "val"),
 			expectActionErr: false,
 		},
 		// test updates
@@ -194,12 +194,12 @@ func TestEnvVarUpdate(t *testing.T) {
 			expectActionErr: false,
 		},
 		{
-			name:            "12_e1Show",
+			name:            "12_envShowE1",
 			args:            envShowTestCmd(dbName, e1),
 			expectActionErr: false,
 		},
 		{
-			name:            "13_e2Show",
+			name:            "13_envShowE2",
 			args:            envShowTestCmd(dbName, e2),
 			expectActionErr: false,
 		},

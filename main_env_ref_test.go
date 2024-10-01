@@ -15,22 +15,22 @@ func TestEnvRefCreate(t *testing.T) {
 
 	tests := []testcase{
 		{
-			name:            "01_env01Create",
+			name:            "01_envCreate01",
 			args:            envCreateTestCmd(dbName, envName01),
 			expectActionErr: false,
 		},
 		{
-			name:            "02_env01VarCreate",
-			args:            envVarCreateTestCmd(dbName, envName01, envVarName01, "val01"),
+			name:            "02_varCreate",
+			args:            varCreateTestCmd(dbName, envName01, envVarName01, "val01"),
 			expectActionErr: false,
 		},
 		{
-			name:            "03_env02Create",
+			name:            "03_envCreate02",
 			args:            envCreateTestCmd(dbName, envName02),
 			expectActionErr: false,
 		},
 		{
-			name: "04_env02RefCreate",
+			name: "04_varRefCreate",
 			args: new(testCmdBuilder).Strs("var", "ref", "create").
 				EnvName(envName02).Name(envRefName01).ZeroTimes().
 				Strs("--ref-env-name", envName01).
@@ -38,19 +38,19 @@ func TestEnvRefCreate(t *testing.T) {
 			expectActionErr: false,
 		},
 		{
-			name: "05_env02Show",
+			name: "05_envShow02",
 			args: new(testCmdBuilder).Strs("env", "show").
 				Name(envName02).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
-			name: "06_env02RefShow",
+			name: "06_varRefShow",
 			args: new(testCmdBuilder).Strs("var", "ref", "show").
 				EnvName(envName02).Name(envRefName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
-			name: "07_env01VarShow",
+			name: "07_envVarShow01",
 			args: new(testCmdBuilder).Strs("var", "show").
 				EnvName(envName01).Name(envVarName01).Tz().Mask(false).Finish(dbName),
 			expectActionErr: false,
@@ -78,7 +78,7 @@ func TestEnvRefDelete(t *testing.T) {
 		},
 		{
 			name:            "02_envLocalVarCreate",
-			args:            envVarCreateTestCmd(dbName, envName01, envVarName01, "value"),
+			args:            varCreateTestCmd(dbName, envName01, envVarName01, "value"),
 			expectActionErr: false,
 		},
 		{
