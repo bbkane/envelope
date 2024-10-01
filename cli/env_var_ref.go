@@ -12,7 +12,7 @@ import (
 	"go.bbkane.com/warg/value/scalar"
 )
 
-func EnvRefCreateCmd() command.Command {
+func RefCreateCmd() command.Command {
 	return command.New(
 		"Create a reference in this env to a variable in another env",
 		envRefCreateRun,
@@ -83,7 +83,7 @@ func envRefCreateRun(cmdCtx command.Context) error {
 	return nil
 }
 
-func EnvRefDeleteCmd() command.Command {
+func RefDeleteCmd() command.Command {
 	return command.New(
 		"Delete a reference to a variablea",
 		envRefDeleteRun,
@@ -135,7 +135,7 @@ func envRefDeleteRun(cmdCtx command.Context) error {
 	return nil
 }
 
-func EnvRefShowCmd() command.Command {
+func RefShowCmd() command.Command {
 	return command.New(
 		"Show details for a reference",
 		envRefShowRun,

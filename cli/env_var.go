@@ -14,7 +14,7 @@ import (
 	"go.bbkane.com/warg/value/scalar"
 )
 
-func EnvVarCreateCmd() command.Command {
+func VarCreateCmd() command.Command {
 	return command.New(
 		"Create a variable local to the this env",
 		envVarCreateRun,
@@ -86,7 +86,7 @@ func envVarCreateRun(cmdCtx command.Context) error {
 	return nil
 }
 
-func EnvVarDeleteCmd() command.Command {
+func VarDeleteCmd() command.Command {
 	return command.New(
 		"Delete a variable local to the this env",
 		envVarDeleteRun,
@@ -138,7 +138,7 @@ func envVarDeleteRun(cmdCtx command.Context) error {
 	return nil
 }
 
-func EnvVarShowCmd() command.Command {
+func VarShowCmd() command.Command {
 	return command.New(
 		"Show details for a local var",
 		envVarShowRun,
@@ -195,7 +195,7 @@ func envVarShowRun(cmdCtx command.Context) error {
 	return nil
 }
 
-func EnvVarUpdateCmd() command.Command {
+func VarUpdateCmd() command.Command {
 	return command.New(
 		"Update and env var",
 		envVarUpdateRun,
