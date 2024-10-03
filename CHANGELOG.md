@@ -9,7 +9,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 ## Changed
 
-- `env print-script --shell zsh --type export` -> `shell zsh export`
+- `env print-script --shell zsh --type export` -> `shell zsh export`.
 - `env print-script --shell zsh --type unexport` -> `shell zsh unexport`
 - Moved `env var` subcommands to toplevel. For example, `env var create` becomes `var create`
 - Moved `env ref` subcommands under var. For example, `env ref create` becomes `var ref create`
@@ -38,7 +38,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 - Skip printing Comment if it's blank
 - Skip printing UpdateTime if it equals CreateTime
-- Moved `init zsh` to `shell zsh init`
+- Moved `init zsh` to `shell zsh init`. If you see an error when you start your shell, you need to update this line in `~/.zshrc`
 
 # v0.0.9
 
