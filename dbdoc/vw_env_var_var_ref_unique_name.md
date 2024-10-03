@@ -1,4 +1,4 @@
-# vw_env_env_ref_env_var_unique_name
+# vw_env_var_var_ref_unique_name
 
 ## Description
 
@@ -6,12 +6,12 @@
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE VIEW vw_env_env_ref_env_var_unique_name AS
-SELECT e.env_id, er.name
-FROM env e JOIN env_ref er ON e.env_id = er.env_id
+CREATE VIEW vw_env_var_var_ref_unique_name AS
+SELECT e.env_id, vr.name
+FROM env e JOIN var_ref vr ON e.env_id = vr.env_id
 UNION ALL
-SELECT e.env_id, ev.name
-FROM env e JOIN env_var ev ON e.env_id = ev.env_id
+SELECT e.env_id, v.name
+FROM env e JOIN var v ON e.env_id = v.env_id
 ```
 
 </details>
@@ -28,12 +28,12 @@ FROM env e JOIN env_var ev ON e.env_id = ev.env_id
 | Name | Columns | Comment | Type |
 | ---- | ------- | ------- | ---- |
 | [env](env.md) | 5 |  | table |
-| [env_ref](env_ref.md) | 7 |  | table |
-| [env_var](env_var.md) | 7 |  | table |
+| [var_ref](var_ref.md) | 7 |  | table |
+| [var](var.md) | 7 |  | table |
 
 ## Relations
 
-![er](vw_env_env_ref_env_var_unique_name.svg)
+![er](vw_env_var_var_ref_unique_name.svg)
 
 ---
 

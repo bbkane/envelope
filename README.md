@@ -49,7 +49,7 @@ Run:
 
 ```bash
 # get a fresh db
-envelope env list --db-path tmp.db
+go run . env list --db-path tmp.db
 tbls doc --rm-dist
 ```
 

@@ -22,7 +22,7 @@ CREATE TABLE env (
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| env_id | INTEGER |  | true | [env_var](env_var.md) [env_ref](env_ref.md) |  |  |
+| env_id | INTEGER |  | true | [var](var.md) [var_ref](var_ref.md) |  |  |
 | name | TEXT |  | false |  |  |  |
 | comment | TEXT |  | false |  |  |  |
 | create_time | TEXT |  | false |  |  |  |

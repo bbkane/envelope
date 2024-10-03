@@ -1,4 +1,4 @@
-# vw_env_ref_referenced_name
+# vw_var_expanded
 
 ## Description
 
@@ -6,19 +6,17 @@
 <summary><strong>Table Definition</strong></summary>
 
 ```sql
-CREATE VIEW vw_env_ref_referenced_name AS
+CREATE VIEW vw_var_expanded AS
 SELECT
-    env_ref_id,
+    var_id,
     env_id,
-    (SELECT name FROM env WHERE env_id = env_ref.env_id) AS env_name,
+    (SELECT name FROM env WHERE env_id = var.env_id) AS env_name,
     name,
-    env_var_id,
-    (SELECT name FROM env_var WHERE env_var_id = env_ref.env_var_id) AS ref_var_name,
-    (SELECT env.name FROM env JOIN env_var ON env.env_id = env_var.env_id WHERE env_var.env_var_id = env_ref.env_var_id) AS ref_env_name,
+    value,
     comment,
     create_time,
     update_time
-FROM env_ref
+FROM var
 ```
 
 </details>
@@ -27,13 +25,11 @@ FROM env_ref
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| env_ref_id | INTEGER |  | true |  |  |  |
+| var_id | INTEGER |  | true |  |  |  |
 | env_id | INTEGER |  | true |  |  |  |
 | env_name | TEXT |  | true |  |  |  |
 | name | TEXT |  | true |  |  |  |
-| env_var_id | INTEGER |  | true |  |  |  |
-| ref_var_name | TEXT |  | true |  |  |  |
-| ref_env_name | TEXT |  | true |  |  |  |
+| value | TEXT |  | true |  |  |  |
 | comment | TEXT |  | true |  |  |  |
 | create_time | TEXT |  | true |  |  |  |
 | update_time | TEXT |  | true |  |  |  |
@@ -43,12 +39,11 @@ FROM env_ref
 | Name | Columns | Comment | Type |
 | ---- | ------- | ------- | ---- |
 | [env](env.md) | 5 |  | table |
-| [env_var](env_var.md) | 7 |  | table |
-| [env_ref](env_ref.md) | 7 |  | table |
+| [var](var.md) | 7 |  | table |
 
 ## Relations
 
-![er](vw_env_ref_referenced_name.svg)
+![er](vw_var_expanded.svg)
 
 ---
 
