@@ -13,7 +13,7 @@ import (
 func (e *EnvService) varFindByID(ctx context.Context, id int64) (*domain.Var, error) {
 	queries := sqlcgen.New(e.db)
 
-	sqlcVar, err := queries.EnvVarFindByID(ctx, id)
+	sqlcVar, err := queries.VarFindByID(ctx, id)
 	if err != nil {
 		return nil, domain.ErrEnvVarNotFound
 	}
@@ -36,7 +36,7 @@ func (e *EnvService) varFindID(ctx context.Context, envName string, name string)
 		return 0, err
 	}
 
-	id, err := queries.EnvVarFindID(ctx, sqlcgen.EnvVarFindIDParams{
+	id, err := queries.VarFindID(ctx, sqlcgen.VarFindIDParams{
 		EnvID: envID,
 		Name:  name,
 	})
@@ -56,7 +56,7 @@ func (e *EnvService) VarCreate(ctx context.Context, args domain.VarCreateArgs) (
 		return nil, err
 	}
 
-	err = queries.EnvVarCreate(ctx, sqlcgen.EnvVarCreateParams{
+	err = queries.VarCreate(ctx, sqlcgen.VarCreateParams{
 		EnvID:      envID,
 		Name:       args.Name,
 		Comment:    args.Comment,
@@ -86,7 +86,7 @@ func (e *EnvService) VarDelete(ctx context.Context, envName string, name string)
 		return err
 	}
 
-	err = queries.EnvVarDelete(ctx, sqlcgen.EnvVarDeleteParams{
+	err = queries.VarDelete(ctx, sqlcgen.VarDeleteParams{
 		EnvID: envID,
 		Name:  name,
 	})
@@ -104,7 +104,7 @@ func (e *EnvService) VarList(ctx context.Context, envName string) ([]domain.Var,
 		return nil, err
 	}
 
-	envs, err := queries.EnvVarList(ctx, envID)
+	envs, err := queries.VarList(ctx, envID)
 	if err != nil {
 		return nil, fmt.Errorf("could not list env vars: %s: %w", envName, err)
 	}
@@ -131,7 +131,7 @@ func (e *EnvService) VarShow(ctx context.Context, envName string, name string) (
 		return nil, nil, err
 	}
 
-	sqlEnvLocalVar, err := queries.EnvVarShow(ctx, sqlcgen.EnvVarShowParams{
+	sqlEnvLocalVar, err := queries.VarShow(ctx, sqlcgen.VarShowParams{
 		EnvID: envID,
 		Name:  name,
 	})
@@ -140,7 +140,7 @@ func (e *EnvService) VarShow(ctx context.Context, envName string, name string) (
 	}
 
 	envRefs := []domain.VarRef{}
-	sqlcEnvRefs, err := queries.EnvRefListByEnvVarID(ctx, sqlEnvLocalVar.EnvVarID)
+	sqlcEnvRefs, err := queries.VarRefListByVarID(ctx, sqlEnvLocalVar.EnvVarID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, nil, err
 	}
@@ -184,7 +184,7 @@ func (e *EnvService) VarUpdate(ctx context.Context, envName string, name string,
 
 	queries := sqlcgen.New(e.db)
 
-	err = queries.EnvVarUpdate(ctx, sqlcgen.EnvVarUpdateParams{
+	err = queries.VarUpdate(ctx, sqlcgen.VarUpdateParams{
 		EnvID:      newEnvID,
 		Name:       args.Name,
 		Comment:    args.Comment,

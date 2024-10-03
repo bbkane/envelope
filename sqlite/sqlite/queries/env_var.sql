@@ -1,33 +1,33 @@
--- name: EnvVarCreate :exec
+-- name: VarCreate :exec
 INSERT INTO env_var(
     env_id, name, comment, create_time, update_time, value
 ) VALUES (
     ?     , ?   , ?      , ?          , ?          , ?
 );
 
--- name: EnvVarDelete :exec
+-- name: VarDelete :exec
 DELETE FROM env_var WHERE env_id = ? AND name = ?;
 
--- name: EnvVarFindID :one
+-- name: VarFindID :one
 SELECT env_var_id FROM env_var WHERE env_id = ? AND name = ?;
 
--- name: EnvVarFindByID :one
+-- name: VarFindByID :one
 SELECT env.name AS env_name, env_var.*
 FROM env_var
 JOIN env ON env_var.env_id = env.env_id
 WHERE env_var.env_var_id = ?;
 
--- name: EnvVarList :many
+-- name: VarList :many
 SELECT * FROM env_var
 WHERE env_id = ?
 ORDER BY name ASC;
 
--- name: EnvVarShow :one
+-- name: VarShow :one
 SELECT *
 FROM env_var
 WHERE env_id = ? AND name = ?;
 
--- name: EnvVarUpdate :exec
+-- name: VarUpdate :exec
 UPDATE env_var SET
     env_id = COALESCE(sqlc.narg('env_id'), env_id),
     name = COALESCE(sqlc.narg('name'), name),

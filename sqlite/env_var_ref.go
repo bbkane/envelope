@@ -21,7 +21,7 @@ func (e *EnvService) VarRefCreate(ctx context.Context, args domain.VarRefCreateA
 		return nil, err
 	}
 
-	err = queries.EnvRefCreate(ctx, sqlcgen.EnvRefCreateParams{
+	err = queries.VarRefCreate(ctx, sqlcgen.VarRefCreateParams{
 		EnvID:      envID,
 		Name:       args.Name,
 		Comment:    args.Comment,
@@ -51,7 +51,7 @@ func (e *EnvService) VarRefDelete(ctx context.Context, envName string, name stri
 		return err
 	}
 
-	err = queries.EnvRefDelete(ctx, sqlcgen.EnvRefDeleteParams{
+	err = queries.VarRefDelete(ctx, sqlcgen.VarRefDeleteParams{
 		EnvID: envID,
 		Name:  name,
 	})
@@ -69,7 +69,7 @@ func (e *EnvService) VarRefList(ctx context.Context, envName string) ([]domain.V
 		return nil, nil, err
 	}
 
-	sqlcRefs, err := queries.EnvRefList(ctx, envID)
+	sqlcRefs, err := queries.VarRefList(ctx, envID)
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not list env vars: %s: %w", envName, err)
 	}
@@ -109,7 +109,7 @@ func (e *EnvService) VarRefShow(ctx context.Context, envName string, name string
 		return nil, nil, err
 	}
 
-	sqlcRef, err := queries.EnvRefShow(ctx, sqlcgen.EnvRefShowParams{
+	sqlcRef, err := queries.VarRefShow(ctx, sqlcgen.VarRefShowParams{
 		EnvID: envID,
 		Name:  name,
 	})

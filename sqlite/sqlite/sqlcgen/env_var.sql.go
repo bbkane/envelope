@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const envVarCreate = `-- name: EnvVarCreate :exec
+const varCreate = `-- name: VarCreate :exec
 INSERT INTO env_var(
     env_id, name, comment, create_time, update_time, value
 ) VALUES (
@@ -17,7 +17,7 @@ INSERT INTO env_var(
 )
 `
 
-type EnvVarCreateParams struct {
+type VarCreateParams struct {
 	EnvID      int64
 	Name       string
 	Comment    string
@@ -26,8 +26,8 @@ type EnvVarCreateParams struct {
 	Value      string
 }
 
-func (q *Queries) EnvVarCreate(ctx context.Context, arg EnvVarCreateParams) error {
-	_, err := q.db.ExecContext(ctx, envVarCreate,
+func (q *Queries) VarCreate(ctx context.Context, arg VarCreateParams) error {
+	_, err := q.db.ExecContext(ctx, varCreate,
 		arg.EnvID,
 		arg.Name,
 		arg.Comment,
@@ -38,28 +38,28 @@ func (q *Queries) EnvVarCreate(ctx context.Context, arg EnvVarCreateParams) erro
 	return err
 }
 
-const envVarDelete = `-- name: EnvVarDelete :exec
+const varDelete = `-- name: VarDelete :exec
 DELETE FROM env_var WHERE env_id = ? AND name = ?
 `
 
-type EnvVarDeleteParams struct {
+type VarDeleteParams struct {
 	EnvID int64
 	Name  string
 }
 
-func (q *Queries) EnvVarDelete(ctx context.Context, arg EnvVarDeleteParams) error {
-	_, err := q.db.ExecContext(ctx, envVarDelete, arg.EnvID, arg.Name)
+func (q *Queries) VarDelete(ctx context.Context, arg VarDeleteParams) error {
+	_, err := q.db.ExecContext(ctx, varDelete, arg.EnvID, arg.Name)
 	return err
 }
 
-const envVarFindByID = `-- name: EnvVarFindByID :one
+const varFindByID = `-- name: VarFindByID :one
 SELECT env.name AS env_name, env_var.env_var_id, env_var.env_id, env_var.name, env_var.comment, env_var.create_time, env_var.update_time, env_var.value
 FROM env_var
 JOIN env ON env_var.env_id = env.env_id
 WHERE env_var.env_var_id = ?
 `
 
-type EnvVarFindByIDRow struct {
+type VarFindByIDRow struct {
 	EnvName    string
 	EnvVarID   int64
 	EnvID      int64
@@ -70,9 +70,9 @@ type EnvVarFindByIDRow struct {
 	Value      string
 }
 
-func (q *Queries) EnvVarFindByID(ctx context.Context, envVarID int64) (EnvVarFindByIDRow, error) {
-	row := q.db.QueryRowContext(ctx, envVarFindByID, envVarID)
-	var i EnvVarFindByIDRow
+func (q *Queries) VarFindByID(ctx context.Context, envVarID int64) (VarFindByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, varFindByID, envVarID)
+	var i VarFindByIDRow
 	err := row.Scan(
 		&i.EnvName,
 		&i.EnvVarID,
@@ -86,30 +86,30 @@ func (q *Queries) EnvVarFindByID(ctx context.Context, envVarID int64) (EnvVarFin
 	return i, err
 }
 
-const envVarFindID = `-- name: EnvVarFindID :one
+const varFindID = `-- name: VarFindID :one
 SELECT env_var_id FROM env_var WHERE env_id = ? AND name = ?
 `
 
-type EnvVarFindIDParams struct {
+type VarFindIDParams struct {
 	EnvID int64
 	Name  string
 }
 
-func (q *Queries) EnvVarFindID(ctx context.Context, arg EnvVarFindIDParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, envVarFindID, arg.EnvID, arg.Name)
+func (q *Queries) VarFindID(ctx context.Context, arg VarFindIDParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, varFindID, arg.EnvID, arg.Name)
 	var env_var_id int64
 	err := row.Scan(&env_var_id)
 	return env_var_id, err
 }
 
-const envVarList = `-- name: EnvVarList :many
+const varList = `-- name: VarList :many
 SELECT env_var_id, env_id, name, comment, create_time, update_time, value FROM env_var
 WHERE env_id = ?
 ORDER BY name ASC
 `
 
-func (q *Queries) EnvVarList(ctx context.Context, envID int64) ([]EnvVar, error) {
-	rows, err := q.db.QueryContext(ctx, envVarList, envID)
+func (q *Queries) VarList(ctx context.Context, envID int64) ([]EnvVar, error) {
+	rows, err := q.db.QueryContext(ctx, varList, envID)
 	if err != nil {
 		return nil, err
 	}
@@ -139,19 +139,19 @@ func (q *Queries) EnvVarList(ctx context.Context, envID int64) ([]EnvVar, error)
 	return items, nil
 }
 
-const envVarShow = `-- name: EnvVarShow :one
+const varShow = `-- name: VarShow :one
 SELECT env_var_id, env_id, name, comment, create_time, update_time, value
 FROM env_var
 WHERE env_id = ? AND name = ?
 `
 
-type EnvVarShowParams struct {
+type VarShowParams struct {
 	EnvID int64
 	Name  string
 }
 
-func (q *Queries) EnvVarShow(ctx context.Context, arg EnvVarShowParams) (EnvVar, error) {
-	row := q.db.QueryRowContext(ctx, envVarShow, arg.EnvID, arg.Name)
+func (q *Queries) VarShow(ctx context.Context, arg VarShowParams) (EnvVar, error) {
+	row := q.db.QueryRowContext(ctx, varShow, arg.EnvID, arg.Name)
 	var i EnvVar
 	err := row.Scan(
 		&i.EnvVarID,
@@ -165,7 +165,7 @@ func (q *Queries) EnvVarShow(ctx context.Context, arg EnvVarShowParams) (EnvVar,
 	return i, err
 }
 
-const envVarUpdate = `-- name: EnvVarUpdate :exec
+const varUpdate = `-- name: VarUpdate :exec
 UPDATE env_var SET
     env_id = COALESCE(?1, env_id),
     name = COALESCE(?2, name),
@@ -176,7 +176,7 @@ UPDATE env_var SET
 WHERE env_var_id = ?7
 `
 
-type EnvVarUpdateParams struct {
+type VarUpdateParams struct {
 	EnvID      *int64
 	Name       *string
 	Comment    *string
@@ -186,8 +186,8 @@ type EnvVarUpdateParams struct {
 	EnvVarID   int64
 }
 
-func (q *Queries) EnvVarUpdate(ctx context.Context, arg EnvVarUpdateParams) error {
-	_, err := q.db.ExecContext(ctx, envVarUpdate,
+func (q *Queries) VarUpdate(ctx context.Context, arg VarUpdateParams) error {
+	_, err := q.db.ExecContext(ctx, varUpdate,
 		arg.EnvID,
 		arg.Name,
 		arg.Comment,
