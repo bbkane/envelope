@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestEnvLocalVarCreate(t *testing.T) {
+func TestVarCreate(t *testing.T) {
 	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
@@ -43,7 +43,7 @@ func TestEnvLocalVarCreate(t *testing.T) {
 	}
 }
 
-func TestEnvLocalVarDelete(t *testing.T) {
+func TestVarDelete(t *testing.T) {
 	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
@@ -121,7 +121,7 @@ func TestEnvNonUniqueNames(t *testing.T) {
 	}
 }
 
-func TestEnvVarUpdate(t *testing.T) {
+func TestVarUpdate(t *testing.T) {
 	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
 
