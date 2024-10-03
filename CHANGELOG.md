@@ -11,7 +11,8 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 - `env print-script --shell zsh --type export` -> `shell zsh export`
 - `env print-script --shell zsh --type unexport` -> `shell zsh unexport`
-- Moved `var` subcommands to toplevel, instead of under `env`. For example, `env var create` becomes `var create`
+- Moved `env var` subcommands to toplevel. For example, `env var create` becomes `var create`
+- Moved `env ref` subcommands under var. For example, `env ref create` becomes `var ref create`
 
 # v0.0.11
 
