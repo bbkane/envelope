@@ -12,7 +12,9 @@ cd "${script_dir}"
 
 # Use a new version of envelope
 go install .
-export PATH="/Users/bbkane/go/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
+echo "Using:"
+which envelope
 
 export PROMPT='%F{47}$ %f'
 rm -f ./tmp.db
