@@ -10,8 +10,8 @@ import (
 )
 
 const varRefCreate = `-- name: VarRefCreate :exec
-INSERT INTO env_ref(
-    env_id, name, comment, create_time, update_time, env_var_id
+INSERT INTO var_ref(
+    env_id, name, comment, create_time, update_time, var_id
 ) VALUES (
     ?     , ?   , ?      , ?          , ?          , ?
 )
@@ -23,7 +23,7 @@ type VarRefCreateParams struct {
 	Comment    string
 	CreateTime string
 	UpdateTime string
-	EnvVarID   int64
+	VarID      int64
 }
 
 func (q *Queries) VarRefCreate(ctx context.Context, arg VarRefCreateParams) error {
@@ -33,13 +33,13 @@ func (q *Queries) VarRefCreate(ctx context.Context, arg VarRefCreateParams) erro
 		arg.Comment,
 		arg.CreateTime,
 		arg.UpdateTime,
-		arg.EnvVarID,
+		arg.VarID,
 	)
 	return err
 }
 
 const varRefDelete = `-- name: VarRefDelete :exec
-DELETE FROM env_ref WHERE env_id = ? AND name = ?
+DELETE FROM var_ref WHERE env_id = ? AND name = ?
 `
 
 type VarRefDeleteParams struct {
@@ -53,28 +53,28 @@ func (q *Queries) VarRefDelete(ctx context.Context, arg VarRefDeleteParams) erro
 }
 
 const varRefList = `-- name: VarRefList :many
-SELECT env_ref_id, env_id, name, comment, create_time, update_time, env_var_id FROM env_ref
+SELECT var_ref_id, env_id, name, comment, create_time, update_time, var_id FROM var_ref
 WHERE env_id = ?
 ORDER BY name ASC
 `
 
-func (q *Queries) VarRefList(ctx context.Context, envID int64) ([]EnvRef, error) {
+func (q *Queries) VarRefList(ctx context.Context, envID int64) ([]VarRef, error) {
 	rows, err := q.db.QueryContext(ctx, varRefList, envID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []EnvRef
+	var items []VarRef
 	for rows.Next() {
-		var i EnvRef
+		var i VarRef
 		if err := rows.Scan(
-			&i.EnvRefID,
+			&i.VarRefID,
 			&i.EnvID,
 			&i.Name,
 			&i.Comment,
 			&i.CreateTime,
 			&i.UpdateTime,
-			&i.EnvVarID,
+			&i.VarID,
 		); err != nil {
 			return nil, err
 		}
@@ -90,25 +90,25 @@ func (q *Queries) VarRefList(ctx context.Context, envID int64) ([]EnvRef, error)
 }
 
 const varRefListByVarID = `-- name: VarRefListByVarID :many
-SELECT env.name AS env_name, env_ref.env_ref_id, env_ref.env_id, env_ref.name, env_ref.comment, env_ref.create_time, env_ref.update_time, env_ref.env_var_id FROM env_ref
-JOIN env ON env_ref.env_id = env.env_id
-WHERE env_var_id = ?
-ORDER BY env_ref.name ASC
+SELECT env.name AS env_name, var_ref.var_ref_id, var_ref.env_id, var_ref.name, var_ref.comment, var_ref.create_time, var_ref.update_time, var_ref.var_id FROM var_ref
+JOIN env ON var_ref.env_id = env.env_id
+WHERE var_id = ?
+ORDER BY var_ref.name ASC
 `
 
 type VarRefListByVarIDRow struct {
 	EnvName    string
-	EnvRefID   int64
+	VarRefID   int64
 	EnvID      int64
 	Name       string
 	Comment    string
 	CreateTime string
 	UpdateTime string
-	EnvVarID   int64
+	VarID      int64
 }
 
-func (q *Queries) VarRefListByVarID(ctx context.Context, envVarID int64) ([]VarRefListByVarIDRow, error) {
-	rows, err := q.db.QueryContext(ctx, varRefListByVarID, envVarID)
+func (q *Queries) VarRefListByVarID(ctx context.Context, varID int64) ([]VarRefListByVarIDRow, error) {
+	rows, err := q.db.QueryContext(ctx, varRefListByVarID, varID)
 	if err != nil {
 		return nil, err
 	}
@@ -118,13 +118,13 @@ func (q *Queries) VarRefListByVarID(ctx context.Context, envVarID int64) ([]VarR
 		var i VarRefListByVarIDRow
 		if err := rows.Scan(
 			&i.EnvName,
-			&i.EnvRefID,
+			&i.VarRefID,
 			&i.EnvID,
 			&i.Name,
 			&i.Comment,
 			&i.CreateTime,
 			&i.UpdateTime,
-			&i.EnvVarID,
+			&i.VarID,
 		); err != nil {
 			return nil, err
 		}
@@ -140,8 +140,8 @@ func (q *Queries) VarRefListByVarID(ctx context.Context, envVarID int64) ([]VarR
 }
 
 const varRefShow = `-- name: VarRefShow :one
-SELECT env_ref_id, env_id, name, comment, create_time, update_time, env_var_id
-FROM env_ref
+SELECT var_ref_id, env_id, name, comment, create_time, update_time, var_id
+FROM var_ref
 WHERE env_id = ? AND name = ?
 `
 
@@ -150,17 +150,17 @@ type VarRefShowParams struct {
 	Name  string
 }
 
-func (q *Queries) VarRefShow(ctx context.Context, arg VarRefShowParams) (EnvRef, error) {
+func (q *Queries) VarRefShow(ctx context.Context, arg VarRefShowParams) (VarRef, error) {
 	row := q.db.QueryRowContext(ctx, varRefShow, arg.EnvID, arg.Name)
-	var i EnvRef
+	var i VarRef
 	err := row.Scan(
-		&i.EnvRefID,
+		&i.VarRefID,
 		&i.EnvID,
 		&i.Name,
 		&i.Comment,
 		&i.CreateTime,
 		&i.UpdateTime,
-		&i.EnvVarID,
+		&i.VarID,
 	)
 	return i, err
 }

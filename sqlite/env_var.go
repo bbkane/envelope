@@ -140,7 +140,7 @@ func (e *EnvService) VarShow(ctx context.Context, envName string, name string) (
 	}
 
 	envRefs := []domain.VarRef{}
-	sqlcEnvRefs, err := queries.VarRefListByVarID(ctx, sqlEnvLocalVar.EnvVarID)
+	sqlcEnvRefs, err := queries.VarRefListByVarID(ctx, sqlEnvLocalVar.VarID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, nil, err
 	}
@@ -191,7 +191,7 @@ func (e *EnvService) VarUpdate(ctx context.Context, envName string, name string,
 		CreateTime: domain.TimePtrToStringPtr(args.CreateTime),
 		UpdateTime: domain.TimePtrToStringPtr(args.UpdateTime),
 		Value:      args.Value,
-		EnvVarID:   envVarID,
+		VarID:      envVarID,
 	})
 
 	if err != nil {

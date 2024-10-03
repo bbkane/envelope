@@ -10,7 +10,7 @@ import (
 )
 
 const varCreate = `-- name: VarCreate :exec
-INSERT INTO env_var(
+INSERT INTO var(
     env_id, name, comment, create_time, update_time, value
 ) VALUES (
     ?     , ?   , ?      , ?          , ?          , ?
@@ -39,7 +39,7 @@ func (q *Queries) VarCreate(ctx context.Context, arg VarCreateParams) error {
 }
 
 const varDelete = `-- name: VarDelete :exec
-DELETE FROM env_var WHERE env_id = ? AND name = ?
+DELETE FROM var WHERE env_id = ? AND name = ?
 `
 
 type VarDeleteParams struct {
@@ -53,15 +53,15 @@ func (q *Queries) VarDelete(ctx context.Context, arg VarDeleteParams) error {
 }
 
 const varFindByID = `-- name: VarFindByID :one
-SELECT env.name AS env_name, env_var.env_var_id, env_var.env_id, env_var.name, env_var.comment, env_var.create_time, env_var.update_time, env_var.value
-FROM env_var
-JOIN env ON env_var.env_id = env.env_id
-WHERE env_var.env_var_id = ?
+SELECT env.name AS env_name, var.var_id, var.env_id, var.name, var.comment, var.create_time, var.update_time, var.value
+FROM var
+JOIN env ON var.env_id = env.env_id
+WHERE var.var_id = ?
 `
 
 type VarFindByIDRow struct {
 	EnvName    string
-	EnvVarID   int64
+	VarID      int64
 	EnvID      int64
 	Name       string
 	Comment    string
@@ -70,12 +70,12 @@ type VarFindByIDRow struct {
 	Value      string
 }
 
-func (q *Queries) VarFindByID(ctx context.Context, envVarID int64) (VarFindByIDRow, error) {
-	row := q.db.QueryRowContext(ctx, varFindByID, envVarID)
+func (q *Queries) VarFindByID(ctx context.Context, varID int64) (VarFindByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, varFindByID, varID)
 	var i VarFindByIDRow
 	err := row.Scan(
 		&i.EnvName,
-		&i.EnvVarID,
+		&i.VarID,
 		&i.EnvID,
 		&i.Name,
 		&i.Comment,
@@ -87,7 +87,7 @@ func (q *Queries) VarFindByID(ctx context.Context, envVarID int64) (VarFindByIDR
 }
 
 const varFindID = `-- name: VarFindID :one
-SELECT env_var_id FROM env_var WHERE env_id = ? AND name = ?
+SELECT var_id FROM var WHERE env_id = ? AND name = ?
 `
 
 type VarFindIDParams struct {
@@ -97,28 +97,28 @@ type VarFindIDParams struct {
 
 func (q *Queries) VarFindID(ctx context.Context, arg VarFindIDParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, varFindID, arg.EnvID, arg.Name)
-	var env_var_id int64
-	err := row.Scan(&env_var_id)
-	return env_var_id, err
+	var var_id int64
+	err := row.Scan(&var_id)
+	return var_id, err
 }
 
 const varList = `-- name: VarList :many
-SELECT env_var_id, env_id, name, comment, create_time, update_time, value FROM env_var
+SELECT var_id, env_id, name, comment, create_time, update_time, value FROM var
 WHERE env_id = ?
 ORDER BY name ASC
 `
 
-func (q *Queries) VarList(ctx context.Context, envID int64) ([]EnvVar, error) {
+func (q *Queries) VarList(ctx context.Context, envID int64) ([]Var, error) {
 	rows, err := q.db.QueryContext(ctx, varList, envID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []EnvVar
+	var items []Var
 	for rows.Next() {
-		var i EnvVar
+		var i Var
 		if err := rows.Scan(
-			&i.EnvVarID,
+			&i.VarID,
 			&i.EnvID,
 			&i.Name,
 			&i.Comment,
@@ -140,8 +140,8 @@ func (q *Queries) VarList(ctx context.Context, envID int64) ([]EnvVar, error) {
 }
 
 const varShow = `-- name: VarShow :one
-SELECT env_var_id, env_id, name, comment, create_time, update_time, value
-FROM env_var
+SELECT var_id, env_id, name, comment, create_time, update_time, value
+FROM var
 WHERE env_id = ? AND name = ?
 `
 
@@ -150,11 +150,11 @@ type VarShowParams struct {
 	Name  string
 }
 
-func (q *Queries) VarShow(ctx context.Context, arg VarShowParams) (EnvVar, error) {
+func (q *Queries) VarShow(ctx context.Context, arg VarShowParams) (Var, error) {
 	row := q.db.QueryRowContext(ctx, varShow, arg.EnvID, arg.Name)
-	var i EnvVar
+	var i Var
 	err := row.Scan(
-		&i.EnvVarID,
+		&i.VarID,
 		&i.EnvID,
 		&i.Name,
 		&i.Comment,
@@ -166,14 +166,14 @@ func (q *Queries) VarShow(ctx context.Context, arg VarShowParams) (EnvVar, error
 }
 
 const varUpdate = `-- name: VarUpdate :exec
-UPDATE env_var SET
+UPDATE var SET
     env_id = COALESCE(?1, env_id),
     name = COALESCE(?2, name),
     comment = COALESCE(?3, comment),
     create_time = COALESCE(?4, create_time),
     update_time = COALESCE(?5, update_time),
     value = COALESCE(?6, value)
-WHERE env_var_id = ?7
+WHERE var_id = ?7
 `
 
 type VarUpdateParams struct {
@@ -183,7 +183,7 @@ type VarUpdateParams struct {
 	CreateTime *string
 	UpdateTime *string
 	Value      *string
-	EnvVarID   int64
+	VarID      int64
 }
 
 func (q *Queries) VarUpdate(ctx context.Context, arg VarUpdateParams) error {
@@ -194,7 +194,7 @@ func (q *Queries) VarUpdate(ctx context.Context, arg VarUpdateParams) error {
 		arg.CreateTime,
 		arg.UpdateTime,
 		arg.Value,
-		arg.EnvVarID,
+		arg.VarID,
 	)
 	return err
 }

@@ -1,38 +1,38 @@
 -- name: VarCreate :exec
-INSERT INTO env_var(
+INSERT INTO var(
     env_id, name, comment, create_time, update_time, value
 ) VALUES (
     ?     , ?   , ?      , ?          , ?          , ?
 );
 
 -- name: VarDelete :exec
-DELETE FROM env_var WHERE env_id = ? AND name = ?;
+DELETE FROM var WHERE env_id = ? AND name = ?;
 
 -- name: VarFindID :one
-SELECT env_var_id FROM env_var WHERE env_id = ? AND name = ?;
+SELECT var_id FROM var WHERE env_id = ? AND name = ?;
 
 -- name: VarFindByID :one
-SELECT env.name AS env_name, env_var.*
-FROM env_var
-JOIN env ON env_var.env_id = env.env_id
-WHERE env_var.env_var_id = ?;
+SELECT env.name AS env_name, var.*
+FROM var
+JOIN env ON var.env_id = env.env_id
+WHERE var.var_id = ?;
 
 -- name: VarList :many
-SELECT * FROM env_var
+SELECT * FROM var
 WHERE env_id = ?
 ORDER BY name ASC;
 
 -- name: VarShow :one
 SELECT *
-FROM env_var
+FROM var
 WHERE env_id = ? AND name = ?;
 
 -- name: VarUpdate :exec
-UPDATE env_var SET
+UPDATE var SET
     env_id = COALESCE(sqlc.narg('env_id'), env_id),
     name = COALESCE(sqlc.narg('name'), name),
     comment = COALESCE(sqlc.narg('comment'), comment),
     create_time = COALESCE(sqlc.narg('create_time'), create_time),
     update_time = COALESCE(sqlc.narg('update_time'), update_time),
     value = COALESCE(sqlc.narg('value'), value)
-WHERE env_var_id = sqlc.arg('env_var_id');
+WHERE var_id = sqlc.arg('var_id');

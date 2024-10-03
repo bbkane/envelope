@@ -27,7 +27,7 @@ func (e *EnvService) VarRefCreate(ctx context.Context, args domain.VarRefCreateA
 		Comment:    args.Comment,
 		CreateTime: domain.TimeToString(args.CreateTime),
 		UpdateTime: domain.TimeToString(args.UpdateTime),
-		EnvVarID:   varID,
+		VarID:      varID,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create env var ref: %w", err)
@@ -81,9 +81,9 @@ func (e *EnvService) VarRefList(ctx context.Context, envName string) ([]domain.V
 		// https://www.sqlite.org/np1queryprob.html
 		// easy to add a join later if I need perf, as this is localized to this package
 
-		localVar, err := e.varFindByID(ctx, sqlcRef.EnvVarID)
+		localVar, err := e.varFindByID(ctx, sqlcRef.VarID)
 		if err != nil {
-			return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.EnvVarID, err)
+			return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.VarID, err)
 		}
 		vars = append(vars, *localVar)
 		refs = append(refs, domain.VarRef{
@@ -116,9 +116,9 @@ func (e *EnvService) VarRefShow(ctx context.Context, envName string, name string
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not find ref: %s: %s: %w", envName, name, err)
 	}
-	sqlcVar, err := e.varFindByID(ctx, sqlcRef.EnvVarID)
+	sqlcVar, err := e.varFindByID(ctx, sqlcRef.VarID)
 	if err != nil {
-		return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.EnvVarID, err)
+		return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.VarID, err)
 	}
 
 	return &domain.VarRef{
