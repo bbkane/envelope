@@ -15,7 +15,7 @@ import (
 func VarRefCreateCmd() command.Command {
 	return command.New(
 		"Create a reference in this env to a variable in another env",
-		varRefCreateRun,
+		withEnvService(varRefCreateRun),
 		command.Flag(
 			"--name",
 			"Ref name",
@@ -44,7 +44,7 @@ func VarRefCreateCmd() command.Command {
 	)
 }
 
-func varRefCreateRun(cmdCtx command.Context) error {
+func varRefCreateRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
 
@@ -54,15 +54,7 @@ func varRefCreateRun(cmdCtx command.Context) error {
 
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
-
-	_, err = es.VarRefCreate(
+	_, err := es.VarRefCreate(
 		ctx,
 		domain.VarRefCreateArgs{
 			EnvName:    envName,
@@ -86,7 +78,7 @@ func varRefCreateRun(cmdCtx command.Context) error {
 func VarRefDeleteCmd() command.Command {
 	return command.New(
 		"Delete a reference to a variablea",
-		varRefDeleteRun,
+		withEnvService(varRefDeleteRun),
 		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -103,7 +95,7 @@ func VarRefDeleteCmd() command.Command {
 	)
 }
 
-func varRefDeleteRun(cmdCtx command.Context) error {
+func varRefDeleteRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
 	confirm := mustGetConfirmArg(cmdCtx.Flags)
@@ -119,15 +111,7 @@ func varRefDeleteRun(cmdCtx command.Context) error {
 		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
-
-	err = es.VarRefDelete(ctx, envName, name)
+	err := es.VarRefDelete(ctx, envName, name)
 	if err != nil {
 		return err
 	}
@@ -138,7 +122,7 @@ func varRefDeleteRun(cmdCtx command.Context) error {
 func VarRefShowCmd() command.Command {
 	return command.New(
 		"Show details for a reference",
-		varRefShowRun,
+		withEnvService(varRefShowRun),
 		command.ExistingFlags(maskFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -158,21 +142,13 @@ func VarRefShowCmd() command.Command {
 	)
 }
 
-func varRefShowRun(cmdCtx command.Context) error {
+func varRefShowRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
 	format := cmdCtx.Flags["--format"].(string)
 	width := mustGetWidthArg(cmdCtx.Flags)
-
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
 
 	envRef, envVar, err := es.VarRefShow(ctx, envName, name)
 	if err != nil {

@@ -252,19 +252,6 @@ func ptrFromMap[T any](m map[string]any, key string) *T {
 	return nil
 }
 
-// initEnvService reads the following from the flags:
-//
-// - --db-path
-func initEnvService(ctx context.Context, passedFlags command.PassedFlags) (domain.EnvService, error) {
-	sqliteDSN := passedFlags["--db-path"].(string)
-	envService, err := sqlite.NewEnvService(ctx, sqliteDSN)
-	if err != nil {
-		//nolint:govet // we don't need the cancel if we err out
-		return nil, fmt.Errorf("could not create env service: %w", err)
-	}
-	return envService, nil
-}
-
 type commonCreateArgs struct {
 	Comment    string
 	CreateTime time.Time
@@ -321,4 +308,26 @@ func mustGetTimezoneArg(pf command.PassedFlags) string {
 
 func mustGetWidthArg(pf command.PassedFlags) int {
 	return pf["--width"].(int)
+}
+
+// withEnvService wraps a command.Action to read --db-path and create a EnvService
+func withEnvService(
+	f func(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error,
+) command.Action {
+	return func(cmdCtx command.Context) error {
+
+		ctx, cancel := context.WithTimeout(
+			context.Background(),
+			mustGetTimeoutArg(cmdCtx.Flags),
+		)
+		defer cancel()
+
+		sqliteDSN := cmdCtx.Flags["--db-path"].(string)
+		es, err := sqlite.NewEnvService(ctx, sqliteDSN)
+		if err != nil {
+			return fmt.Errorf("could not create env service: %w", err)
+		}
+
+		return f(ctx, es, cmdCtx)
+	}
 }

@@ -15,7 +15,7 @@ import (
 func EnvCreateCmd() command.Command {
 	return command.New(
 		"Create an environment",
-		envCreateRun,
+		withEnvService(envCreate),
 		command.ExistingFlags(commonCreateFlagMap()),
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
@@ -23,17 +23,8 @@ func EnvCreateCmd() command.Command {
 	)
 }
 
-func envCreateRun(cmdCtx command.Context) error {
-
+func envCreate(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
-
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
 
 	env, err := es.EnvCreate(ctx, domain.EnvCreateArgs{
 		Name:       mustGetNameArg(cmdCtx.Flags),
@@ -54,7 +45,7 @@ func envCreateRun(cmdCtx command.Context) error {
 func EnvDeleteCmd() command.Command {
 	return command.New(
 		"Delete an environment and associated vars",
-		envDeleteRun,
+		withEnvService(envDelete),
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
@@ -62,10 +53,8 @@ func EnvDeleteCmd() command.Command {
 	)
 }
 
-func envDeleteRun(cmdCtx command.Context) error {
-
+func envDelete(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	name := mustGetNameArg(cmdCtx.Flags)
-
 	confirm := mustGetConfirmArg(cmdCtx.Flags)
 
 	if confirm {
@@ -78,17 +67,7 @@ func envDeleteRun(cmdCtx command.Context) error {
 		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
-	defer cancel()
-
-	err = es.EnvDelete(ctx, name)
-
+	err := es.EnvDelete(ctx, name)
 	if err != nil {
 		return fmt.Errorf("could not delete env: %s: %w", name, err)
 	}
@@ -100,7 +79,7 @@ func envDeleteRun(cmdCtx command.Context) error {
 func EnvListCmd() command.Command {
 	return command.New(
 		"List environments",
-		envListRun,
+		withEnvService(envList),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
 		command.ExistingFlags(timeZoneFlagMap()),
@@ -108,19 +87,7 @@ func EnvListCmd() command.Command {
 	)
 }
 
-func envListRun(cmdCtx command.Context) error {
-
-	timezone := mustGetTimezoneArg(cmdCtx.Flags)
-	width := mustGetWidthArg(cmdCtx.Flags)
-
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
-
+func envList(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	envs, err := es.EnvList(ctx)
 	if err != nil {
 		return err
@@ -129,9 +96,9 @@ func envListRun(cmdCtx command.Context) error {
 	c := tableprint.CommonTablePrintArgs{
 		Format:          tableprint.Format_Table,
 		Mask:            false,
-		Tz:              tableprint.Timezone(timezone),
+		Tz:              tableprint.Timezone(mustGetTimezoneArg(cmdCtx.Flags)),
 		W:               cmdCtx.Stdout,
-		DesiredMaxWidth: width,
+		DesiredMaxWidth: mustGetWidthArg(cmdCtx.Flags),
 	}
 
 	tableprint.EnvList(c, envs)
@@ -141,7 +108,7 @@ func envListRun(cmdCtx command.Context) error {
 func EnvShowCmd() command.Command {
 	return command.New(
 		"Print environment details",
-		envShowRun,
+		withEnvService(envShow),
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(maskFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
@@ -151,20 +118,11 @@ func EnvShowCmd() command.Command {
 	)
 }
 
-func envShowRun(cmdCtx command.Context) error {
-
+func envShow(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
 	width := mustGetWidthArg(cmdCtx.Flags)
-
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
 
 	env, err := es.EnvShow(ctx, name)
 	if err != nil {
@@ -182,8 +140,6 @@ func envShowRun(cmdCtx command.Context) error {
 	}
 
 	c := tableprint.CommonTablePrintArgs{
-		// NOTE: since the only two options are value-only and table,
-		// and value-only doesn't make sense here, hardcode Format_Table
 		Format:          tableprint.Format_Table,
 		Mask:            mask,
 		Tz:              tableprint.Timezone(timezone),
@@ -197,7 +153,7 @@ func envShowRun(cmdCtx command.Context) error {
 func EnvUpdateCmd() command.Command {
 	return command.New(
 		"Update an environment",
-		envUpdateRun,
+		withEnvService(envUpdate),
 		command.ExistingFlags(commonUpdateFlags()),
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
@@ -206,8 +162,7 @@ func EnvUpdateCmd() command.Command {
 	)
 }
 
-func envUpdateRun(cmdCtx command.Context) error {
-
+func envUpdate(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	// common update flags
 	comment := ptrFromMap[string](cmdCtx.Flags, "--comment")
 	createTime := ptrFromMap[time.Time](cmdCtx.Flags, "--create-time")
@@ -216,7 +171,6 @@ func envUpdateRun(cmdCtx command.Context) error {
 
 	confirm := mustGetConfirmArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
-	timeout := mustGetTimeoutArg(cmdCtx.Flags)
 
 	if confirm {
 		keepGoing, err := askConfirm()
@@ -228,15 +182,7 @@ func envUpdateRun(cmdCtx command.Context) error {
 		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
-
-	err = es.EnvUpdate(ctx, name, domain.EnvUpdateArgs{
+	err := es.EnvUpdate(ctx, name, domain.EnvUpdateArgs{
 		Comment:    comment,
 		CreateTime: createTime,
 		Name:       newName,

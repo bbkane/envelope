@@ -90,7 +90,7 @@ unexport-env() { eval $(envelope shell zsh unexport --env-name "$1" --no-env-no-
 func ShellZshExportCmd() command.Command {
 	return command.New(
 		"Print export script",
-		shellZshExportRun,
+		withEnvService(shellZshExportRun),
 		command.ExistingFlag("--env-name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -105,14 +105,14 @@ func ShellZshExportCmd() command.Command {
 	)
 }
 
-func shellZshExportRun(cmdCtx command.Context) error {
-	return shellZshExportUnexport(cmdCtx, "export")
+func shellZshExportRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+	return shellZshExportUnexport(ctx, cmdCtx, es, "export")
 }
 
 func ShellZshUnexportCmd() command.Command {
 	return command.New(
 		"Print unexport script",
-		shellZshUnexportRun,
+		withEnvService(shellZshUnexportRun),
 		command.ExistingFlag("--env-name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -127,21 +127,13 @@ func ShellZshUnexportCmd() command.Command {
 	)
 }
 
-func shellZshUnexportRun(cmdCtx command.Context) error {
-	return shellZshExportUnexport(cmdCtx, "unexport")
+func shellZshUnexportRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+	return shellZshExportUnexport(ctx, cmdCtx, es, "unexport")
 }
 
-func shellZshExportUnexport(cmdCtx command.Context, scriptType string) error {
+func shellZshExportUnexport(ctx context.Context, cmdCtx command.Context, es domain.EnvService, scriptType string) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	noEnvNoProblem := cmdCtx.Flags["--no-env-no-problem"].(bool)
-
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
 
 	envVars, err := es.VarList(ctx, envName)
 	if err != nil {

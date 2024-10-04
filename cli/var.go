@@ -17,7 +17,7 @@ import (
 func VarCreateCmd() command.Command {
 	return command.New(
 		"Create a variable local to the this env",
-		varCreateRun,
+		withEnvService(varCreateRun),
 		command.ExistingFlag(
 			"--env-name",
 			envNameFlag(),
@@ -39,7 +39,7 @@ func VarCreateCmd() command.Command {
 	)
 }
 
-func varCreateRun(cmdCtx command.Context) error {
+func varCreateRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
@@ -57,17 +57,8 @@ func varCreateRun(cmdCtx command.Context) error {
 	}
 
 	name := mustGetNameArg(cmdCtx.Flags)
-	timeout := mustGetTimeoutArg(cmdCtx.Flags)
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
-
-	_, err = es.VarCreate(
+	_, err := es.VarCreate(
 		ctx,
 		domain.VarCreateArgs{
 			EnvName:    envName,
@@ -89,7 +80,7 @@ func varCreateRun(cmdCtx command.Context) error {
 func VarDeleteCmd() command.Command {
 	return command.New(
 		"Delete a variable local to the this env",
-		varDeleteRun,
+		withEnvService(varDeleteRun),
 		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -106,7 +97,7 @@ func VarDeleteCmd() command.Command {
 	)
 }
 
-func varDeleteRun(cmdCtx command.Context) error {
+func varDeleteRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
 	confirm := mustGetConfirmArg(cmdCtx.Flags)
@@ -122,15 +113,7 @@ func varDeleteRun(cmdCtx command.Context) error {
 		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
-
-	err = es.VarDelete(ctx, envName, name)
+	err := es.VarDelete(ctx, envName, name)
 	if err != nil {
 		return err
 	}
@@ -141,7 +124,7 @@ func varDeleteRun(cmdCtx command.Context) error {
 func VarShowCmd() command.Command {
 	return command.New(
 		"Show details for a local var",
-		varShowRun,
+		withEnvService(varShowRun),
 		command.ExistingFlags(maskFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -161,7 +144,7 @@ func VarShowCmd() command.Command {
 	)
 }
 
-func varShowRun(cmdCtx command.Context) error {
+func varShowRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
@@ -169,14 +152,6 @@ func varShowRun(cmdCtx command.Context) error {
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
 	format := cmdCtx.Flags["--format"].(string)
 	width := mustGetWidthArg(cmdCtx.Flags)
-
-	ctx, cancel := context.WithTimeout(context.Background(), mustGetTimeoutArg(cmdCtx.Flags))
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
 
 	envVar, envRefs, err := es.VarShow(ctx, envName, name)
 	if err != nil {
@@ -198,7 +173,7 @@ func varShowRun(cmdCtx command.Context) error {
 func VarUpdateCmd() command.Command {
 	return command.New(
 		"Update and env var",
-		varUpdateRun,
+		withEnvService(varUpdateRun),
 		command.ExistingFlag("--env-name", envNameFlag()),
 		command.ExistingFlags(commonUpdateFlags()),
 		command.ExistingFlags(timeoutFlagMap()),
@@ -223,7 +198,7 @@ func VarUpdateCmd() command.Command {
 	)
 }
 
-func varUpdateRun(cmdCtx command.Context) error {
+func varUpdateRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	// common update flags
 	commonUpdateArgs := getCommonUpdateArgs(cmdCtx.Flags)
 
@@ -232,7 +207,6 @@ func varUpdateRun(cmdCtx command.Context) error {
 	name := mustGetNameArg(cmdCtx.Flags)
 	newEnvName := ptrFromMap[string](cmdCtx.Flags, "--new-env-name")
 	value := ptrFromMap[string](cmdCtx.Flags, "--value")
-	timeout := mustGetTimeoutArg(cmdCtx.Flags)
 
 	if confirm {
 		keepGoing, err := askConfirm()
@@ -244,14 +218,7 @@ func varUpdateRun(cmdCtx command.Context) error {
 		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	es, err := initEnvService(ctx, cmdCtx.Flags)
-	if err != nil {
-		return err
-	}
-	err = es.VarUpdate(ctx, envName, name, domain.VarUpdateArgs{
+	err := es.VarUpdate(ctx, envName, name, domain.VarUpdateArgs{
 		Comment:    commonUpdateArgs.Comment,
 		CreateTime: commonUpdateArgs.CreateTime,
 		EnvName:    newEnvName,
