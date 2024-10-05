@@ -7,6 +7,10 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 # v0.0.13
 
+## Added
+
+- `ENVELOPE_MASK` env var to control `--mask`
+
 ## Fixed
 
 - #58 - print error if deleting or updating non-existent envs/vars/refs

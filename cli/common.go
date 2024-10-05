@@ -63,6 +63,7 @@ func maskFlag() flag.FlagMap {
 			scalar.Bool(
 				scalar.Default(true),
 			),
+			flag.EnvVars("ENVELOPE_MASK"),
 			flag.Required(),
 		),
 	}
