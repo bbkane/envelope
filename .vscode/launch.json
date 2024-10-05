@@ -12,7 +12,14 @@
             "program": "${workspaceFolder}",
             // change these to debug different commands
             "args": [
-                "-h"
+                "var",
+                "delete",
+                "--name",
+                "non-existing",
+                "--env-name",
+                "tmp",
+                "--confirm",
+                "false",
             ]
         }
     ]

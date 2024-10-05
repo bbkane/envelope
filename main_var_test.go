@@ -88,6 +88,34 @@ func TestVarDelete(t *testing.T) {
 	}
 }
 
+func TestVarDeleteNonexisting(t *testing.T) {
+	t.Parallel()
+	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
+
+	dbName := createTempDB(t)
+
+	tests := []testcase{
+		{
+			name:            "01_envCreate",
+			args:            envCreateTestCmd(dbName, envName01),
+			expectActionErr: false,
+		},
+		// unfortunately, I can't test the output since this just checks that an error occurred
+		{
+			name: "02_varDeleteNonexisting",
+			args: new(testCmdBuilder).Strs("var", "delete").Confirm(false).
+				EnvName(envName01).Name("nonexisting").Finish(dbName),
+			expectActionErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			goldenTest(t, tt, updateGolden)
+		})
+	}
+}
+
 func TestEnvNonUniqueNames(t *testing.T) {
 	t.Parallel()
 	updateGolden := os.Getenv("ENVELOPE_TEST_UPDATE_GOLDEN") != ""
