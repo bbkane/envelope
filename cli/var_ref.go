@@ -2,7 +2,6 @@ package cli
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"go.bbkane.com/envelope/cli/tableprint"
@@ -78,7 +77,7 @@ func varRefCreateRun(ctx context.Context, es domain.EnvService, cmdCtx command.C
 func VarRefDeleteCmd() command.Command {
 	return command.New(
 		"Delete a reference to a variablea",
-		withEnvService(varRefDeleteRun),
+		withConfirm(withEnvService(varRefDeleteRun)),
 		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -98,18 +97,7 @@ func VarRefDeleteCmd() command.Command {
 func varRefDeleteRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
-	confirm := mustGetConfirmArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
-
-	if confirm {
-		keepGoing, err := askConfirm()
-		if err != nil {
-			panic(err)
-		}
-		if !keepGoing {
-			return errors.New("unconfirmed change")
-		}
-	}
 
 	err := es.VarRefDelete(ctx, envName, name)
 	if err != nil {

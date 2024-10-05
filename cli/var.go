@@ -3,7 +3,6 @@ package cli
 import (
 	"bufio"
 	"context"
-	"errors"
 	"fmt"
 	"os"
 
@@ -80,7 +79,7 @@ func varCreateRun(ctx context.Context, es domain.EnvService, cmdCtx command.Cont
 func VarDeleteCmd() command.Command {
 	return command.New(
 		"Delete a variable local to the this env",
-		withEnvService(varDeleteRun),
+		withConfirm(withEnvService(varDeleteRun)),
 		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
 		command.ExistingFlags(sqliteDSNFlagMap()),
@@ -99,19 +98,7 @@ func VarDeleteCmd() command.Command {
 
 func varDeleteRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
-
-	confirm := mustGetConfirmArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
-
-	if confirm {
-		keepGoing, err := askConfirm()
-		if err != nil {
-			panic(err)
-		}
-		if !keepGoing {
-			return errors.New("unconfirmed change")
-		}
-	}
 
 	err := es.VarDelete(ctx, envName, name)
 	if err != nil {
@@ -173,7 +160,7 @@ func varShowRun(ctx context.Context, es domain.EnvService, cmdCtx command.Contex
 func VarUpdateCmd() command.Command {
 	return command.New(
 		"Update and env var",
-		withEnvService(varUpdateRun),
+		withConfirm(withEnvService(varUpdateRun)),
 		command.ExistingFlag("--env-name", envNameFlag()),
 		command.ExistingFlags(commonUpdateFlags()),
 		command.ExistingFlags(timeoutFlagMap()),
@@ -202,21 +189,10 @@ func varUpdateRun(ctx context.Context, es domain.EnvService, cmdCtx command.Cont
 	// common update flags
 	commonUpdateArgs := getCommonUpdateArgs(cmdCtx.Flags)
 
-	confirm := mustGetConfirmArg(cmdCtx.Flags)
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 	newEnvName := ptrFromMap[string](cmdCtx.Flags, "--new-env-name")
 	value := ptrFromMap[string](cmdCtx.Flags, "--value")
-
-	if confirm {
-		keepGoing, err := askConfirm()
-		if err != nil {
-			panic(err)
-		}
-		if !keepGoing {
-			return errors.New("unconfirmed change")
-		}
-	}
 
 	err := es.VarUpdate(ctx, envName, name, domain.VarUpdateArgs{
 		Comment:    commonUpdateArgs.Comment,

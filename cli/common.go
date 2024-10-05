@@ -19,21 +19,6 @@ import (
 	"go.bbkane.com/warg/value/scalar"
 )
 
-func askConfirm() (bool, error) {
-	fmt.Print("Type 'yes' to continue: ")
-	reader := bufio.NewReader(os.Stdin)
-	confirmation, err := reader.ReadString('\n')
-	if err != nil {
-		err = fmt.Errorf("confirmation ReadString error: %w", err)
-		return false, err
-	}
-	confirmation = strings.TrimSpace(confirmation)
-	if confirmation != "yes" {
-		return false, nil
-	}
-	return true, nil
-}
-
 func emptyOrNil[T any](iFace interface{}) (T, error) {
 	under, ok := iFace.(T)
 	if !ok {
@@ -282,10 +267,6 @@ func getCommonUpdateArgs(pf command.PassedFlags) commonUpdateArgs {
 	}
 }
 
-func mustGetConfirmArg(pf command.PassedFlags) bool {
-	return pf["--confirm"].(bool)
-}
-
 func mustGetEnvNameArg(pf command.PassedFlags) string {
 	return pf["--env-name"].(string)
 }
@@ -329,5 +310,27 @@ func withEnvService(
 		}
 
 		return f(ctx, es, cmdCtx)
+	}
+}
+
+// withConfirm wraps a command.Action to ask for confirmation before running
+func withConfirm(f func(cmdCtx command.Context) error) command.Action {
+	return func(cmdCtx command.Context) error {
+		confirm := cmdCtx.Flags["--confirm"].(bool)
+		if !confirm {
+			return f(cmdCtx)
+		}
+
+		fmt.Print("Type 'yes' to continue: ")
+		reader := bufio.NewReader(os.Stdin)
+		confirmation, err := reader.ReadString('\n')
+		if err != nil {
+			return fmt.Errorf("confirmation ReadString error: %w", err)
+		}
+		confirmation = strings.TrimSpace(confirmation)
+		if confirmation != "yes" {
+			return fmt.Errorf("unconfirmed change")
+		}
+		return f(cmdCtx)
 	}
 }

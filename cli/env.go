@@ -2,7 +2,6 @@ package cli
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -45,7 +44,7 @@ func envCreate(ctx context.Context, es domain.EnvService, cmdCtx command.Context
 func EnvDeleteCmd() command.Command {
 	return command.New(
 		"Delete an environment and associated vars",
-		withEnvService(envDelete),
+		withConfirm(withEnvService(envDelete)),
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(confirmFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
@@ -55,17 +54,6 @@ func EnvDeleteCmd() command.Command {
 
 func envDelete(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
 	name := mustGetNameArg(cmdCtx.Flags)
-	confirm := mustGetConfirmArg(cmdCtx.Flags)
-
-	if confirm {
-		keepGoing, err := askConfirm()
-		if err != nil {
-			panic(err)
-		}
-		if !keepGoing {
-			return errors.New("unconfirmed change")
-		}
-	}
 
 	err := es.EnvDelete(ctx, name)
 	if err != nil {
@@ -153,7 +141,7 @@ func envShow(ctx context.Context, es domain.EnvService, cmdCtx command.Context) 
 func EnvUpdateCmd() command.Command {
 	return command.New(
 		"Update an environment",
-		withEnvService(envUpdate),
+		withConfirm(withEnvService(envUpdate)),
 		command.ExistingFlags(commonUpdateFlags()),
 		command.ExistingFlag("--name", envNameFlag()),
 		command.ExistingFlags(timeoutFlagMap()),
@@ -169,18 +157,7 @@ func envUpdate(ctx context.Context, es domain.EnvService, cmdCtx command.Context
 	newName := ptrFromMap[string](cmdCtx.Flags, "--new-name")
 	updateTime := ptrFromMap[time.Time](cmdCtx.Flags, "--update-time")
 
-	confirm := mustGetConfirmArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
-
-	if confirm {
-		keepGoing, err := askConfirm()
-		if err != nil {
-			panic(err)
-		}
-		if !keepGoing {
-			return errors.New("unconfirmed change")
-		}
-	}
 
 	err := es.EnvUpdate(ctx, name, domain.EnvUpdateArgs{
 		Comment:    comment,
