@@ -5,7 +5,7 @@ INSERT INTO var_ref(
     ?     , ?   , ?      , ?          , ?          , ?
 );
 
--- name: VarRefDelete :exec
+-- name: VarRefDelete :execrows
 DELETE FROM var_ref WHERE env_id = ? AND name = ?;
 
 -- name: VarRefList :many

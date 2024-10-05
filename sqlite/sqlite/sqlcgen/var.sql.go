@@ -38,7 +38,7 @@ func (q *Queries) VarCreate(ctx context.Context, arg VarCreateParams) error {
 	return err
 }
 
-const varDelete = `-- name: VarDelete :exec
+const varDelete = `-- name: VarDelete :execrows
 DELETE FROM var WHERE env_id = ? AND name = ?
 `
 
@@ -47,9 +47,12 @@ type VarDeleteParams struct {
 	Name  string
 }
 
-func (q *Queries) VarDelete(ctx context.Context, arg VarDeleteParams) error {
-	_, err := q.db.ExecContext(ctx, varDelete, arg.EnvID, arg.Name)
-	return err
+func (q *Queries) VarDelete(ctx context.Context, arg VarDeleteParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, varDelete, arg.EnvID, arg.Name)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const varFindByID = `-- name: VarFindByID :one
@@ -165,7 +168,7 @@ func (q *Queries) VarShow(ctx context.Context, arg VarShowParams) (Var, error) {
 	return i, err
 }
 
-const varUpdate = `-- name: VarUpdate :exec
+const varUpdate = `-- name: VarUpdate :execrows
 UPDATE var SET
     env_id = COALESCE(?1, env_id),
     name = COALESCE(?2, name),
@@ -186,8 +189,8 @@ type VarUpdateParams struct {
 	VarID      int64
 }
 
-func (q *Queries) VarUpdate(ctx context.Context, arg VarUpdateParams) error {
-	_, err := q.db.ExecContext(ctx, varUpdate,
+func (q *Queries) VarUpdate(ctx context.Context, arg VarUpdateParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, varUpdate,
 		arg.EnvID,
 		arg.Name,
 		arg.Comment,
@@ -196,5 +199,8 @@ func (q *Queries) VarUpdate(ctx context.Context, arg VarUpdateParams) error {
 		arg.Value,
 		arg.VarID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

@@ -51,12 +51,15 @@ func (e *EnvService) VarRefDelete(ctx context.Context, envName string, name stri
 		return err
 	}
 
-	err = queries.VarRefDelete(ctx, sqlcgen.VarRefDeleteParams{
+	rowsAffected, err := queries.VarRefDelete(ctx, sqlcgen.VarRefDeleteParams{
 		EnvID: envID,
 		Name:  name,
 	})
 	if err != nil {
 		return fmt.Errorf("could not delete ref: %s: %s: %w", envName, name, err)
+	}
+	if rowsAffected == 0 {
+		return domain.ErrVarRefNotFound
 	}
 	return nil
 }

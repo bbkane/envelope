@@ -5,6 +5,12 @@ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note the the latest version is usually work in progress and may have not yet been released.
 
+# v0.0.13
+
+## Fixed
+
+- #58 - print error if deleting or updating non-existent envs/vars/refs
+
 # v0.0.12
 
 ## Changed

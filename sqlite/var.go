@@ -15,7 +15,7 @@ func (e *EnvService) varFindByID(ctx context.Context, id int64) (*domain.Var, er
 
 	sqlcVar, err := queries.VarFindByID(ctx, id)
 	if err != nil {
-		return nil, domain.ErrEnvVarNotFound
+		return nil, domain.ErrVarNotFound
 	}
 
 	return &domain.Var{
@@ -42,7 +42,7 @@ func (e *EnvService) varFindID(ctx context.Context, envName string, name string)
 	})
 
 	if err != nil {
-		return 0, domain.ErrEnvVarNotFound
+		return 0, domain.ErrVarNotFound
 	}
 	return id, nil
 
@@ -86,12 +86,15 @@ func (e *EnvService) VarDelete(ctx context.Context, envName string, name string)
 		return err
 	}
 
-	err = queries.VarDelete(ctx, sqlcgen.VarDeleteParams{
+	rowsAffected, err := queries.VarDelete(ctx, sqlcgen.VarDeleteParams{
 		EnvID: envID,
 		Name:  name,
 	})
 	if err != nil {
 		return fmt.Errorf("could not delete env var: %s: %s: %w", envName, name, err)
+	}
+	if rowsAffected == 0 {
+		return domain.ErrVarNotFound
 	}
 	return nil
 }
@@ -184,7 +187,7 @@ func (e *EnvService) VarUpdate(ctx context.Context, envName string, name string,
 
 	queries := sqlcgen.New(e.db)
 
-	err = queries.VarUpdate(ctx, sqlcgen.VarUpdateParams{
+	rowsAffected, err := queries.VarUpdate(ctx, sqlcgen.VarUpdateParams{
 		EnvID:      newEnvID,
 		Name:       args.Name,
 		Comment:    args.Comment,
@@ -196,6 +199,9 @@ func (e *EnvService) VarUpdate(ctx context.Context, envName string, name string,
 
 	if err != nil {
 		return fmt.Errorf("err updating env var: %w", err)
+	}
+	if rowsAffected == 0 {
+		return domain.ErrVarNotFound
 	}
 	return nil
 }

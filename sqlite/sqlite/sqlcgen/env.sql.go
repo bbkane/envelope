@@ -49,13 +49,16 @@ func (q *Queries) EnvCreate(ctx context.Context, arg EnvCreateParams) (EnvCreate
 	return i, err
 }
 
-const envDelete = `-- name: EnvDelete :exec
+const envDelete = `-- name: EnvDelete :execrows
 DELETE FROM env WHERE name = ?
 `
 
-func (q *Queries) EnvDelete(ctx context.Context, name string) error {
-	_, err := q.db.ExecContext(ctx, envDelete, name)
-	return err
+func (q *Queries) EnvDelete(ctx context.Context, name string) (int64, error) {
+	result, err := q.db.ExecContext(ctx, envDelete, name)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const envFindID = `-- name: EnvFindID :one
@@ -129,7 +132,7 @@ func (q *Queries) EnvShow(ctx context.Context, name string) (EnvShowRow, error) 
 	return i, err
 }
 
-const envUpdate = `-- name: EnvUpdate :exec
+const envUpdate = `-- name: EnvUpdate :execrows
 UPDATE env SET
     name = COALESCE(?1, name),
     comment = COALESCE(?2, comment),
@@ -147,13 +150,16 @@ type EnvUpdateParams struct {
 }
 
 // See https://docs.sqlc.dev/en/latest/howto/named_parameters.html#nullable-parameters
-func (q *Queries) EnvUpdate(ctx context.Context, arg EnvUpdateParams) error {
-	_, err := q.db.ExecContext(ctx, envUpdate,
+func (q *Queries) EnvUpdate(ctx context.Context, arg EnvUpdateParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, envUpdate,
 		arg.NewName,
 		arg.Comment,
 		arg.CreateTime,
 		arg.UpdateTime,
 		arg.Name,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

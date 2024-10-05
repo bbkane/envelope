@@ -6,7 +6,7 @@ INSERT INTO env (
 )
 RETURNING name, comment, create_time, update_time;
 
--- name: EnvDelete :exec
+-- name: EnvDelete :execrows
 DELETE FROM env WHERE name = ?;
 
 -- name: EnvFindID :one
@@ -23,7 +23,7 @@ FROM env
 WHERE name = ?;
 
 -- See https://docs.sqlc.dev/en/latest/howto/named_parameters.html#nullable-parameters
--- name: EnvUpdate :exec
+-- name: EnvUpdate :execrows
 UPDATE env SET
     name = COALESCE(sqlc.narg('new_name'), name),
     comment = COALESCE(sqlc.narg('comment'), comment),

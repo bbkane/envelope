@@ -5,7 +5,7 @@ INSERT INTO var(
     ?     , ?   , ?      , ?          , ?          , ?
 );
 
--- name: VarDelete :exec
+-- name: VarDelete :execrows
 DELETE FROM var WHERE env_id = ? AND name = ?;
 
 -- name: VarFindID :one
@@ -27,7 +27,7 @@ SELECT *
 FROM var
 WHERE env_id = ? AND name = ?;
 
--- name: VarUpdate :exec
+-- name: VarUpdate :execrows
 UPDATE var SET
     env_id = COALESCE(sqlc.narg('env_id'), env_id),
     name = COALESCE(sqlc.narg('name'), name),

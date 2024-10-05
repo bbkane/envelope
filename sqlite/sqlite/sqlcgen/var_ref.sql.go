@@ -38,7 +38,7 @@ func (q *Queries) VarRefCreate(ctx context.Context, arg VarRefCreateParams) erro
 	return err
 }
 
-const varRefDelete = `-- name: VarRefDelete :exec
+const varRefDelete = `-- name: VarRefDelete :execrows
 DELETE FROM var_ref WHERE env_id = ? AND name = ?
 `
 
@@ -47,9 +47,12 @@ type VarRefDeleteParams struct {
 	Name  string
 }
 
-func (q *Queries) VarRefDelete(ctx context.Context, arg VarRefDeleteParams) error {
-	_, err := q.db.ExecContext(ctx, varRefDelete, arg.EnvID, arg.Name)
-	return err
+func (q *Queries) VarRefDelete(ctx context.Context, arg VarRefDeleteParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, varRefDelete, arg.EnvID, arg.Name)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const varRefList = `-- name: VarRefList :many

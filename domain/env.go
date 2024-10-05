@@ -33,7 +33,7 @@ type EnvUpdateArgs struct {
 
 // -- Var
 
-var ErrEnvVarNotFound = errors.New("local var not found")
+var ErrVarNotFound = errors.New("local var not found")
 
 type Var struct {
 	EnvName    string
@@ -64,7 +64,7 @@ type VarUpdateArgs struct {
 
 // -- VarRef
 
-var ErrEnvRefNotFound = errors.New("local ref not found")
+var ErrVarRefNotFound = errors.New("local ref not found")
 
 type VarRef struct {
 	EnvName    string

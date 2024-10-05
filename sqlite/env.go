@@ -60,9 +60,12 @@ func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (
 func (e *EnvService) EnvDelete(ctx context.Context, name string) error {
 	queries := sqlcgen.New(e.db)
 
-	err := queries.EnvDelete(ctx, name)
+	rowsAffected, err := queries.EnvDelete(ctx, name)
 	if err != nil {
 		return mapErrEnvNotFound(err)
+	}
+	if rowsAffected == 0 {
+		return domain.ErrEnvNotFound
 	}
 	return nil
 }
@@ -92,7 +95,7 @@ func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.Env
 
 	queries := sqlcgen.New(e.db)
 
-	err := queries.EnvUpdate(ctx, sqlcgen.EnvUpdateParams{
+	rowsAffected, err := queries.EnvUpdate(ctx, sqlcgen.EnvUpdateParams{
 		NewName:    args.Name,
 		Comment:    args.Comment,
 		CreateTime: domain.TimePtrToStringPtr(args.CreateTime),
@@ -102,6 +105,9 @@ func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.Env
 
 	if err != nil {
 		return fmt.Errorf("err updating env: %w", mapErrEnvNotFound(err))
+	}
+	if rowsAffected == 0 {
+		return domain.ErrEnvNotFound
 	}
 
 	return nil
