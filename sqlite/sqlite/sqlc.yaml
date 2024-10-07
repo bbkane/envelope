@@ -1,3 +1,9 @@
+rules:
+  - message: use execrows instead of exec
+    name: no-exec
+    rule: |
+      query.cmd == "exec"
+      && (query.sql.contains("UPDATE") || query.sql.contains("DELETE"))
 sql:
   - engine: sqlite
     gen:
@@ -6,6 +12,8 @@ sql:
         out: sqlcgen
         package: sqlcgen
     queries: queries
+    rules:
+      - no-exec
     schema: migrations
 # yq wants to double quote "2", but yamllint wants it single-quoted
 # yamllint disable-line rule:quoted-strings
