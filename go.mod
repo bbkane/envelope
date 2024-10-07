@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/alessio/shellescape v1.4.2
-	github.com/jedib0t/go-pretty/v6 v6.5.9
+	github.com/jedib0t/go-pretty/v6 v6.6.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/sqlc-dev/sqlc v1.27.0
 	github.com/stretchr/testify v1.9.0
