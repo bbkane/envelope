@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mitchellh/go-homedir"
 	"go.bbkane.com/envelope/domain"
 	"go.bbkane.com/envelope/sqlite"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
+	"go.bbkane.com/warg/path"
 	"golang.org/x/term"
 
 	"go.bbkane.com/warg/value/contained"
@@ -32,9 +32,6 @@ func datetime() contained.TypeInfo[time.Time] {
 	return contained.TypeInfo[time.Time]{
 		Description: "datetime in RFC3339 format",
 		FromIFace:   emptyOrNil[time.Time],
-		FromInstance: func(t time.Time) (time.Time, error) {
-			return t, nil
-		},
 		FromString: func(s string) (time.Time, error) {
 			return time.Parse(time.RFC3339, s)
 		},
@@ -123,22 +120,17 @@ func envNameFlag() flag.Flag {
 }
 
 func sqliteDSNFlagMap() flag.FlagMap {
-	dbPath, err := homedir.Expand("~/.config/envelope.db")
-	if err != nil {
-		panic(err)
-	}
 
-	sqliteDSN := flag.FlagMap{
+	return flag.FlagMap{
 		"--db-path": flag.New(
 			"Sqlite DSN. Usually the file name",
-			scalar.String(
-				scalar.Default(dbPath),
+			scalar.Path(
+				scalar.Default(path.New("~/.config/envelope.db")),
 			),
 			flag.Required(),
 			flag.EnvVars("ENVELOPE_DB_PATH"),
 		),
 	}
-	return sqliteDSN
 }
 
 func commonCreateFlagMap() flag.FlagMap {
@@ -304,7 +296,7 @@ func withEnvService(
 		)
 		defer cancel()
 
-		sqliteDSN := cmdCtx.Flags["--db-path"].(string)
+		sqliteDSN := cmdCtx.Flags["--db-path"].(path.Path).MustExpand()
 		es, err := sqlite.NewEnvService(ctx, sqliteDSN)
 		if err != nil {
 			return fmt.Errorf("could not create env service: %w", err)
