@@ -1,6 +1,7 @@
 module go.bbkane.com/envelope
 
 go 1.22
+toolchain go1.23.4
 
 require (
 	github.com/alessio/shellescape v1.4.2
@@ -8,7 +9,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/sqlc-dev/sqlc v1.27.0
 	github.com/stretchr/testify v1.10.0
-	go.bbkane.com/warg v0.0.23
+	go.bbkane.com/warg v0.0.26
 	golang.org/x/term v0.28.0
 	modernc.org/sqlite v1.34.4
 )
