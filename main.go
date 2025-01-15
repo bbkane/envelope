@@ -19,7 +19,6 @@ func buildApp() *warg.App {
 		section.New(
 			"Manage Environmental secrets centrally",
 			section.ExistingCommand("version", warg.VersionCommand()),
-			section.ExistingFlag("--color", warg.ColorFlag()),
 			section.Section(
 				"env",
 				"Environment commands",
@@ -56,6 +55,7 @@ func buildApp() *warg.App {
 				),
 			),
 		),
+		warg.ExistingGlobalFlag("--color", warg.ColorFlag()),
 		warg.OverrideHelpFlag(
 			[]help.HelpFlagMapping{
 				{Name: "detailed", CommandHelp: detailed.DetailedCommandHelp, SectionHelp: detailed.DetailedSectionHelp},

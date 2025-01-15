@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -60,9 +61,7 @@ func (tcb *testCmdBuilder) Strs(args ...string) *testCmdBuilder {
 }
 
 func (tcb *testCmdBuilder) Finish(dbPath string) []string {
-	cmd := []string{"envelope", "--db-path", dbPath}
-	cmd = append(cmd, tcb.cmd...)
-	return cmd
+	return slices.Concat([]string{"envelope"}, tcb.cmd, []string{"--db-path", dbPath})
 }
 
 func (tcb *testCmdBuilder) Name(name string) *testCmdBuilder {
