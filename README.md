@@ -23,7 +23,7 @@ scoop install bbkane/envelope
 
 - Download Mac/Linux/Windows executable: [GitHub releases](https://github.com/bbkane/envelope/releases)
 - Go: `go install go.bbkane.com/envelope@latest`
-- Build with [goreleaser](https://goreleaser.com/) after cloning: `goreleaser --snapshot --skip-publish --clean`
+- Build with [goreleaser](https://goreleaser.com/) after cloning: ` goreleaser release --snapshot --clean`
 
 ## Initialize in `~/.zshrc`
 

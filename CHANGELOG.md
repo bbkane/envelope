@@ -5,6 +5,12 @@ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note the the latest version is usually work in progress and may have not yet been released.
 
+# v0.0.14
+
+## Changed
+
+- Due to warg update (v0.0.26), flags must now be passed after commands
+
 # v0.0.13
 
 ## Added
