@@ -14,8 +14,7 @@ type EnvService struct {
 }
 
 func NewEnvService(ctx context.Context, dsn string) (domain.EnvService, error) {
-	// TODO use context!!
-	db, err := sqlite.Connect(dsn)
+	db, err := sqlite.Connect(ctx, dsn)
 	if err != nil {
 		return nil, fmt.Errorf("could not init db: %w", err)
 	}

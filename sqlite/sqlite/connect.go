@@ -1,6 +1,7 @@
 package sqlite
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"errors"
@@ -18,17 +19,22 @@ import (
 //go:embed migrations/*.sql
 var migrationFS embed.FS
 
-func Connect(dsn string) (*sql.DB, error) {
+func Connect(ctx context.Context, dsn string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("db open error: %s: %w", dsn, err)
 	}
 
-	if _, err := db.Exec(`PRAGMA foreign_keys = ON;`); err != nil {
+	err = db.PingContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("db ping error: %w", err)
+	}
+
+	if _, err := db.ExecContext(ctx, `PRAGMA foreign_keys = ON;`); err != nil {
 		return nil, fmt.Errorf("foreign keys pragma: %w", err)
 	}
 
-	if err := migrate(db, migrationFS, "*/*.sql"); err != nil {
+	if err := migrate(ctx, db, migrationFS, "*/*.sql"); err != nil {
 		return nil, fmt.Errorf("migrate connect error: %w", err)
 	}
 
@@ -43,10 +49,10 @@ func Connect(dsn string) (*sql.DB, error) {
 // Once a migration is run, its name is stored in the 'migrations' table so it
 // is not re-executed. Migrations run in a transaction to prevent partial
 // migrations.
-func migrate(db *sql.DB, migrationFS fs.ReadFileFS, migrationsGlobPattern string) error {
+func migrate(ctx context.Context, db *sql.DB, migrationFS fs.ReadFileFS, migrationsGlobPattern string) error {
 
 	// Create or update the migration table. Wouldn't need this if I was starting from scratch :D
-	if err := withTx(db, migrateMigrationTable); err != nil {
+	if err := withTx(ctx, db, migrateMigrationTable); err != nil {
 		return fmt.Errorf("could not migrate migration table: %w", err)
 	}
 
@@ -64,24 +70,24 @@ func migrate(db *sql.DB, migrationFS fs.ReadFileFS, migrationsGlobPattern string
 
 	// Loop over all migration files and execute them in order.
 	for _, name := range names {
-		if err := migrateFile(db, migrationFS, name); err != nil {
+		if err := migrateFile(ctx, db, migrationFS, name); err != nil {
 			return fmt.Errorf("migration error: name=%q err=%w", name, err)
 		}
 	}
 	return nil
 }
 
-// migrateMigrationTable creates the migrations table if it does not exist, and updates it if we have an old version of the table. This is a special table that tracks updates to the rest of the db, so we have to pudate it separately
-func migrateMigrationTable(tx *sql.Tx) error {
+// migrateMigrationTable creates the migrations table if it does not exist, and updates it if we have an old version of the table. This is a special table that tracks updates to the rest of the db, so we have to update it separately
+func migrateMigrationTable(ctx context.Context, tx *sql.Tx) error {
 
 	// Check if the migrations table exists
 	migrationsTableCount := false
-	if err := tx.QueryRow(`SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='migrations';`).Scan(&migrationsTableCount); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='migrations';`).Scan(&migrationsTableCount); err != nil {
 		return fmt.Errorf("check if migrations table exists err: %w", err)
 	}
 
 	migrationV2TableCount := false
-	if err := tx.QueryRow(`SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='migration_v2';`).Scan(&migrationV2TableCount); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='migration_v2';`).Scan(&migrationV2TableCount); err != nil {
 		return fmt.Errorf("check if migration_v2 table exists err: %w", err)
 	}
 
@@ -100,7 +106,7 @@ CREATE TABLE migration_v2 (
 		return errors.New("both migrations and migration_v2 tables exist")
 
 	case migrationsTableCount && !migrationV2TableCount:
-		if _, err := tx.Exec(migrationV2Create); err != nil {
+		if _, err := tx.ExecContext(ctx, migrationV2Create); err != nil {
 			return fmt.Errorf("cannot create migration_v2 table: %w", err)
 		}
 		// NOTE: this relies on the embedded file system using '/' as the path separator. I think that's ok?
@@ -111,11 +117,11 @@ FROM migrations
 ORDER BY name;
 `
 		now := time.Now().Round(0).UTC().Format(time.RFC3339)
-		if _, err := tx.Exec(insertIntoMigrationV2, now); err != nil {
+		if _, err := tx.ExecContext(ctx, insertIntoMigrationV2, now); err != nil {
 			return fmt.Errorf("cannot copy data from migrations to migration_v2: %w", err)
 		}
 
-		if _, err := tx.Exec(`DROP TABLE migrations;`); err != nil {
+		if _, err := tx.ExecContext(ctx, `DROP TABLE migrations;`); err != nil {
 			return fmt.Errorf("cannot drop migrations table: %w", err)
 		}
 
@@ -125,7 +131,7 @@ ORDER BY name;
 		return nil
 
 	case !migrationsTableCount && !migrationV2TableCount:
-		if _, err := tx.Exec(migrationV2Create); err != nil {
+		if _, err := tx.ExecContext(ctx, migrationV2Create); err != nil {
 			return fmt.Errorf("cannot create migration_v2 table: %w", err)
 		}
 
@@ -137,15 +143,16 @@ ORDER BY name;
 
 // migrate runs a single migration file within a transaction. On success, the
 // migration file name is saved to the "migrations" table to prevent re-running.
-func migrateFile(db *sql.DB, migrationFS fs.ReadFileFS, name string) error {
+func migrateFile(ctx context.Context, db *sql.DB, migrationFS fs.ReadFileFS, name string) error {
 	err := withTx(
+		ctx,
 		db,
-		func(tx *sql.Tx) error {
+		func(ctx context.Context, tx *sql.Tx) error {
 
 			fileName := filepath.Base(name)
 			// Ensure migration has not already been run.
 			var n int
-			if err := tx.QueryRow(`SELECT COUNT(*) FROM migration_v2 WHERE file_name = ?`, fileName).Scan(&n); err != nil {
+			if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM migration_v2 WHERE file_name = ?`, fileName).Scan(&n); err != nil {
 				return err
 			} else if n != 0 {
 				return nil // already run migration, skip
@@ -154,13 +161,13 @@ func migrateFile(db *sql.DB, migrationFS fs.ReadFileFS, name string) error {
 			// Read and execute migration file.
 			if buf, err := fs.ReadFile(migrationFS, name); err != nil {
 				return err
-			} else if _, err := tx.Exec(string(buf)); err != nil {
+			} else if _, err := tx.ExecContext(ctx, string(buf)); err != nil {
 				return err
 			}
 
 			now := time.Now().Round(0).UTC().Format(time.RFC3339)
 			// Insert record into migrations to prevent re-running migration.
-			if _, err := tx.Exec(`INSERT INTO migration_v2 (file_name, migrate_time) VALUES (?, ?)`, fileName, now); err != nil {
+			if _, err := tx.ExecContext(ctx, `INSERT INTO migration_v2 (file_name, migrate_time) VALUES (?, ?)`, fileName, now); err != nil {
 				return err
 			}
 			return nil
@@ -174,29 +181,31 @@ func migrateFile(db *sql.DB, migrationFS fs.ReadFileFS, name string) error {
 }
 
 // withTx makes transactions easy!!
-func withTx(db *sql.DB, txFunc func(tx *sql.Tx) error) error {
+func withTx(ctx context.Context, db *sql.DB, txFunc func(ctx context.Context, tx *sql.Tx) error) error {
 
-	tx, err := db.Begin()
+	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		err = fmt.Errorf("can't begin tx: %w", err)
-		return err
+		return fmt.Errorf("could not start transaction: %w", err)
+
 	}
-	// will not succeed if tx.Commit is called
-	// explicitly ignore the error
-	defer func() { _ = tx.Rollback() }()
 
-	// do da magic
-	err = txFunc(tx)
-
+	err = txFunc(ctx, tx)
 	if err != nil {
-		err = fmt.Errorf("txFunc err: %w", err)
-		return err
+		err = fmt.Errorf("err inside transaction: %w", err)
+		goto rollback
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		err = fmt.Errorf("commit err: %w", err)
-		return err
+		err = fmt.Errorf("could not commit transaction: %w", err)
+		goto rollback
 	}
 	return nil
+
+rollback:
+	rollbackErr := tx.Rollback()
+	if rollbackErr != nil {
+		return fmt.Errorf("could not rollback transaction: %w after previous err: %w", rollbackErr, err)
+	}
+	return fmt.Errorf("transaction rolled back after err: %w", err)
 }
