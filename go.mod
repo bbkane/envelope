@@ -10,7 +10,7 @@ require (
 	github.com/sqlc-dev/sqlc v1.27.0
 	github.com/stretchr/testify v1.10.0
 	go.bbkane.com/warg v0.0.26
-	golang.org/x/term v0.27.0
+	golang.org/x/term v0.28.0
 	modernc.org/sqlite v1.34.5
 )
 
