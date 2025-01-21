@@ -3,10 +3,10 @@ package tableprint
 import (
 	"fmt"
 
-	"go.bbkane.com/envelope/domain"
+	"go.bbkane.com/envelope/models"
 )
 
-func EnvList(c CommonTablePrintArgs, envs []domain.Env) {
+func EnvList(c CommonTablePrintArgs, envs []models.Env) {
 	if len(envs) > 0 {
 		t := newKeyValueTable(c.W, c.DesiredMaxWidth, len("CreateTime"))
 		for _, e := range envs {
@@ -27,10 +27,10 @@ func EnvList(c CommonTablePrintArgs, envs []domain.Env) {
 
 func EnvShowRun(
 	c CommonTablePrintArgs,
-	env domain.Env,
-	localvars []domain.Var,
-	refs []domain.VarRef,
-	referencedVars []domain.Var,
+	env models.Env,
+	localvars []models.Var,
+	refs []models.VarRef,
+	referencedVars []models.Var,
 ) {
 	switch c.Format {
 	case Format_Table:

@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"go.bbkane.com/envelope/domain"
-	"go.bbkane.com/envelope/sqlite"
+	"go.bbkane.com/envelope/app"
+	"go.bbkane.com/envelope/models"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/path"
@@ -286,7 +286,7 @@ func mustGetWidthArg(pf command.PassedFlags) int {
 
 // withEnvService wraps a command.Action to read --db-path and create a EnvService
 func withEnvService(
-	f func(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error,
+	f func(ctx context.Context, es models.EnvService, cmdCtx command.Context) error,
 ) command.Action {
 	return func(cmdCtx command.Context) error {
 
@@ -297,7 +297,7 @@ func withEnvService(
 		defer cancel()
 
 		sqliteDSN := cmdCtx.Flags["--db-path"].(path.Path).MustExpand()
-		es, err := sqlite.NewEnvService(ctx, sqliteDSN)
+		es, err := app.NewEnvService(ctx, sqliteDSN)
 		if err != nil {
 			return fmt.Errorf("could not create env service: %w", err)
 		}

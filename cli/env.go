@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"go.bbkane.com/envelope/cli/tableprint"
-	"go.bbkane.com/envelope/domain"
+	"go.bbkane.com/envelope/models"
 
 	"go.bbkane.com/warg/command"
 )
@@ -22,10 +22,10 @@ func EnvCreateCmd() command.Command {
 	)
 }
 
-func envCreate(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func envCreate(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
 
-	env, err := es.EnvCreate(ctx, domain.EnvCreateArgs{
+	env, err := es.EnvCreate(ctx, models.EnvCreateArgs{
 		Name:       mustGetNameArg(cmdCtx.Flags),
 		Comment:    commonCreateArgs.Comment,
 		CreateTime: commonCreateArgs.CreateTime,
@@ -52,7 +52,7 @@ func EnvDeleteCmd() command.Command {
 	)
 }
 
-func envDelete(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func envDelete(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	name := mustGetNameArg(cmdCtx.Flags)
 
 	err := es.EnvDelete(ctx, name)
@@ -75,7 +75,7 @@ func EnvListCmd() command.Command {
 	)
 }
 
-func envList(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func envList(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	envs, err := es.EnvList(ctx)
 	if err != nil {
 		return err
@@ -106,7 +106,7 @@ func EnvShowCmd() command.Command {
 	)
 }
 
-func envShow(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func envShow(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
@@ -150,7 +150,7 @@ func EnvUpdateCmd() command.Command {
 	)
 }
 
-func envUpdate(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func envUpdate(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	// common update flags
 	comment := ptrFromMap[string](cmdCtx.Flags, "--comment")
 	createTime := ptrFromMap[time.Time](cmdCtx.Flags, "--create-time")
@@ -159,7 +159,7 @@ func envUpdate(ctx context.Context, es domain.EnvService, cmdCtx command.Context
 
 	name := mustGetNameArg(cmdCtx.Flags)
 
-	err := es.EnvUpdate(ctx, name, domain.EnvUpdateArgs{
+	err := es.EnvUpdate(ctx, name, models.EnvUpdateArgs{
 		Comment:    comment,
 		CreateTime: createTime,
 		Name:       newName,

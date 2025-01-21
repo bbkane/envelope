@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/alessio/shellescape"
-	"go.bbkane.com/envelope/domain"
+	"go.bbkane.com/envelope/models"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
@@ -105,7 +105,7 @@ func ShellZshExportCmd() command.Command {
 	)
 }
 
-func shellZshExportRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func shellZshExportRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	return shellZshExportUnexport(ctx, cmdCtx, es, "export")
 }
 
@@ -127,17 +127,17 @@ func ShellZshUnexportCmd() command.Command {
 	)
 }
 
-func shellZshUnexportRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func shellZshUnexportRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	return shellZshExportUnexport(ctx, cmdCtx, es, "unexport")
 }
 
-func shellZshExportUnexport(ctx context.Context, cmdCtx command.Context, es domain.EnvService, scriptType string) error {
+func shellZshExportUnexport(ctx context.Context, cmdCtx command.Context, es models.EnvService, scriptType string) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	noEnvNoProblem := cmdCtx.Flags["--no-env-no-problem"].(bool)
 
 	envVars, err := es.VarList(ctx, envName)
 	if err != nil {
-		if errors.Is(err, domain.ErrEnvNotFound) && noEnvNoProblem {
+		if errors.Is(err, models.ErrEnvNotFound) && noEnvNoProblem {
 			return nil
 		}
 		return fmt.Errorf("could not list env vars: %s: %w", envName, err)
@@ -145,7 +145,7 @@ func shellZshExportUnexport(ctx context.Context, cmdCtx command.Context, es doma
 
 	envRefs, envRefVars, err := es.VarRefList(ctx, envName)
 	if err != nil {
-		if errors.Is(err, domain.ErrEnvNotFound) && noEnvNoProblem {
+		if errors.Is(err, models.ErrEnvNotFound) && noEnvNoProblem {
 			return nil
 		}
 		return fmt.Errorf("could not list env refs: %s: %w", envName, err)

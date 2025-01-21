@@ -3,10 +3,10 @@ package tableprint
 import (
 	"fmt"
 
-	"go.bbkane.com/envelope/domain"
+	"go.bbkane.com/envelope/models"
 )
 
-func VarShowPrint(c CommonTablePrintArgs, envVar domain.Var, envRefs []domain.VarRef) {
+func VarShowPrint(c CommonTablePrintArgs, envVar models.Var, envRefs []models.VarRef) {
 
 	switch c.Format {
 	case Format_Table:

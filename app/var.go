@@ -1,4 +1,4 @@
-package sqlite
+package app
 
 import (
 	"context"
@@ -6,24 +6,24 @@ import (
 	"errors"
 	"fmt"
 
-	"go.bbkane.com/envelope/domain"
-	"go.bbkane.com/envelope/sqlite/sqlite/sqlcgen"
+	"go.bbkane.com/envelope/app/sqliteconnect/sqlcgen"
+	"go.bbkane.com/envelope/models"
 )
 
-func (e *EnvService) varFindByID(ctx context.Context, id int64) (*domain.Var, error) {
+func (e *EnvService) varFindByID(ctx context.Context, id int64) (*models.Var, error) {
 	queries := sqlcgen.New(e.db)
 
 	sqlcVar, err := queries.VarFindByID(ctx, id)
 	if err != nil {
-		return nil, domain.ErrVarNotFound
+		return nil, models.ErrVarNotFound
 	}
 
-	return &domain.Var{
+	return &models.Var{
 		EnvName:    sqlcVar.EnvName,
 		Name:       sqlcVar.Name,
 		Comment:    sqlcVar.Comment,
-		CreateTime: domain.StringToTimeMust(sqlcVar.CreateTime),
-		UpdateTime: domain.StringToTimeMust(sqlcVar.UpdateTime),
+		CreateTime: models.StringToTimeMust(sqlcVar.CreateTime),
+		UpdateTime: models.StringToTimeMust(sqlcVar.UpdateTime),
 		Value:      sqlcVar.Value,
 	}, nil
 }
@@ -42,13 +42,13 @@ func (e *EnvService) varFindID(ctx context.Context, envName string, name string)
 	})
 
 	if err != nil {
-		return 0, domain.ErrVarNotFound
+		return 0, models.ErrVarNotFound
 	}
 	return id, nil
 
 }
 
-func (e *EnvService) VarCreate(ctx context.Context, args domain.VarCreateArgs) (*domain.Var, error) {
+func (e *EnvService) VarCreate(ctx context.Context, args models.VarCreateArgs) (*models.Var, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := e.envFindID(ctx, args.EnvName)
@@ -60,15 +60,15 @@ func (e *EnvService) VarCreate(ctx context.Context, args domain.VarCreateArgs) (
 		EnvID:      envID,
 		Name:       args.Name,
 		Comment:    args.Comment,
-		CreateTime: domain.TimeToString(args.CreateTime),
-		UpdateTime: domain.TimeToString(args.UpdateTime),
+		CreateTime: models.TimeToString(args.CreateTime),
+		UpdateTime: models.TimeToString(args.UpdateTime),
 		Value:      args.Value,
 	})
 
 	if err != nil {
 		return nil, fmt.Errorf("could not create env var: %w", err)
 	}
-	return &domain.Var{
+	return &models.Var{
 		EnvName:    args.EnvName,
 		Name:       args.Name,
 		Comment:    args.Comment,
@@ -94,12 +94,12 @@ func (e *EnvService) VarDelete(ctx context.Context, envName string, name string)
 		return fmt.Errorf("could not delete env var: %s: %s: %w", envName, name, err)
 	}
 	if rowsAffected == 0 {
-		return domain.ErrVarNotFound
+		return models.ErrVarNotFound
 	}
 	return nil
 }
 
-func (e *EnvService) VarList(ctx context.Context, envName string) ([]domain.Var, error) {
+func (e *EnvService) VarList(ctx context.Context, envName string) ([]models.Var, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := e.envFindID(ctx, envName)
@@ -111,14 +111,14 @@ func (e *EnvService) VarList(ctx context.Context, envName string) ([]domain.Var,
 	if err != nil {
 		return nil, fmt.Errorf("could not list env vars: %s: %w", envName, err)
 	}
-	var ret []domain.Var
+	var ret []models.Var
 	for _, sqlcEnv := range envs {
-		ret = append(ret, domain.Var{
+		ret = append(ret, models.Var{
 			Name:       sqlcEnv.Name,
 			Comment:    sqlcEnv.Comment,
-			CreateTime: domain.StringToTimeMust(sqlcEnv.CreateTime),
+			CreateTime: models.StringToTimeMust(sqlcEnv.CreateTime),
 			EnvName:    envName,
-			UpdateTime: domain.StringToTimeMust(sqlcEnv.UpdateTime),
+			UpdateTime: models.StringToTimeMust(sqlcEnv.UpdateTime),
 			Value:      sqlcEnv.Value,
 		})
 	}
@@ -126,7 +126,7 @@ func (e *EnvService) VarList(ctx context.Context, envName string) ([]domain.Var,
 	return ret, nil
 }
 
-func (e *EnvService) VarShow(ctx context.Context, envName string, name string) (*domain.Var, []domain.VarRef, error) {
+func (e *EnvService) VarShow(ctx context.Context, envName string, name string) (*models.Var, []models.VarRef, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := e.envFindID(ctx, envName)
@@ -142,35 +142,35 @@ func (e *EnvService) VarShow(ctx context.Context, envName string, name string) (
 		return nil, nil, fmt.Errorf("could not find env var: %s: %s: %w", envName, name, err)
 	}
 
-	envRefs := []domain.VarRef{}
+	envRefs := []models.VarRef{}
 	sqlcEnvRefs, err := queries.VarRefListByVarID(ctx, sqlEnvLocalVar.VarID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, nil, err
 	}
 
 	for _, e := range sqlcEnvRefs {
-		envRefs = append(envRefs, domain.VarRef{
+		envRefs = append(envRefs, models.VarRef{
 			EnvName:    e.EnvName,
 			Name:       e.Name,
 			Comment:    e.Comment,
-			CreateTime: domain.StringToTimeMust(e.CreateTime),
-			UpdateTime: domain.StringToTimeMust(e.UpdateTime),
+			CreateTime: models.StringToTimeMust(e.CreateTime),
+			UpdateTime: models.StringToTimeMust(e.UpdateTime),
 			RefEnvName: envName,
 			RevVarName: name,
 		})
 	}
 
-	return &domain.Var{
+	return &models.Var{
 		EnvName:    envName,
 		Name:       name,
 		Comment:    sqlEnvLocalVar.Comment,
-		CreateTime: domain.StringToTimeMust(sqlEnvLocalVar.CreateTime),
-		UpdateTime: domain.StringToTimeMust(sqlEnvLocalVar.UpdateTime),
+		CreateTime: models.StringToTimeMust(sqlEnvLocalVar.CreateTime),
+		UpdateTime: models.StringToTimeMust(sqlEnvLocalVar.UpdateTime),
 		Value:      sqlEnvLocalVar.Value,
 	}, envRefs, nil
 }
 
-func (e *EnvService) VarUpdate(ctx context.Context, envName string, name string, args domain.VarUpdateArgs) error {
+func (e *EnvService) VarUpdate(ctx context.Context, envName string, name string, args models.VarUpdateArgs) error {
 	envVarID, err := e.varFindID(ctx, envName, name)
 	if err != nil {
 		return err
@@ -191,8 +191,8 @@ func (e *EnvService) VarUpdate(ctx context.Context, envName string, name string,
 		EnvID:      newEnvID,
 		Name:       args.Name,
 		Comment:    args.Comment,
-		CreateTime: domain.TimePtrToStringPtr(args.CreateTime),
-		UpdateTime: domain.TimePtrToStringPtr(args.UpdateTime),
+		CreateTime: models.TimePtrToStringPtr(args.CreateTime),
+		UpdateTime: models.TimePtrToStringPtr(args.UpdateTime),
 		Value:      args.Value,
 		VarID:      envVarID,
 	})
@@ -201,7 +201,7 @@ func (e *EnvService) VarUpdate(ctx context.Context, envName string, name string,
 		return fmt.Errorf("err updating env var: %w", err)
 	}
 	if rowsAffected == 0 {
-		return domain.ErrVarNotFound
+		return models.ErrVarNotFound
 	}
 	return nil
 }

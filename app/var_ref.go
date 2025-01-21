@@ -1,14 +1,14 @@
-package sqlite
+package app
 
 import (
 	"context"
 	"fmt"
 
-	"go.bbkane.com/envelope/domain"
-	"go.bbkane.com/envelope/sqlite/sqlite/sqlcgen"
+	"go.bbkane.com/envelope/app/sqliteconnect/sqlcgen"
+	"go.bbkane.com/envelope/models"
 )
 
-func (e *EnvService) VarRefCreate(ctx context.Context, args domain.VarRefCreateArgs) (*domain.VarRef, error) {
+func (e *EnvService) VarRefCreate(ctx context.Context, args models.VarRefCreateArgs) (*models.VarRef, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := e.envFindID(ctx, args.EnvName)
@@ -25,14 +25,14 @@ func (e *EnvService) VarRefCreate(ctx context.Context, args domain.VarRefCreateA
 		EnvID:      envID,
 		Name:       args.Name,
 		Comment:    args.Comment,
-		CreateTime: domain.TimeToString(args.CreateTime),
-		UpdateTime: domain.TimeToString(args.UpdateTime),
+		CreateTime: models.TimeToString(args.CreateTime),
+		UpdateTime: models.TimeToString(args.UpdateTime),
 		VarID:      varID,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create env var ref: %w", err)
 	}
-	return &domain.VarRef{
+	return &models.VarRef{
 		EnvName:    args.EnvName,
 		Name:       args.Name,
 		Comment:    args.Comment,
@@ -59,12 +59,12 @@ func (e *EnvService) VarRefDelete(ctx context.Context, envName string, name stri
 		return fmt.Errorf("could not delete ref: %s: %s: %w", envName, name, err)
 	}
 	if rowsAffected == 0 {
-		return domain.ErrVarRefNotFound
+		return models.ErrVarRefNotFound
 	}
 	return nil
 }
 
-func (e *EnvService) VarRefList(ctx context.Context, envName string) ([]domain.VarRef, []domain.Var, error) {
+func (e *EnvService) VarRefList(ctx context.Context, envName string) ([]models.VarRef, []models.Var, error) {
 	queries := sqlcgen.New(e.db)
 
 	envID, err := e.envFindID(ctx, envName)
@@ -76,8 +76,8 @@ func (e *EnvService) VarRefList(ctx context.Context, envName string) ([]domain.V
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not list env vars: %s: %w", envName, err)
 	}
-	var refs []domain.VarRef
-	var vars []domain.Var
+	var refs []models.VarRef
+	var vars []models.Var
 	for _, sqlcRef := range sqlcRefs {
 
 		// classic N+1 query pattern, but luckily SQLite is not really affected by this :)
@@ -89,12 +89,12 @@ func (e *EnvService) VarRefList(ctx context.Context, envName string) ([]domain.V
 			return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.VarID, err)
 		}
 		vars = append(vars, *localVar)
-		refs = append(refs, domain.VarRef{
+		refs = append(refs, models.VarRef{
 			EnvName:    envName,
 			Name:       sqlcRef.Name,
 			Comment:    sqlcRef.Comment,
-			CreateTime: domain.StringToTimeMust(sqlcRef.CreateTime),
-			UpdateTime: domain.StringToTimeMust(sqlcRef.UpdateTime),
+			CreateTime: models.StringToTimeMust(sqlcRef.CreateTime),
+			UpdateTime: models.StringToTimeMust(sqlcRef.UpdateTime),
 			RefEnvName: localVar.EnvName,
 			RevVarName: localVar.Name,
 		})
@@ -103,7 +103,7 @@ func (e *EnvService) VarRefList(ctx context.Context, envName string) ([]domain.V
 	return refs, vars, nil
 }
 
-func (e *EnvService) VarRefShow(ctx context.Context, envName string, name string) (*domain.VarRef, *domain.Var, error) {
+func (e *EnvService) VarRefShow(ctx context.Context, envName string, name string) (*models.VarRef, *models.Var, error) {
 
 	queries := sqlcgen.New(e.db)
 
@@ -124,15 +124,15 @@ func (e *EnvService) VarRefShow(ctx context.Context, envName string, name string
 		return nil, nil, fmt.Errorf("could not find var from id: %d: %w", sqlcRef.VarID, err)
 	}
 
-	return &domain.VarRef{
+	return &models.VarRef{
 			EnvName:    envName,
 			Name:       sqlcRef.Name,
 			Comment:    sqlcRef.Comment,
-			CreateTime: domain.StringToTimeMust(sqlcRef.CreateTime),
-			UpdateTime: domain.StringToTimeMust(sqlcRef.UpdateTime),
+			CreateTime: models.StringToTimeMust(sqlcRef.CreateTime),
+			UpdateTime: models.StringToTimeMust(sqlcRef.UpdateTime),
 			RefEnvName: sqlcVar.EnvName,
 			RevVarName: sqlcVar.Name,
-		}, &domain.Var{
+		}, &models.Var{
 			EnvName:    sqlcVar.EnvName,
 			Name:       sqlcVar.Name,
 			Comment:    sqlcVar.Comment,

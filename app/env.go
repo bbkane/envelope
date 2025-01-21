@@ -1,4 +1,4 @@
-package sqlite
+package app
 
 import (
 	"context"
@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"go.bbkane.com/envelope/domain"
-	"go.bbkane.com/envelope/sqlite/sqlite/sqlcgen"
+	"go.bbkane.com/envelope/app/sqliteconnect/sqlcgen"
+	"go.bbkane.com/envelope/models"
 )
 
 // mapErrEnvNotFound replaces sql.ErrNoRows with domain.ErrEnvNotFound but otherwise
@@ -16,7 +16,7 @@ import (
 // Deprecated: I want to replace this with envFindID, but that'll require rewriting some sql
 func mapErrEnvNotFound(e error) error {
 	if errors.Is(e, sql.ErrNoRows) {
-		return domain.ErrEnvNotFound
+		return models.ErrEnvNotFound
 	} else {
 		return e
 	}
@@ -27,7 +27,7 @@ func (e *EnvService) envFindID(ctx context.Context, envName string) (int64, erro
 	queries := sqlcgen.New(e.db)
 	envID, err := queries.EnvFindID(ctx, envName)
 	if errors.Is(err, sql.ErrNoRows) {
-		err = domain.ErrEnvNotFound
+		err = models.ErrEnvNotFound
 	}
 	if err != nil {
 		return 0, fmt.Errorf("could not find env with name: %s: %w", envName, err)
@@ -35,25 +35,25 @@ func (e *EnvService) envFindID(ctx context.Context, envName string) (int64, erro
 	return envID, nil
 }
 
-func (e *EnvService) EnvCreate(ctx context.Context, args domain.EnvCreateArgs) (*domain.Env, error) {
+func (e *EnvService) EnvCreate(ctx context.Context, args models.EnvCreateArgs) (*models.Env, error) {
 	queries := sqlcgen.New(e.db)
 
 	createdEnvID, err := queries.EnvCreate(ctx, sqlcgen.EnvCreateParams{
 		Name:       args.Name,
 		Comment:    args.Comment,
-		CreateTime: domain.TimeToString(args.CreateTime),
-		UpdateTime: domain.TimeToString(args.UpdateTime),
+		CreateTime: models.TimeToString(args.CreateTime),
+		UpdateTime: models.TimeToString(args.UpdateTime),
 	})
 
 	if err != nil {
 		return nil, fmt.Errorf("could not create env in db: %w", err)
 	}
 
-	return &domain.Env{
+	return &models.Env{
 		Name:       createdEnvID.Name,
 		Comment:    createdEnvID.Comment,
-		CreateTime: domain.StringToTimeMust(createdEnvID.CreateTime),
-		UpdateTime: domain.StringToTimeMust(createdEnvID.UpdateTime),
+		CreateTime: models.StringToTimeMust(createdEnvID.CreateTime),
+		UpdateTime: models.StringToTimeMust(createdEnvID.UpdateTime),
 	}, nil
 }
 
@@ -65,12 +65,12 @@ func (e *EnvService) EnvDelete(ctx context.Context, name string) error {
 		return mapErrEnvNotFound(err)
 	}
 	if rowsAffected == 0 {
-		return domain.ErrEnvNotFound
+		return models.ErrEnvNotFound
 	}
 	return nil
 }
 
-func (e *EnvService) EnvList(ctx context.Context) ([]domain.Env, error) {
+func (e *EnvService) EnvList(ctx context.Context) ([]models.Env, error) {
 	queries := sqlcgen.New(e.db)
 
 	sqlcEnvs, err := queries.EnvList(ctx)
@@ -78,28 +78,28 @@ func (e *EnvService) EnvList(ctx context.Context) ([]domain.Env, error) {
 		return nil, err
 	}
 
-	ret := []domain.Env{}
+	ret := []models.Env{}
 	for _, e := range sqlcEnvs {
-		ret = append(ret, domain.Env{
+		ret = append(ret, models.Env{
 			Name:       e.Name,
 			Comment:    e.Comment,
-			CreateTime: domain.StringToTimeMust(e.CreateTime),
-			UpdateTime: domain.StringToTimeMust(e.UpdateTime),
+			CreateTime: models.StringToTimeMust(e.CreateTime),
+			UpdateTime: models.StringToTimeMust(e.UpdateTime),
 		})
 	}
 
 	return ret, nil
 }
 
-func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.EnvUpdateArgs) error {
+func (e *EnvService) EnvUpdate(ctx context.Context, name string, args models.EnvUpdateArgs) error {
 
 	queries := sqlcgen.New(e.db)
 
 	rowsAffected, err := queries.EnvUpdate(ctx, sqlcgen.EnvUpdateParams{
 		NewName:    args.Name,
 		Comment:    args.Comment,
-		CreateTime: domain.TimePtrToStringPtr(args.CreateTime),
-		UpdateTime: domain.TimePtrToStringPtr(args.UpdateTime),
+		CreateTime: models.TimePtrToStringPtr(args.CreateTime),
+		UpdateTime: models.TimePtrToStringPtr(args.UpdateTime),
 		Name:       name,
 	})
 
@@ -107,13 +107,13 @@ func (e *EnvService) EnvUpdate(ctx context.Context, name string, args domain.Env
 		return fmt.Errorf("err updating env: %w", mapErrEnvNotFound(err))
 	}
 	if rowsAffected == 0 {
-		return domain.ErrEnvNotFound
+		return models.ErrEnvNotFound
 	}
 
 	return nil
 }
 
-func (e *EnvService) EnvShow(ctx context.Context, name string) (*domain.Env, error) {
+func (e *EnvService) EnvShow(ctx context.Context, name string) (*models.Env, error) {
 	queries := sqlcgen.New(e.db)
 
 	sqlcEnv, err := queries.EnvShow(ctx, name)
@@ -122,10 +122,10 @@ func (e *EnvService) EnvShow(ctx context.Context, name string) (*domain.Env, err
 		return nil, mapErrEnvNotFound(err)
 	}
 
-	return &domain.Env{
+	return &models.Env{
 		Name:       name,
 		Comment:    sqlcEnv.Comment,
-		CreateTime: domain.StringToTimeMust(sqlcEnv.CreateTime),
-		UpdateTime: domain.StringToTimeMust(sqlcEnv.UpdateTime),
+		CreateTime: models.StringToTimeMust(sqlcEnv.CreateTime),
+		UpdateTime: models.StringToTimeMust(sqlcEnv.UpdateTime),
 	}, nil
 }

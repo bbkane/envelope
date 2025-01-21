@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"go.bbkane.com/envelope/cli/tableprint"
-	"go.bbkane.com/envelope/domain"
+	"go.bbkane.com/envelope/models"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
@@ -38,7 +38,7 @@ func VarCreateCmd() command.Command {
 	)
 }
 
-func varCreateRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func varCreateRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
@@ -59,7 +59,7 @@ func varCreateRun(ctx context.Context, es domain.EnvService, cmdCtx command.Cont
 
 	_, err := es.VarCreate(
 		ctx,
-		domain.VarCreateArgs{
+		models.VarCreateArgs{
 			EnvName:    envName,
 			Name:       name,
 			Comment:    commonCreateArgs.Comment,
@@ -96,7 +96,7 @@ func VarDeleteCmd() command.Command {
 	)
 }
 
-func varDeleteRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func varDeleteRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 
@@ -131,7 +131,7 @@ func VarShowCmd() command.Command {
 	)
 }
 
-func varShowRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func varShowRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
@@ -185,7 +185,7 @@ func VarUpdateCmd() command.Command {
 	)
 }
 
-func varUpdateRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func varUpdateRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	// common update flags
 	commonUpdateArgs := getCommonUpdateArgs(cmdCtx.Flags)
 
@@ -194,7 +194,7 @@ func varUpdateRun(ctx context.Context, es domain.EnvService, cmdCtx command.Cont
 	newEnvName := ptrFromMap[string](cmdCtx.Flags, "--new-env-name")
 	value := ptrFromMap[string](cmdCtx.Flags, "--value")
 
-	err := es.VarUpdate(ctx, envName, name, domain.VarUpdateArgs{
+	err := es.VarUpdate(ctx, envName, name, models.VarUpdateArgs{
 		Comment:    commonUpdateArgs.Comment,
 		CreateTime: commonUpdateArgs.CreateTime,
 		EnvName:    newEnvName,

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"go.bbkane.com/envelope/cli/tableprint"
-	"go.bbkane.com/envelope/domain"
+	"go.bbkane.com/envelope/models"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
@@ -43,7 +43,7 @@ func VarRefCreateCmd() command.Command {
 	)
 }
 
-func varRefCreateRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func varRefCreateRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
 
@@ -55,7 +55,7 @@ func varRefCreateRun(ctx context.Context, es domain.EnvService, cmdCtx command.C
 
 	_, err := es.VarRefCreate(
 		ctx,
-		domain.VarRefCreateArgs{
+		models.VarRefCreateArgs{
 			EnvName:    envName,
 			Name:       name,
 			Comment:    commonCreateArgs.Comment,
@@ -94,7 +94,7 @@ func VarRefDeleteCmd() command.Command {
 	)
 }
 
-func varRefDeleteRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func varRefDeleteRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
 	name := mustGetNameArg(cmdCtx.Flags)
@@ -130,7 +130,7 @@ func VarRefShowCmd() command.Command {
 	)
 }
 
-func varRefShowRun(ctx context.Context, es domain.EnvService, cmdCtx command.Context) error {
+func varRefShowRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
