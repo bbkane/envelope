@@ -6,7 +6,7 @@ toolchain go1.23.4
 
 require (
 	github.com/alessio/shellescape v1.4.2
-	github.com/jedib0t/go-pretty/v6 v6.6.5
+	github.com/jedib0t/go-pretty/v6 v6.6.6
 	github.com/sqlc-dev/sqlc v1.28.0
 	github.com/stretchr/testify v1.10.0
 	go.bbkane.com/warg v0.0.27
@@ -57,9 +57,9 @@ require (
 	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948 // indirect
 	golang.org/x/net v0.33.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241015192408-796eee8c2d53 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241015192408-796eee8c2d53 // indirect
 	google.golang.org/grpc v1.69.4 // indirect
