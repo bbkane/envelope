@@ -9,6 +9,8 @@ import (
 	"go.bbkane.com/envelope/models"
 
 	"go.bbkane.com/warg/command"
+	"go.bbkane.com/warg/flag"
+	"go.bbkane.com/warg/value/scalar"
 )
 
 func EnvCreateCmd() command.Command {
@@ -136,6 +138,53 @@ func envShow(ctx context.Context, es models.EnvService, cmdCtx command.Context) 
 	}
 	tableprint.EnvShowRun(c, *env, localvars, refs, referencedVars)
 	return nil
+}
+
+func EnvUpdateCmd2() command.Command {
+	// TODO: rework this to use the new PointerTo system. Make the helper functions less awkward
+	var envName string
+	var updateArgs models.EnvUpdateArgs
+	return command.New(
+		"Update an environment",
+		withConfirm(withEnvService(func(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+			return nil
+		})),
+		command.FlagMap(flag.FlagMap{
+			"--comment": flag.New(
+				"Comment",
+				scalar.String(
+					scalar.PointerTo(updateArgs.Comment),
+				),
+			),
+			"--create-time": flag.New(
+				"Create time",
+				scalar.New(
+					datetime(),
+					scalar.PointerTo(updateArgs.CreateTime),
+				),
+			),
+			"--new-name": flag.New(
+				"New name",
+				scalar.String(
+					scalar.PointerTo(updateArgs.Name),
+				),
+			),
+			"--update-time": flag.New(
+				"Update time",
+				scalar.New(
+					datetime(),
+					scalar.Default(time.Now()),
+					scalar.PointerTo(updateArgs.UpdateTime),
+				),
+				flag.UnsetSentinel("UNSET"),
+			),
+		}),
+		// NOTE: this is to find the env
+		command.Flag("--name", envNameFlag2(&envName)),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(confirmFlag()),
+	)
 }
 
 func EnvUpdateCmd() command.Command {

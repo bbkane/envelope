@@ -98,6 +98,25 @@ func widthFlag() flag.FlagMap {
 	}
 }
 
+func envNameFlag2(addr *string) flag.Flag {
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		// I don't know when this could happen?
+		panic(err)
+	}
+
+	envNameFlag := flag.New(
+		"Environment name",
+		scalar.String(
+			scalar.Default(cwd),
+			scalar.PointerTo(addr),
+		),
+		flag.Required(),
+	)
+	return envNameFlag
+}
+
 func envNameFlag() flag.Flag {
 
 	cwd, err := os.Getwd()
