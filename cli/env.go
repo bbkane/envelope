@@ -15,10 +15,10 @@ func EnvCreateCmd() command.Command {
 	return command.New(
 		"Create an environment",
 		withEnvService(envCreate),
-		command.ExistingFlags(commonCreateFlagMap()),
-		command.ExistingFlag("--name", envNameFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
+		command.FlagMap(commonCreateFlagMap()),
+		command.Flag("--name", envNameFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
 	)
 }
 
@@ -45,10 +45,10 @@ func EnvDeleteCmd() command.Command {
 	return command.New(
 		"Delete an environment and associated vars",
 		withConfirm(withEnvService(envDelete)),
-		command.ExistingFlag("--name", envNameFlag()),
-		command.ExistingFlags(confirmFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
+		command.Flag("--name", envNameFlag()),
+		command.FlagMap(confirmFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
 	)
 }
 
@@ -68,10 +68,10 @@ func EnvListCmd() command.Command {
 	return command.New(
 		"List environments",
 		withEnvService(envList),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeZoneFlagMap()),
-		command.ExistingFlags(widthFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeZoneFlagMap()),
+		command.FlagMap(widthFlag()),
 	)
 }
 
@@ -97,12 +97,12 @@ func EnvShowCmd() command.Command {
 	return command.New(
 		"Print environment details",
 		withEnvService(envShow),
-		command.ExistingFlag("--name", envNameFlag()),
-		command.ExistingFlags(maskFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeZoneFlagMap()),
-		command.ExistingFlags(widthFlag()),
+		command.Flag("--name", envNameFlag()),
+		command.FlagMap(maskFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeZoneFlagMap()),
+		command.FlagMap(widthFlag()),
 	)
 }
 
@@ -142,11 +142,11 @@ func EnvUpdateCmd() command.Command {
 	return command.New(
 		"Update an environment",
 		withConfirm(withEnvService(envUpdate)),
-		command.ExistingFlags(commonUpdateFlags()),
-		command.ExistingFlag("--name", envNameFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(confirmFlag()),
+		command.FlagMap(commonUpdateFlags()),
+		command.Flag("--name", envNameFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(confirmFlag()),
 	)
 }
 

@@ -35,9 +35,6 @@ func datetime() contained.TypeInfo[time.Time] {
 		FromString: func(s string) (time.Time, error) {
 			return time.Parse(time.RFC3339, s)
 		},
-		Empty: func() time.Time {
-			return time.Time{}
-		},
 	}
 }
 

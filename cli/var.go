@@ -17,20 +17,20 @@ func VarCreateCmd() command.Command {
 	return command.New(
 		"Create a variable local to the this env",
 		withEnvService(varCreateRun),
-		command.ExistingFlag(
+		command.Flag(
 			"--env-name",
 			envNameFlag(),
 		),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(commonCreateFlagMap()),
-		command.Flag(
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(commonCreateFlagMap()),
+		command.NewFlag(
 			"--name",
 			"Existing env var name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.Flag(
+		command.NewFlag(
 			"--value",
 			"Value for this local env var",
 			scalar.String(),
@@ -80,16 +80,16 @@ func VarDeleteCmd() command.Command {
 	return command.New(
 		"Delete a variable local to the this env",
 		withConfirm(withEnvService(varDeleteRun)),
-		command.ExistingFlags(confirmFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.Flag(
+		command.FlagMap(confirmFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.NewFlag(
 			"--name",
 			"Env var name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.ExistingFlag(
+		command.Flag(
 			"--env-name",
 			envNameFlag(),
 		),
@@ -112,19 +112,19 @@ func VarShowCmd() command.Command {
 	return command.New(
 		"Show details for a local var",
 		withEnvService(varShowRun),
-		command.ExistingFlags(maskFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeZoneFlagMap()),
-		command.ExistingFlags(formatFlag()),
-		command.ExistingFlags(widthFlag()),
-		command.Flag(
+		command.FlagMap(maskFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeZoneFlagMap()),
+		command.FlagMap(formatFlag()),
+		command.FlagMap(widthFlag()),
+		command.NewFlag(
 			"--name",
 			"Env var name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.ExistingFlag(
+		command.Flag(
 			"--env-name",
 			envNameFlag(),
 		),
@@ -161,23 +161,23 @@ func VarUpdateCmd() command.Command {
 	return command.New(
 		"Update and env var",
 		withConfirm(withEnvService(varUpdateRun)),
-		command.ExistingFlag("--env-name", envNameFlag()),
-		command.ExistingFlags(commonUpdateFlags()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(confirmFlag()),
-		command.Flag(
+		command.Flag("--env-name", envNameFlag()),
+		command.FlagMap(commonUpdateFlags()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(confirmFlag()),
+		command.NewFlag(
 			"--name",
 			"Env var name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.Flag(
+		command.NewFlag(
 			"--new-env-name",
 			"New env name",
 			scalar.String(),
 		),
-		command.Flag(
+		command.NewFlag(
 			"--value",
 			"New value for this env var",
 			scalar.String(),

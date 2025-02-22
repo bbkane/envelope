@@ -16,46 +16,47 @@ func buildApp() *warg.App {
 
 	app := warg.New(
 		"envelope",
+		version,
 		section.New(
 			"Manage Environmental secrets centrally",
-			section.ExistingCommand("version", warg.VersionCommand()),
-			section.Section(
+			section.CommandMap(warg.VersionCommandMap()),
+			section.NewSection(
 				"env",
 				"Environment commands",
-				section.ExistingCommand("create", cli.EnvCreateCmd()),
-				section.ExistingCommand("delete", cli.EnvDeleteCmd()),
-				section.ExistingCommand("list", cli.EnvListCmd()),
-				section.ExistingCommand("update", cli.EnvUpdateCmd()),
-				section.ExistingCommand("show", cli.EnvShowCmd()),
+				section.Command("create", cli.EnvCreateCmd()),
+				section.Command("delete", cli.EnvDeleteCmd()),
+				section.Command("list", cli.EnvListCmd()),
+				section.Command("update", cli.EnvUpdateCmd()),
+				section.Command("show", cli.EnvShowCmd()),
 			),
-			section.Section(
+			section.NewSection(
 				"shell",
 				"Manipulate the current shell",
-				section.Section(
+				section.NewSection(
 					"zsh",
 					"Zsh-specific commands",
-					section.ExistingCommand("init", cli.ShellZshInitCmd()),
-					section.ExistingCommand("export", cli.ShellZshExportCmd()),
-					section.ExistingCommand("unexport", cli.ShellZshUnexportCmd()),
+					section.Command("init", cli.ShellZshInitCmd()),
+					section.Command("export", cli.ShellZshExportCmd()),
+					section.Command("unexport", cli.ShellZshUnexportCmd()),
 				),
 			),
-			section.Section(
+			section.NewSection(
 				"var",
 				"Env vars owned by this environment",
-				section.ExistingCommand("create", cli.VarCreateCmd()),
-				section.ExistingCommand("delete", cli.VarDeleteCmd()),
-				section.ExistingCommand("show", cli.VarShowCmd()),
-				section.ExistingCommand("update", cli.VarUpdateCmd()),
-				section.Section(
+				section.Command("create", cli.VarCreateCmd()),
+				section.Command("delete", cli.VarDeleteCmd()),
+				section.Command("show", cli.VarShowCmd()),
+				section.Command("update", cli.VarUpdateCmd()),
+				section.NewSection(
 					"ref",
 					"Variable References owned by this environment",
-					section.ExistingCommand("create", cli.VarRefCreateCmd()),
-					section.ExistingCommand("delete", cli.VarRefDeleteCmd()),
-					section.ExistingCommand("show", cli.VarRefShowCmd()),
+					section.Command("create", cli.VarRefCreateCmd()),
+					section.Command("delete", cli.VarRefDeleteCmd()),
+					section.Command("show", cli.VarRefShowCmd()),
 				),
 			),
 		),
-		warg.ExistingGlobalFlag("--color", warg.ColorFlag()),
+		warg.GlobalFlagMap(warg.ColorFlagMap()),
 		warg.OverrideHelpFlag(
 			[]help.HelpFlagMapping{
 				{Name: "detailed", CommandHelp: detailed.DetailedCommandHelp, SectionHelp: detailed.DetailedSectionHelp},
@@ -68,7 +69,6 @@ func buildApp() *warg.App {
 			"Print help",
 			flag.Alias("-h"),
 		),
-		warg.OverrideVersion(version),
 	)
 	return &app
 }

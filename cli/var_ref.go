@@ -15,28 +15,28 @@ func VarRefCreateCmd() command.Command {
 	return command.New(
 		"Create a reference in this env to a variable in another env",
 		withEnvService(varRefCreateRun),
-		command.Flag(
+		command.NewFlag(
 			"--name",
 			"Ref name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.Flag(
+		command.NewFlag(
 			"--ref-env-name",
 			"Environment we're referencing",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.Flag(
+		command.NewFlag(
 			"--ref-var-name",
 			"Variable we're referencing",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.ExistingFlags(commonCreateFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlag(
+		command.FlagMap(commonCreateFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeoutFlagMap()),
+		command.Flag(
 			"--env-name",
 			envNameFlag(),
 		),
@@ -78,16 +78,16 @@ func VarRefDeleteCmd() command.Command {
 	return command.New(
 		"Delete a reference to a variablea",
 		withConfirm(withEnvService(varRefDeleteRun)),
-		command.ExistingFlags(confirmFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.Flag(
+		command.FlagMap(confirmFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.NewFlag(
 			"--name",
 			"Ref name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.ExistingFlag(
+		command.Flag(
 			"--env-name",
 			envNameFlag(),
 		),
@@ -111,19 +111,19 @@ func VarRefShowCmd() command.Command {
 	return command.New(
 		"Show details for a reference",
 		withEnvService(varRefShowRun),
-		command.ExistingFlags(maskFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeZoneFlagMap()),
-		command.ExistingFlags(formatFlag()),
-		command.ExistingFlags(widthFlag()),
-		command.Flag(
+		command.FlagMap(maskFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeZoneFlagMap()),
+		command.FlagMap(formatFlag()),
+		command.FlagMap(widthFlag()),
+		command.NewFlag(
 			"--name",
 			"Env ref name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.ExistingFlag(
+		command.Flag(
 			"--env-name",
 			envNameFlag(),
 		),
