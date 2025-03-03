@@ -11,7 +11,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	go.bbkane.com/warg v0.0.27
 	golang.org/x/term v0.29.0
-	modernc.org/sqlite v1.35.0
+	modernc.org/sqlite v1.36.0
 )
 
 require (
