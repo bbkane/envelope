@@ -6,7 +6,7 @@ toolchain go1.23.4
 
 require (
 	github.com/alessio/shellescape v1.4.2
-	github.com/jedib0t/go-pretty/v6 v6.6.6
+	github.com/jedib0t/go-pretty/v6 v6.6.7
 	github.com/sqlc-dev/sqlc v1.28.0
 	github.com/stretchr/testify v1.10.0
 	go.bbkane.com/warg v0.0.27
