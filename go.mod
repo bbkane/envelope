@@ -2,8 +2,6 @@ module go.bbkane.com/envelope
 
 go 1.23
 
-toolchain go1.23.4
-
 require (
 	github.com/alessio/shellescape v1.4.2
 	github.com/jedib0t/go-pretty/v6 v6.6.7
@@ -11,7 +9,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	go.bbkane.com/warg v0.0.27
 	golang.org/x/term v0.29.0
-	modernc.org/sqlite v1.36.0
+	modernc.org/sqlite v1.36.1
 )
 
 require (
