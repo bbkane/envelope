@@ -1,6 +1,7 @@
 module go.bbkane.com/envelope
 
 go 1.23
+toolchain go1.24.1
 
 require (
 	github.com/alessio/shellescape v1.4.2
@@ -8,7 +9,7 @@ require (
 	github.com/sqlc-dev/sqlc v1.28.0
 	github.com/stretchr/testify v1.10.0
 	go.bbkane.com/warg v0.0.27
-	golang.org/x/term v0.29.0
+	golang.org/x/term v0.30.0
 	modernc.org/sqlite v1.36.1
 )
 
@@ -56,7 +57,7 @@ require (
 	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948 // indirect
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/sync v0.11.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241015192408-796eee8c2d53 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241015192408-796eee8c2d53 // indirect
