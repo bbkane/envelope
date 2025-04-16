@@ -3,72 +3,63 @@ package main
 import (
 	"go.bbkane.com/envelope/cli"
 	"go.bbkane.com/warg"
-	"go.bbkane.com/warg/flag"
+	wargcli "go.bbkane.com/warg/cli"
 	"go.bbkane.com/warg/help"
-	"go.bbkane.com/warg/help/allcommands"
-	"go.bbkane.com/warg/help/detailed"
 	"go.bbkane.com/warg/section"
 )
 
 var version string
 
-func buildApp() *warg.App {
+func buildApp() *wargcli.App {
 
 	app := warg.New(
 		"envelope",
+		version,
 		section.New(
 			"Manage Environmental secrets centrally",
-			section.ExistingCommand("version", warg.VersionCommand()),
-			section.Section(
+			section.CommandMap(warg.VersionCommandMap()),
+			section.NewSection(
 				"env",
 				"Environment commands",
-				section.ExistingCommand("create", cli.EnvCreateCmd()),
-				section.ExistingCommand("delete", cli.EnvDeleteCmd()),
-				section.ExistingCommand("list", cli.EnvListCmd()),
-				section.ExistingCommand("update", cli.EnvUpdateCmd()),
-				section.ExistingCommand("show", cli.EnvShowCmd()),
+				section.Command("create", cli.EnvCreateCmd()),
+				section.Command("delete", cli.EnvDeleteCmd()),
+				section.Command("list", cli.EnvListCmd()),
+				section.Command("update", cli.EnvUpdateCmd()),
+				section.Command("show", cli.EnvShowCmd()),
 			),
-			section.Section(
+			section.NewSection(
 				"shell",
 				"Manipulate the current shell",
-				section.Section(
+				section.NewSection(
 					"zsh",
 					"Zsh-specific commands",
-					section.ExistingCommand("init", cli.ShellZshInitCmd()),
-					section.ExistingCommand("export", cli.ShellZshExportCmd()),
-					section.ExistingCommand("unexport", cli.ShellZshUnexportCmd()),
+					section.Command("init", cli.ShellZshInitCmd()),
+					section.Command("export", cli.ShellZshExportCmd()),
+					section.Command("unexport", cli.ShellZshUnexportCmd()),
 				),
 			),
-			section.Section(
+			section.NewSection(
 				"var",
 				"Env vars owned by this environment",
-				section.ExistingCommand("create", cli.VarCreateCmd()),
-				section.ExistingCommand("delete", cli.VarDeleteCmd()),
-				section.ExistingCommand("show", cli.VarShowCmd()),
-				section.ExistingCommand("update", cli.VarUpdateCmd()),
-				section.Section(
+				section.Command("create", cli.VarCreateCmd()),
+				section.Command("delete", cli.VarDeleteCmd()),
+				section.Command("show", cli.VarShowCmd()),
+				section.Command("update", cli.VarUpdateCmd()),
+				section.NewSection(
 					"ref",
 					"Variable References owned by this environment",
-					section.ExistingCommand("create", cli.VarRefCreateCmd()),
-					section.ExistingCommand("delete", cli.VarRefDeleteCmd()),
-					section.ExistingCommand("show", cli.VarRefShowCmd()),
+					section.Command("create", cli.VarRefCreateCmd()),
+					section.Command("delete", cli.VarRefDeleteCmd()),
+					section.Command("show", cli.VarRefShowCmd()),
 				),
 			),
 		),
-		warg.ExistingGlobalFlag("--color", warg.ColorFlag()),
-		warg.OverrideHelpFlag(
-			[]help.HelpFlagMapping{
-				{Name: "detailed", CommandHelp: detailed.DetailedCommandHelp, SectionHelp: detailed.DetailedSectionHelp},
-				{Name: "outline", CommandHelp: help.OutlineCommandHelp, SectionHelp: help.OutlineSectionHelp},
-				// allcommands list child commands, so it doesn't really make sense for a command
-				{Name: "allcommands", CommandHelp: detailed.DetailedCommandHelp, SectionHelp: allcommands.AllCommandsSectionHelp},
-			},
-			"detailed",
-			"--help",
-			"Print help",
-			flag.Alias("-h"),
+		warg.GlobalFlagMap(warg.ColorFlagMap()),
+		// use "detailed" as the default choice
+		warg.HelpFlag(
+			help.DefaultHelpCommandMap(),
+			help.DefaultHelpFlagMap("detailed", help.DefaultHelpCommandMap().SortedNames()),
 		),
-		warg.OverrideVersion(version),
 	)
 	return &app
 }

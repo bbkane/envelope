@@ -10,7 +10,7 @@ import (
 
 	"go.bbkane.com/envelope/app"
 	"go.bbkane.com/envelope/models"
-	"go.bbkane.com/warg/command"
+	"go.bbkane.com/warg/cli"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/path"
 	"golang.org/x/term"
@@ -41,8 +41,8 @@ func datetime() contained.TypeInfo[time.Time] {
 	}
 }
 
-func confirmFlag() flag.FlagMap {
-	return flag.FlagMap{
+func confirmFlag() cli.FlagMap {
+	return cli.FlagMap{
 		"--confirm": flag.New(
 			"Ask for confirmation before running",
 			scalar.Bool(
@@ -53,8 +53,8 @@ func confirmFlag() flag.FlagMap {
 	}
 }
 
-func maskFlag() flag.FlagMap {
-	return flag.FlagMap{
+func maskFlag() cli.FlagMap {
+	return cli.FlagMap{
 		"--mask": flag.New(
 			"Mask values when printing",
 			scalar.Bool(
@@ -66,8 +66,8 @@ func maskFlag() flag.FlagMap {
 	}
 }
 
-func formatFlag() flag.FlagMap {
-	return flag.FlagMap{
+func formatFlag() cli.FlagMap {
+	return cli.FlagMap{
 		"--format": flag.New(
 			"output format",
 			scalar.String(
@@ -79,7 +79,7 @@ func formatFlag() flag.FlagMap {
 	}
 }
 
-func widthFlag() flag.FlagMap {
+func widthFlag() cli.FlagMap {
 
 	// TODO: figure out a good way to cache this for all width flags
 	width := 0
@@ -90,7 +90,7 @@ func widthFlag() flag.FlagMap {
 		}
 	}
 
-	return flag.FlagMap{
+	return cli.FlagMap{
 		"--width": flag.New(
 			"Width of the table. 0 means no limit",
 			scalar.Int(
@@ -101,7 +101,7 @@ func widthFlag() flag.FlagMap {
 	}
 }
 
-func envNameFlag() flag.Flag {
+func envNameFlag() cli.Flag {
 
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -119,9 +119,9 @@ func envNameFlag() flag.Flag {
 	return envNameFlag
 }
 
-func sqliteDSNFlagMap() flag.FlagMap {
+func sqliteDSNFlagMap() cli.FlagMap {
 
-	return flag.FlagMap{
+	return cli.FlagMap{
 		"--db-path": flag.New(
 			"Sqlite DSN. Usually the file name",
 			scalar.Path(
@@ -133,9 +133,9 @@ func sqliteDSNFlagMap() flag.FlagMap {
 	}
 }
 
-func commonCreateFlagMap() flag.FlagMap {
+func commonCreateFlagMap() cli.FlagMap {
 	now := time.Now()
-	commonCreateFlags := flag.FlagMap{
+	commonCreateFlags := cli.FlagMap{
 		"--comment": flag.New(
 			"Comment",
 			scalar.String(
@@ -163,9 +163,9 @@ func commonCreateFlagMap() flag.FlagMap {
 	return commonCreateFlags
 }
 
-func commonUpdateFlags() flag.FlagMap {
+func commonUpdateFlags() cli.FlagMap {
 
-	commonUpdateFlags := flag.FlagMap{
+	commonUpdateFlags := cli.FlagMap{
 		"--comment": flag.New(
 			"Comment",
 			scalar.String(),
@@ -192,8 +192,8 @@ func commonUpdateFlags() flag.FlagMap {
 	return commonUpdateFlags
 }
 
-func timeoutFlagMap() flag.FlagMap {
-	timeoutFlag := flag.FlagMap{
+func timeoutFlagMap() cli.FlagMap {
+	timeoutFlag := cli.FlagMap{
 		"--timeout": flag.New(
 			"Timeout for a run. Use https://pkg.go.dev/time#Duration to build it",
 			scalar.Duration(
@@ -206,8 +206,8 @@ func timeoutFlagMap() flag.FlagMap {
 
 }
 
-func timeZoneFlagMap() flag.FlagMap {
-	return flag.FlagMap{
+func timeZoneFlagMap() cli.FlagMap {
+	return cli.FlagMap{
 		"--timezone": flag.New(
 			"Timezone to display dates",
 			scalar.String(
@@ -236,7 +236,7 @@ type commonCreateArgs struct {
 	UpdateTime time.Time
 }
 
-func mustGetCommonCreateArgs(pf command.PassedFlags) commonCreateArgs {
+func mustGetCommonCreateArgs(pf cli.PassedFlags) commonCreateArgs {
 	return commonCreateArgs{
 		Comment:    pf["--comment"].(string),
 		CreateTime: pf["--create-time"].(time.Time),
@@ -251,7 +251,7 @@ type commonUpdateArgs struct {
 	UpdateTime *time.Time
 }
 
-func getCommonUpdateArgs(pf command.PassedFlags) commonUpdateArgs {
+func getCommonUpdateArgs(pf cli.PassedFlags) commonUpdateArgs {
 	return commonUpdateArgs{
 		Comment:    ptrFromMap[string](pf, "--comment"),
 		CreateTime: ptrFromMap[time.Time](pf, "--create-time"),
@@ -260,35 +260,35 @@ func getCommonUpdateArgs(pf command.PassedFlags) commonUpdateArgs {
 	}
 }
 
-func mustGetEnvNameArg(pf command.PassedFlags) string {
+func mustGetEnvNameArg(pf cli.PassedFlags) string {
 	return pf["--env-name"].(string)
 }
 
-func mustGetMaskArg(pf command.PassedFlags) bool {
+func mustGetMaskArg(pf cli.PassedFlags) bool {
 	return pf["--mask"].(bool)
 }
 
-func mustGetNameArg(pf command.PassedFlags) string {
+func mustGetNameArg(pf cli.PassedFlags) string {
 	return pf["--name"].(string)
 }
 
-func mustGetTimeoutArg(pf command.PassedFlags) time.Duration {
+func mustGetTimeoutArg(pf cli.PassedFlags) time.Duration {
 	return pf["--timeout"].(time.Duration)
 }
 
-func mustGetTimezoneArg(pf command.PassedFlags) string {
+func mustGetTimezoneArg(pf cli.PassedFlags) string {
 	return pf["--timezone"].(string)
 }
 
-func mustGetWidthArg(pf command.PassedFlags) int {
+func mustGetWidthArg(pf cli.PassedFlags) int {
 	return pf["--width"].(int)
 }
 
-// withEnvService wraps a command.Action to read --db-path and create a EnvService
+// withEnvService wraps a cli.Action to read --db-path and create a EnvService
 func withEnvService(
-	f func(ctx context.Context, es models.EnvService, cmdCtx command.Context) error,
-) command.Action {
-	return func(cmdCtx command.Context) error {
+	f func(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error,
+) cli.Action {
+	return func(cmdCtx cli.Context) error {
 
 		ctx, cancel := context.WithTimeout(
 			context.Background(),
@@ -306,9 +306,9 @@ func withEnvService(
 	}
 }
 
-// withConfirm wraps a command.Action to ask for confirmation before running
-func withConfirm(f func(cmdCtx command.Context) error) command.Action {
-	return func(cmdCtx command.Context) error {
+// withConfirm wraps a cli.Action to ask for confirmation before running
+func withConfirm(f func(cmdCtx cli.Context) error) cli.Action {
+	return func(cmdCtx cli.Context) error {
 		confirm := cmdCtx.Flags["--confirm"].(bool)
 		if !confirm {
 			return f(cmdCtx)

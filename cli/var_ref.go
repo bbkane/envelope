@@ -6,44 +6,45 @@ import (
 
 	"go.bbkane.com/envelope/cli/tableprint"
 	"go.bbkane.com/envelope/models"
+	"go.bbkane.com/warg/cli"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
 )
 
-func VarRefCreateCmd() command.Command {
+func VarRefCreateCmd() cli.Command {
 	return command.New(
 		"Create a reference in this env to a variable in another env",
 		withEnvService(varRefCreateRun),
-		command.Flag(
+		command.NewFlag(
 			"--name",
 			"Ref name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.Flag(
+		command.NewFlag(
 			"--ref-env-name",
 			"Environment we're referencing",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.Flag(
+		command.NewFlag(
 			"--ref-var-name",
 			"Variable we're referencing",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.ExistingFlags(commonCreateFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlag(
+		command.FlagMap(commonCreateFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeoutFlagMap()),
+		command.Flag(
 			"--env-name",
 			envNameFlag(),
 		),
 	)
 }
 
-func varRefCreateRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func varRefCreateRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
 
@@ -74,27 +75,27 @@ func varRefCreateRun(ctx context.Context, es models.EnvService, cmdCtx command.C
 	return nil
 }
 
-func VarRefDeleteCmd() command.Command {
+func VarRefDeleteCmd() cli.Command {
 	return command.New(
 		"Delete a reference to a variablea",
 		withConfirm(withEnvService(varRefDeleteRun)),
-		command.ExistingFlags(confirmFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.Flag(
+		command.FlagMap(confirmFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.NewFlag(
 			"--name",
 			"Ref name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.ExistingFlag(
+		command.Flag(
 			"--env-name",
 			envNameFlag(),
 		),
 	)
 }
 
-func varRefDeleteRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func varRefDeleteRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
 	name := mustGetNameArg(cmdCtx.Flags)
@@ -107,30 +108,30 @@ func varRefDeleteRun(ctx context.Context, es models.EnvService, cmdCtx command.C
 	return nil
 }
 
-func VarRefShowCmd() command.Command {
+func VarRefShowCmd() cli.Command {
 	return command.New(
 		"Show details for a reference",
 		withEnvService(varRefShowRun),
-		command.ExistingFlags(maskFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeZoneFlagMap()),
-		command.ExistingFlags(formatFlag()),
-		command.ExistingFlags(widthFlag()),
-		command.Flag(
+		command.FlagMap(maskFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeZoneFlagMap()),
+		command.FlagMap(formatFlag()),
+		command.FlagMap(widthFlag()),
+		command.NewFlag(
 			"--name",
 			"Env ref name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.ExistingFlag(
+		command.Flag(
 			"--env-name",
 			envNameFlag(),
 		),
 	)
 }
 
-func varRefShowRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func varRefShowRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)

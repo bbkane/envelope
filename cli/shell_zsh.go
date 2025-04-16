@@ -7,16 +7,17 @@ import (
 
 	"github.com/alessio/shellescape"
 	"go.bbkane.com/envelope/models"
+	"go.bbkane.com/warg/cli"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
 )
 
-func ShellZshInitCmd() command.Command {
+func ShellZshInitCmd() cli.Command {
 	return command.New(
 		"Prints the zsh initialization script",
 		shellZshInitRun,
-		command.Flag(
+		command.NewFlag(
 			"--print-autoload",
 			"Include autoload -Uz add-zsh-hook line (might not be needed if you already autoloaded it)",
 			scalar.Bool(
@@ -24,7 +25,7 @@ func ShellZshInitCmd() command.Command {
 			),
 			flag.Required(),
 		),
-		command.Flag(
+		command.NewFlag(
 			"--print-export-env",
 			"Include export-env/unexport-env to easily use envs from the CLI",
 			scalar.Bool(
@@ -32,7 +33,7 @@ func ShellZshInitCmd() command.Command {
 			),
 			flag.Required(),
 		),
-		command.Flag(
+		command.NewFlag(
 			"--print-chpwd-hook",
 			"Include hook to export/unexport envs when changing directories",
 			scalar.Bool(
@@ -43,7 +44,7 @@ func ShellZshInitCmd() command.Command {
 	)
 }
 
-func shellZshInitRun(cmdCtx command.Context) error {
+func shellZshInitRun(cmdCtx cli.Context) error {
 
 	printAutoload := cmdCtx.Flags["--print-autoload"].(bool)
 	printChpwdHook := cmdCtx.Flags["--print-chpwd-hook"].(bool)
@@ -87,14 +88,14 @@ unexport-env() { eval $(envelope shell zsh unexport --env-name "$1" --no-env-no-
 	return nil
 }
 
-func ShellZshExportCmd() command.Command {
+func ShellZshExportCmd() cli.Command {
 	return command.New(
 		"Print export script",
 		withEnvService(shellZshExportRun),
-		command.ExistingFlag("--env-name", envNameFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.Flag(
+		command.Flag("--env-name", envNameFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.NewFlag(
 			"--no-env-no-problem",
 			"Exit without an error if the environment doesn't exit. Useful when runnng envelop on chpwd",
 			scalar.Bool(
@@ -105,18 +106,18 @@ func ShellZshExportCmd() command.Command {
 	)
 }
 
-func shellZshExportRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func shellZshExportRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
 	return shellZshExportUnexport(ctx, cmdCtx, es, "export")
 }
 
-func ShellZshUnexportCmd() command.Command {
+func ShellZshUnexportCmd() cli.Command {
 	return command.New(
 		"Print unexport script",
 		withEnvService(shellZshUnexportRun),
-		command.ExistingFlag("--env-name", envNameFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.Flag(
+		command.Flag("--env-name", envNameFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.NewFlag(
 			"--no-env-no-problem",
 			"Exit without an error if the environment doesn't exit. Useful when runnng envelop on chpwd",
 			scalar.Bool(
@@ -127,11 +128,11 @@ func ShellZshUnexportCmd() command.Command {
 	)
 }
 
-func shellZshUnexportRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func shellZshUnexportRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
 	return shellZshExportUnexport(ctx, cmdCtx, es, "unexport")
 }
 
-func shellZshExportUnexport(ctx context.Context, cmdCtx command.Context, es models.EnvService, scriptType string) error {
+func shellZshExportUnexport(ctx context.Context, cmdCtx cli.Context, es models.EnvService, scriptType string) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	noEnvNoProblem := cmdCtx.Flags["--no-env-no-problem"].(bool)
 
@@ -154,7 +155,7 @@ func shellZshExportUnexport(ctx context.Context, cmdCtx command.Context, es mode
 	switch scriptType {
 	case "export":
 		if len(envVars)+len(envRefs) > 0 {
-			fmt.Fprintf(cmdCtx.Stdout, "printf '%s:';\n", cmdCtx.AppName)
+			fmt.Fprintf(cmdCtx.Stdout, "printf '%s:';\n", cmdCtx.App.Name)
 			for _, ev := range envVars {
 				fmt.Fprintf(cmdCtx.Stdout, "printf ' +%s';\n", shellescape.Quote(ev.Name))
 				fmt.Fprintf(cmdCtx.Stdout, "export %s=%s;\n", shellescape.Quote(ev.Name), shellescape.Quote(ev.Value))
@@ -169,7 +170,7 @@ func shellZshExportUnexport(ctx context.Context, cmdCtx command.Context, es mode
 
 	case "unexport":
 		if len(envVars)+len(envRefs) > 0 {
-			fmt.Fprintf(cmdCtx.Stdout, "printf '%s:';\n", cmdCtx.AppName)
+			fmt.Fprintf(cmdCtx.Stdout, "printf '%s:';\n", cmdCtx.App.Name)
 			for _, ev := range envVars {
 				fmt.Fprintf(cmdCtx.Stdout, "printf ' -%s';\n", shellescape.Quote(ev.Name))
 				fmt.Fprintf(cmdCtx.Stdout, "unset %s;\n", shellescape.Quote(ev.Name))

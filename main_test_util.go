@@ -7,6 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"go.bbkane.com/warg"
+	"go.bbkane.com/warg/cli"
+	"go.bbkane.com/warg/parseopt"
 )
 
 // abstract some common test functionality to make writing
@@ -118,7 +120,7 @@ func goldenTest(t *testing.T, tt testcase, updateGolden bool) {
 			UpdateGolden:    updateGolden,
 			ExpectActionErr: tt.expectActionErr,
 		},
-		warg.OverrideArgs(tt.args),
-		warg.OverrideLookupFunc(warg.LookupMap(nil)),
+		parseopt.Args(tt.args),
+		parseopt.LookupEnv(cli.LookupMap(nil)),
 	)
 }
