@@ -10,7 +10,40 @@ import (
 
 	"go.bbkane.com/warg/cli"
 	"go.bbkane.com/warg/command"
+	"go.bbkane.com/warg/flag"
+	"go.bbkane.com/warg/value/scalar"
 )
+
+func EnvCreateCmd2() cli.Command {
+	var createArgs models.EnvCreateArgs
+	return command.New(
+		"Create an environment",
+		withEnvService(func(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
+			env, err := es.EnvCreate(ctx, createArgs)
+			if err != nil {
+				return fmt.Errorf("could not create env: %w", err)
+			}
+			fmt.Fprintf(cmdCtx.Stdout, "Created env: %s\n", env.Name)
+			return nil
+		}),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(commonCreateFlagMapPtrs(
+			&createArgs.Comment,
+			&createArgs.CreateTime,
+			&createArgs.UpdateTime,
+		)),
+		command.NewFlag(
+			"--name",
+			"Environment name",
+			scalar.String(
+				scalar.Default(cwd),
+				scalar.PointerTo(&createArgs.Name),
+			),
+			flag.Required(),
+		),
+	)
+}
 
 func EnvCreateCmd() cli.Command {
 	return command.New(

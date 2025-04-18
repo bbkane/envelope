@@ -11,6 +11,7 @@ import (
 	"go.bbkane.com/envelope/app"
 	"go.bbkane.com/envelope/models"
 	"go.bbkane.com/warg/cli"
+	"go.bbkane.com/warg/completion"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/path"
 	"golang.org/x/term"
@@ -18,6 +19,17 @@ import (
 	"go.bbkane.com/warg/value/contained"
 	"go.bbkane.com/warg/value/scalar"
 )
+
+var cwd string //nolint:gochecknoglobals // cwd will not change
+
+func init() { //nolint:gochecknoinits  // cwd will not change
+	var err error
+	cwd, err = os.Getwd()
+	if err != nil {
+		// I don't know when this could happen?
+		panic(err)
+	}
+}
 
 func emptyOrNil[T any](iFace interface{}) (T, error) {
 	under, ok := iFace.(T)
@@ -101,22 +113,44 @@ func widthFlag() cli.FlagMap {
 	}
 }
 
-func envNameFlag() cli.Flag {
+func completeExistingEnvName(cmdCtx cli.Context) (*completion.Candidates, error) {
+	ctx, cancel := context.WithTimeout(
+		context.Background(),
+		mustGetTimeoutArg(cmdCtx.Flags),
+	)
+	defer cancel()
 
-	cwd, err := os.Getwd()
+	sqliteDSN := cmdCtx.Flags["--db-path"].(path.Path).MustExpand()
+	es, err := app.NewEnvService(ctx, sqliteDSN)
 	if err != nil {
-		// I don't know when this could happen?
-		panic(err)
+		return nil, fmt.Errorf("could not create env service: %w", err)
 	}
+	envs, err := es.EnvList(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("could not list envs for completion: %w", err)
+	}
+	candidates := &completion.Candidates{
+		Type:   completion.Type_ValuesDescriptions,
+		Values: nil,
+	}
+	for _, e := range envs {
+		candidates.Values = append(candidates.Values, completion.Candidate{
+			Name:        e.Name,
+			Description: e.Comment,
+		})
+	}
+	return candidates, nil
+}
 
-	envNameFlag := flag.New(
+func envNameFlag() cli.Flag {
+	return flag.New(
 		"Environment name",
 		scalar.String(
 			scalar.Default(cwd),
 		),
 		flag.Required(),
+		flag.CompletionCandidates(completeExistingEnvName),
 	)
-	return envNameFlag
 }
 
 func sqliteDSNFlagMap() cli.FlagMap {
@@ -131,6 +165,39 @@ func sqliteDSNFlagMap() cli.FlagMap {
 			flag.EnvVars("ENVELOPE_DB_PATH"),
 		),
 	}
+}
+
+func commonCreateFlagMapPtrs(comment *string, createTime *time.Time, updateTime *time.Time) cli.FlagMap {
+	now := time.Now()
+	commonCreateFlags := cli.FlagMap{
+		"--comment": flag.New(
+			"Comment",
+			scalar.String(
+				scalar.Default(""),
+				scalar.PointerTo(comment),
+			),
+			flag.Required(),
+		),
+		"--create-time": flag.New(
+			"Create time",
+			scalar.New(
+				datetime(),
+				scalar.Default(now),
+				scalar.PointerTo(createTime),
+			),
+			flag.Required(),
+		),
+		"--update-time": flag.New(
+			"Update time",
+			scalar.New(
+				datetime(),
+				scalar.Default(now),
+				scalar.PointerTo(updateTime),
+			),
+			flag.Required(),
+		),
+	}
+	return commonCreateFlags
 }
 
 func commonCreateFlagMap() cli.FlagMap {
@@ -284,7 +351,7 @@ func mustGetWidthArg(pf cli.PassedFlags) int {
 	return pf["--width"].(int)
 }
 
-// withEnvService wraps a cli.Action to read --db-path and create a EnvService
+// withEnvService wraps a cli.Action to read --db-path and --timeout and create a EnvService
 func withEnvService(
 	f func(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error,
 ) cli.Action {
