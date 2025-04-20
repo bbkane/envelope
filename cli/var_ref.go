@@ -27,12 +27,14 @@ func VarRefCreateCmd() cli.Command {
 			"Environment we're referencing",
 			scalar.String(),
 			flag.Required(),
+			flag.CompletionCandidates(withEnvServiceCompletions(completeExistingEnvName)),
 		),
 		command.NewFlag(
 			"--ref-var-name",
 			"Variable we're referencing",
 			scalar.String(),
 			flag.Required(),
+			flag.CompletionCandidates(withEnvServiceCompletions(completeExistingEnvVarName)),
 		),
 		command.FlagMap(commonCreateFlagMap()),
 		command.FlagMap(sqliteDSNFlagMap()),
@@ -84,7 +86,7 @@ func VarRefDeleteCmd() cli.Command {
 		command.FlagMap(sqliteDSNFlagMap()),
 		command.NewFlag(
 			"--name",
-			"Ref name",
+			"Var ref name",
 			scalar.String(),
 			flag.Required(),
 		),
@@ -120,7 +122,7 @@ func VarRefShowCmd() cli.Command {
 		command.FlagMap(widthFlag()),
 		command.NewFlag(
 			"--name",
-			"Env ref name",
+			"Var ref name",
 			scalar.String(),
 			flag.Required(),
 		),

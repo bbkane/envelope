@@ -113,18 +113,7 @@ func widthFlag() cli.FlagMap {
 	}
 }
 
-func completeExistingEnvName(cmdCtx cli.Context) (*completion.Candidates, error) {
-	ctx, cancel := context.WithTimeout(
-		context.Background(),
-		mustGetTimeoutArg(cmdCtx.Flags),
-	)
-	defer cancel()
-
-	sqliteDSN := cmdCtx.Flags["--db-path"].(path.Path).MustExpand()
-	es, err := app.NewEnvService(ctx, sqliteDSN)
-	if err != nil {
-		return nil, fmt.Errorf("could not create env service: %w", err)
-	}
+func completeExistingEnvName(ctx context.Context, es models.EnvService, cmdCtx cli.Context) (*completion.Candidates, error) {
 	envs, err := es.EnvList(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not list envs for completion: %w", err)
@@ -149,7 +138,43 @@ func envNameFlag() cli.Flag {
 			scalar.Default(cwd),
 		),
 		flag.Required(),
-		flag.CompletionCandidates(completeExistingEnvName),
+		flag.CompletionCandidates(withEnvServiceCompletions(
+			completeExistingEnvName)),
+	)
+}
+
+func completeExistingEnvVarName(
+	ctx context.Context, es models.EnvService, cmdCtx cli.Context) (*completion.Candidates, error) {
+	// no completions if we can't get the env name
+	envNamePtr := ptrFromMap[string](cmdCtx.Flags, "--env-name")
+	if envNamePtr == nil {
+		return nil, nil
+	}
+
+	vars, err := es.VarList(ctx, *envNamePtr)
+	if err != nil {
+		return nil, fmt.Errorf("could not get env for completion: %w", err)
+	}
+	candidates := &completion.Candidates{
+		Type:   completion.Type_ValuesDescriptions,
+		Values: nil,
+	}
+	for _, v := range vars {
+		candidates.Values = append(candidates.Values, completion.Candidate{
+			Name:        v.Name,
+			Description: v.Comment,
+		})
+	}
+	return candidates, nil
+}
+
+func envVarNameFlag() cli.Flag {
+	return flag.New(
+		"Env var name",
+		scalar.String(),
+		flag.Required(),
+		flag.CompletionCandidates(withEnvServiceCompletions(
+			completeExistingEnvVarName)),
 	)
 }
 
@@ -367,6 +392,28 @@ func withEnvService(
 		es, err := app.NewEnvService(ctx, sqliteDSN)
 		if err != nil {
 			return fmt.Errorf("could not create env service: %w", err)
+		}
+
+		return f(ctx, es, cmdCtx)
+	}
+}
+
+// withEnvService wraps a cli.Action to read --db-path and --timeout and create a EnvService
+func withEnvServiceCompletions(
+	f func(ctx context.Context, es models.EnvService, cmdCtx cli.Context) (*completion.Candidates, error),
+) cli.CompletionCandidates {
+	return func(cmdCtx cli.Context) (*completion.Candidates, error) {
+
+		ctx, cancel := context.WithTimeout(
+			context.Background(),
+			mustGetTimeoutArg(cmdCtx.Flags),
+		)
+		defer cancel()
+
+		sqliteDSN := cmdCtx.Flags["--db-path"].(path.Path).MustExpand()
+		es, err := app.NewEnvService(ctx, sqliteDSN)
+		if err != nil {
+			return nil, fmt.Errorf("could not create env service: %w", err)
 		}
 
 		return f(ctx, es, cmdCtx)

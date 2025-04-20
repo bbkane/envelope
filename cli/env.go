@@ -45,36 +45,6 @@ func EnvCreateCmd2() cli.Command {
 	)
 }
 
-func EnvCreateCmd() cli.Command {
-	return command.New(
-		"Create an environment",
-		withEnvService(envCreate),
-		command.FlagMap(commonCreateFlagMap()),
-		command.Flag("--name", envNameFlag()),
-		command.FlagMap(timeoutFlagMap()),
-		command.FlagMap(sqliteDSNFlagMap()),
-	)
-}
-
-func envCreate(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
-	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
-
-	env, err := es.EnvCreate(ctx, models.EnvCreateArgs{
-		Name:       mustGetNameArg(cmdCtx.Flags),
-		Comment:    commonCreateArgs.Comment,
-		CreateTime: commonCreateArgs.CreateTime,
-		UpdateTime: commonCreateArgs.UpdateTime,
-	})
-
-	if err != nil {
-		return fmt.Errorf("could not create env: %w", err)
-	}
-
-	fmt.Fprintf(cmdCtx.Stdout, "Created env: %s\n", env.Name)
-
-	return nil
-}
-
 func EnvDeleteCmd() cli.Command {
 	return command.New(
 		"Delete an environment and associated vars",
