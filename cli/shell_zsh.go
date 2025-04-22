@@ -69,8 +69,8 @@ autoload -Uz add-zsh-hook
 
 	chpwdHook := `
 add-zsh-hook -Uz chpwd (){
-    eval $(envelope shell zsh unexport --env-name "$OLDPWD" --no-env-no-problem true)
-    eval $(envelope shell zsh export --env-name "$PWD" --no-env-no-problem true)
+    eval $(envelope shell zsh unexport --env "$OLDPWD" --no-env-no-problem true)
+    eval $(envelope shell zsh export --env "$PWD" --no-env-no-problem true)
 }
 `
 	if printChpwdHook {
@@ -78,8 +78,8 @@ add-zsh-hook -Uz chpwd (){
 	}
 
 	exportEnv := `
-export-env() { eval $(envelope shell zsh export --env-name "$1" --no-env-no-problem true) }
-unexport-env() { eval $(envelope shell zsh unexport --env-name "$1" --no-env-no-problem true) }
+export-env() { eval $(envelope shell zsh export --env "$1" --no-env-no-problem true) }
+unexport-env() { eval $(envelope shell zsh unexport --env "$1" --no-env-no-problem true) }
 `
 	if printExportEnv {
 		fmt.Fprint(cmdCtx.Stdout, exportEnv)
@@ -92,7 +92,7 @@ func ShellZshExportCmd() cli.Command {
 	return command.New(
 		"Print export script",
 		withEnvService(shellZshExportRun),
-		command.Flag("--env-name", envNameFlag()),
+		command.Flag("--env", envNameFlag()),
 		command.FlagMap(timeoutFlagMap()),
 		command.FlagMap(sqliteDSNFlagMap()),
 		command.NewFlag(
@@ -114,7 +114,7 @@ func ShellZshUnexportCmd() cli.Command {
 	return command.New(
 		"Print unexport script",
 		withEnvService(shellZshUnexportRun),
-		command.Flag("--env-name", envNameFlag()),
+		command.Flag("--env", envNameFlag()),
 		command.FlagMap(timeoutFlagMap()),
 		command.FlagMap(sqliteDSNFlagMap()),
 		command.NewFlag(

@@ -83,7 +83,7 @@ func (tcb *testCmdBuilder) ZeroTimes() *testCmdBuilder {
 }
 
 func (tcb *testCmdBuilder) EnvName(envName string) *testCmdBuilder {
-	return tcb.Strs("--env-name", envName)
+	return tcb.Strs("--env", envName)
 }
 
 func (tcb *testCmdBuilder) Tz() *testCmdBuilder {

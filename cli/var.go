@@ -19,7 +19,7 @@ func VarCreateCmd() cli.Command {
 		"Create a variable local to the this env",
 		withEnvService(varCreateRun),
 		command.Flag(
-			"--env-name",
+			"--env",
 			envNameFlag(),
 		),
 		command.FlagMap(timeoutFlagMap()),
@@ -86,7 +86,7 @@ func VarDeleteCmd() cli.Command {
 		command.FlagMap(sqliteDSNFlagMap()),
 		command.Flag("--name", varNameFlag()),
 		command.Flag(
-			"--env-name",
+			"--env",
 			envNameFlag(),
 		),
 	)
@@ -116,7 +116,7 @@ func VarShowCmd() cli.Command {
 		command.FlagMap(widthFlag()),
 		command.Flag("--name", varNameFlag()),
 		command.Flag(
-			"--env-name",
+			"--env",
 			envNameFlag(),
 		),
 	)
@@ -152,7 +152,7 @@ func VarUpdateCmd() cli.Command {
 	return command.New(
 		"Update and env var",
 		withConfirm(withEnvService(varUpdateRun)),
-		command.Flag("--env-name", envNameFlag()),
+		command.Flag("--env", envNameFlag()),
 		command.FlagMap(commonUpdateFlags()),
 		command.FlagMap(timeoutFlagMap()),
 		command.FlagMap(sqliteDSNFlagMap()),

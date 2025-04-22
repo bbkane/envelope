@@ -146,7 +146,7 @@ func envNameFlag() cli.Flag {
 func completeExistingEnvVarName(
 	ctx context.Context, es models.EnvService, cmdCtx cli.Context) (*completion.Candidates, error) {
 	// no completions if we can't get the env name
-	envNamePtr := ptrFromMap[string](cmdCtx.Flags, "--env-name")
+	envNamePtr := ptrFromMap[string](cmdCtx.Flags, "--env")
 	if envNamePtr == nil {
 		return nil, nil
 	}
@@ -181,7 +181,7 @@ func varNameFlag() cli.Flag {
 func completeExistingVarRefName(
 	ctx context.Context, es models.EnvService, cmdCtx cli.Context) (*completion.Candidates, error) {
 	// no completions if we can't get the env name
-	envNamePtr := ptrFromMap[string](cmdCtx.Flags, "--env-name")
+	envNamePtr := ptrFromMap[string](cmdCtx.Flags, "--env")
 	if envNamePtr == nil {
 		return nil, nil
 	}
@@ -388,7 +388,7 @@ func getCommonUpdateArgs(pf cli.PassedFlags) commonUpdateArgs {
 }
 
 func mustGetEnvNameArg(pf cli.PassedFlags) string {
-	return pf["--env-name"].(string)
+	return pf["--env"].(string)
 }
 
 func mustGetMaskArg(pf cli.PassedFlags) bool {

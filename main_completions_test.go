@@ -86,7 +86,7 @@ func TestMainCompletions(t *testing.T) {
 		},
 		{
 			name:        "envVarShow",
-			args:        []string{"var", "show", "--db-path", dbName, "--env-name", envName01, "--name"},
+			args:        []string{"var", "show", "--db-path", dbName, "--env", envName01, "--name"},
 			expectedErr: false,
 			expectedCandidates: &completion.Candidates{
 				Type: completion.Type_ValuesDescriptions,
@@ -100,7 +100,7 @@ func TestMainCompletions(t *testing.T) {
 		},
 		{
 			name:        "varRefShow",
-			args:        []string{"var", "ref", "show", "--db-path", dbName, "--env-name", envName01, "--name"},
+			args:        []string{"var", "ref", "show", "--db-path", dbName, "--env", envName01, "--name"},
 			expectedErr: false,
 			expectedCandidates: &completion.Candidates{
 				Type: completion.Type_ValuesDescriptions,

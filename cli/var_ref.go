@@ -23,14 +23,14 @@ func VarRefCreateCmd() cli.Command {
 			flag.Required(),
 		),
 		command.NewFlag(
-			"--ref-env-name",
+			"--ref-env",
 			"Environment we're referencing",
 			scalar.String(),
 			flag.Required(),
 			flag.CompletionCandidates(withEnvServiceCompletions(completeExistingEnvName)),
 		),
 		command.NewFlag(
-			"--ref-var-name",
+			"--ref-var",
 			"Variable we're referencing",
 			scalar.String(),
 			flag.Required(),
@@ -40,7 +40,7 @@ func VarRefCreateCmd() cli.Command {
 		command.FlagMap(sqliteDSNFlagMap()),
 		command.FlagMap(timeoutFlagMap()),
 		command.Flag(
-			"--env-name",
+			"--env",
 			envNameFlag(),
 		),
 	)
@@ -51,8 +51,8 @@ func varRefCreateRun(ctx context.Context, es models.EnvService, cmdCtx cli.Conte
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
 
 	name := mustGetNameArg(cmdCtx.Flags)
-	refEnvName := cmdCtx.Flags["--ref-env-name"].(string)
-	refVarName := cmdCtx.Flags["--ref-var-name"].(string)
+	refEnvName := cmdCtx.Flags["--ref-env"].(string)
+	refVarName := cmdCtx.Flags["--ref-var"].(string)
 
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
@@ -86,7 +86,7 @@ func VarRefDeleteCmd() cli.Command {
 		command.FlagMap(sqliteDSNFlagMap()),
 		command.Flag("--name", varRefFlag()),
 		command.Flag(
-			"--env-name",
+			"--env",
 			envNameFlag(),
 		),
 	)
@@ -117,7 +117,7 @@ func VarRefShowCmd() cli.Command {
 		command.FlagMap(widthFlag()),
 		command.Flag("--name", varRefFlag()),
 		command.Flag(
-			"--env-name",
+			"--env",
 			envNameFlag(),
 		),
 	)

@@ -136,8 +136,8 @@ func TestEnvNonUniqueNames(t *testing.T) {
 		{
 			name: "03_varRefCreateSameName",
 			args: new(testCmdBuilder).Strs("var", "ref", "create").
-				EnvName(envName01).Name(envVarName01).Strs("--ref-env-name", envName01).
-				Strs("--ref-var-name", envVarName01).ZeroTimes().Finish(dbName),
+				EnvName(envName01).Name(envVarName01).Strs("--ref-env", envName01).
+				Strs("--ref-var", envVarName01).ZeroTimes().Finish(dbName),
 			expectActionErr: true,
 		},
 	}

@@ -16,7 +16,7 @@
                 "delete",
                 "--name",
                 "non-existing",
-                "--env-name",
+                "--env",
                 "tmp",
                 "--confirm",
                 "false",
