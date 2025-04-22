@@ -84,7 +84,7 @@ func VarDeleteCmd() cli.Command {
 		command.FlagMap(confirmFlag()),
 		command.FlagMap(timeoutFlagMap()),
 		command.FlagMap(sqliteDSNFlagMap()),
-		command.Flag("--name", envVarNameFlag()),
+		command.Flag("--name", varNameFlag()),
 		command.Flag(
 			"--env-name",
 			envNameFlag(),
@@ -114,7 +114,7 @@ func VarShowCmd() cli.Command {
 		command.FlagMap(timeZoneFlagMap()),
 		command.FlagMap(formatFlag()),
 		command.FlagMap(widthFlag()),
-		command.Flag("--name", envVarNameFlag()),
+		command.Flag("--name", varNameFlag()),
 		command.Flag(
 			"--env-name",
 			envNameFlag(),
@@ -157,7 +157,7 @@ func VarUpdateCmd() cli.Command {
 		command.FlagMap(timeoutFlagMap()),
 		command.FlagMap(sqliteDSNFlagMap()),
 		command.FlagMap(confirmFlag()),
-		command.Flag("--name", envVarNameFlag()),
+		command.Flag("--name", varNameFlag()),
 		command.NewFlag(
 			"--new-env-name",
 			"New env name",

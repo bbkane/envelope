@@ -84,12 +84,7 @@ func VarRefDeleteCmd() cli.Command {
 		command.FlagMap(confirmFlag()),
 		command.FlagMap(timeoutFlagMap()),
 		command.FlagMap(sqliteDSNFlagMap()),
-		command.NewFlag(
-			"--name",
-			"Var ref name",
-			scalar.String(),
-			flag.Required(),
-		),
+		command.Flag("--name", varRefFlag()),
 		command.Flag(
 			"--env-name",
 			envNameFlag(),
@@ -120,12 +115,7 @@ func VarRefShowCmd() cli.Command {
 		command.FlagMap(timeZoneFlagMap()),
 		command.FlagMap(formatFlag()),
 		command.FlagMap(widthFlag()),
-		command.NewFlag(
-			"--name",
-			"Var ref name",
-			scalar.String(),
-			flag.Required(),
-		),
+		command.Flag("--name", varRefFlag()),
 		command.Flag(
 			"--env-name",
 			envNameFlag(),

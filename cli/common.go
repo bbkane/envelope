@@ -168,13 +168,48 @@ func completeExistingEnvVarName(
 	return candidates, nil
 }
 
-func envVarNameFlag() cli.Flag {
+func varNameFlag() cli.Flag {
 	return flag.New(
 		"Env var name",
 		scalar.String(),
 		flag.Required(),
 		flag.CompletionCandidates(withEnvServiceCompletions(
 			completeExistingEnvVarName)),
+	)
+}
+
+func completeExistingVarRefName(
+	ctx context.Context, es models.EnvService, cmdCtx cli.Context) (*completion.Candidates, error) {
+	// no completions if we can't get the env name
+	envNamePtr := ptrFromMap[string](cmdCtx.Flags, "--env-name")
+	if envNamePtr == nil {
+		return nil, nil
+	}
+
+	varRefs, _, err := es.VarRefList(ctx, *envNamePtr)
+	if err != nil {
+		return nil, fmt.Errorf("could not get env for completion: %w", err)
+	}
+	candidates := &completion.Candidates{
+		Type:   completion.Type_ValuesDescriptions,
+		Values: nil,
+	}
+	for _, v := range varRefs {
+		candidates.Values = append(candidates.Values, completion.Candidate{
+			Name:        v.Name,
+			Description: v.Comment,
+		})
+	}
+	return candidates, nil
+}
+
+func varRefFlag() cli.Flag {
+	return flag.New(
+		"Var ref name",
+		scalar.String(),
+		flag.Required(),
+		flag.CompletionCandidates(withEnvServiceCompletions(
+			completeExistingVarRefName)),
 	)
 }
 
