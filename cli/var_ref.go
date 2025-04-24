@@ -6,13 +6,13 @@ import (
 
 	"go.bbkane.com/envelope/cli/tableprint"
 	"go.bbkane.com/envelope/models"
-	"go.bbkane.com/warg/cli"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
+	"go.bbkane.com/warg/wargcore"
 )
 
-func VarRefCreateCmd() cli.Command {
+func VarRefCreateCmd() wargcore.Command {
 	return command.New(
 		"Create a reference in this env to a variable in another env",
 		withEnvService(varRefCreateRun),
@@ -46,7 +46,7 @@ func VarRefCreateCmd() cli.Command {
 	)
 }
 
-func varRefCreateRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
+func varRefCreateRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
 
@@ -77,7 +77,7 @@ func varRefCreateRun(ctx context.Context, es models.EnvService, cmdCtx cli.Conte
 	return nil
 }
 
-func VarRefDeleteCmd() cli.Command {
+func VarRefDeleteCmd() wargcore.Command {
 	return command.New(
 		"Delete a reference to a variablea",
 		withConfirm(withEnvService(varRefDeleteRun)),
@@ -92,7 +92,7 @@ func VarRefDeleteCmd() cli.Command {
 	)
 }
 
-func varRefDeleteRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
+func varRefDeleteRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
 	name := mustGetNameArg(cmdCtx.Flags)
@@ -105,7 +105,7 @@ func varRefDeleteRun(ctx context.Context, es models.EnvService, cmdCtx cli.Conte
 	return nil
 }
 
-func VarRefShowCmd() cli.Command {
+func VarRefShowCmd() wargcore.Command {
 	return command.New(
 		"Show details for a reference",
 		withEnvService(varRefShowRun),
@@ -123,7 +123,7 @@ func VarRefShowCmd() cli.Command {
 	)
 }
 
-func varRefShowRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
+func varRefShowRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)

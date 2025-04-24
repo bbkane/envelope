@@ -7,13 +7,13 @@ import (
 
 	"github.com/alessio/shellescape"
 	"go.bbkane.com/envelope/models"
-	"go.bbkane.com/warg/cli"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
+	"go.bbkane.com/warg/wargcore"
 )
 
-func ShellZshInitCmd() cli.Command {
+func ShellZshInitCmd() wargcore.Command {
 	return command.New(
 		"Prints the zsh initialization script",
 		shellZshInitRun,
@@ -44,7 +44,7 @@ func ShellZshInitCmd() cli.Command {
 	)
 }
 
-func shellZshInitRun(cmdCtx cli.Context) error {
+func shellZshInitRun(cmdCtx wargcore.Context) error {
 
 	printAutoload := cmdCtx.Flags["--print-autoload"].(bool)
 	printChpwdHook := cmdCtx.Flags["--print-chpwd-hook"].(bool)
@@ -88,7 +88,7 @@ unexport-env() { eval $(envelope shell zsh unexport --env "$1" --no-env-no-probl
 	return nil
 }
 
-func ShellZshExportCmd() cli.Command {
+func ShellZshExportCmd() wargcore.Command {
 	return command.New(
 		"Print export script",
 		withEnvService(shellZshExportRun),
@@ -106,11 +106,11 @@ func ShellZshExportCmd() cli.Command {
 	)
 }
 
-func shellZshExportRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
+func shellZshExportRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	return shellZshExportUnexport(ctx, cmdCtx, es, "export")
 }
 
-func ShellZshUnexportCmd() cli.Command {
+func ShellZshUnexportCmd() wargcore.Command {
 	return command.New(
 		"Print unexport script",
 		withEnvService(shellZshUnexportRun),
@@ -128,11 +128,11 @@ func ShellZshUnexportCmd() cli.Command {
 	)
 }
 
-func shellZshUnexportRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
+func shellZshUnexportRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	return shellZshExportUnexport(ctx, cmdCtx, es, "unexport")
 }
 
-func shellZshExportUnexport(ctx context.Context, cmdCtx cli.Context, es models.EnvService, scriptType string) error {
+func shellZshExportUnexport(ctx context.Context, cmdCtx wargcore.Context, es models.EnvService, scriptType string) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	noEnvNoProblem := cmdCtx.Flags["--no-env-no-problem"].(bool)
 

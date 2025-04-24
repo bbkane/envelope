@@ -10,10 +10,10 @@ import (
 
 	"go.bbkane.com/envelope/app"
 	"go.bbkane.com/envelope/models"
-	"go.bbkane.com/warg/cli"
 	"go.bbkane.com/warg/completion"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/path"
+	"go.bbkane.com/warg/wargcore"
 	"golang.org/x/term"
 
 	"go.bbkane.com/warg/value/contained"
@@ -53,8 +53,8 @@ func datetime() contained.TypeInfo[time.Time] {
 	}
 }
 
-func confirmFlag() cli.FlagMap {
-	return cli.FlagMap{
+func confirmFlag() wargcore.FlagMap {
+	return wargcore.FlagMap{
 		"--confirm": flag.New(
 			"Ask for confirmation before running",
 			scalar.Bool(
@@ -65,8 +65,8 @@ func confirmFlag() cli.FlagMap {
 	}
 }
 
-func maskFlag() cli.FlagMap {
-	return cli.FlagMap{
+func maskFlag() wargcore.FlagMap {
+	return wargcore.FlagMap{
 		"--mask": flag.New(
 			"Mask values when printing",
 			scalar.Bool(
@@ -78,8 +78,8 @@ func maskFlag() cli.FlagMap {
 	}
 }
 
-func formatFlag() cli.FlagMap {
-	return cli.FlagMap{
+func formatFlag() wargcore.FlagMap {
+	return wargcore.FlagMap{
 		"--format": flag.New(
 			"output format",
 			scalar.String(
@@ -91,7 +91,7 @@ func formatFlag() cli.FlagMap {
 	}
 }
 
-func widthFlag() cli.FlagMap {
+func widthFlag() wargcore.FlagMap {
 
 	// TODO: figure out a good way to cache this for all width flags
 	width := 0
@@ -102,7 +102,7 @@ func widthFlag() cli.FlagMap {
 		}
 	}
 
-	return cli.FlagMap{
+	return wargcore.FlagMap{
 		"--width": flag.New(
 			"Width of the table. 0 means no limit",
 			scalar.Int(
@@ -113,7 +113,7 @@ func widthFlag() cli.FlagMap {
 	}
 }
 
-func completeExistingEnvName(ctx context.Context, es models.EnvService, cmdCtx cli.Context) (*completion.Candidates, error) {
+func completeExistingEnvName(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) (*completion.Candidates, error) {
 	envs, err := es.EnvList(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not list envs for completion: %w", err)
@@ -131,7 +131,7 @@ func completeExistingEnvName(ctx context.Context, es models.EnvService, cmdCtx c
 	return candidates, nil
 }
 
-func envNameFlag() cli.Flag {
+func envNameFlag() wargcore.Flag {
 	return flag.New(
 		"Environment name",
 		scalar.String(
@@ -144,7 +144,7 @@ func envNameFlag() cli.Flag {
 }
 
 func completeExistingEnvVarName(
-	ctx context.Context, es models.EnvService, cmdCtx cli.Context) (*completion.Candidates, error) {
+	ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) (*completion.Candidates, error) {
 	// no completions if we can't get the env name
 	envNamePtr := ptrFromMap[string](cmdCtx.Flags, "--env")
 	if envNamePtr == nil {
@@ -168,7 +168,7 @@ func completeExistingEnvVarName(
 	return candidates, nil
 }
 
-func varNameFlag() cli.Flag {
+func varNameFlag() wargcore.Flag {
 	return flag.New(
 		"Env var name",
 		scalar.String(),
@@ -179,7 +179,7 @@ func varNameFlag() cli.Flag {
 }
 
 func completeExistingVarRefName(
-	ctx context.Context, es models.EnvService, cmdCtx cli.Context) (*completion.Candidates, error) {
+	ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) (*completion.Candidates, error) {
 	// no completions if we can't get the env name
 	envNamePtr := ptrFromMap[string](cmdCtx.Flags, "--env")
 	if envNamePtr == nil {
@@ -203,7 +203,7 @@ func completeExistingVarRefName(
 	return candidates, nil
 }
 
-func varRefFlag() cli.Flag {
+func varRefFlag() wargcore.Flag {
 	return flag.New(
 		"Var ref name",
 		scalar.String(),
@@ -213,9 +213,9 @@ func varRefFlag() cli.Flag {
 	)
 }
 
-func sqliteDSNFlagMap() cli.FlagMap {
+func sqliteDSNFlagMap() wargcore.FlagMap {
 
-	return cli.FlagMap{
+	return wargcore.FlagMap{
 		"--db-path": flag.New(
 			"Sqlite DSN. Usually the file name",
 			scalar.Path(
@@ -227,9 +227,9 @@ func sqliteDSNFlagMap() cli.FlagMap {
 	}
 }
 
-func commonCreateFlagMapPtrs(comment *string, createTime *time.Time, updateTime *time.Time) cli.FlagMap {
+func commonCreateFlagMapPtrs(comment *string, createTime *time.Time, updateTime *time.Time) wargcore.FlagMap {
 	now := time.Now()
-	commonCreateFlags := cli.FlagMap{
+	commonCreateFlags := wargcore.FlagMap{
 		"--comment": flag.New(
 			"Comment",
 			scalar.String(
@@ -260,9 +260,9 @@ func commonCreateFlagMapPtrs(comment *string, createTime *time.Time, updateTime 
 	return commonCreateFlags
 }
 
-func commonCreateFlagMap() cli.FlagMap {
+func commonCreateFlagMap() wargcore.FlagMap {
 	now := time.Now()
-	commonCreateFlags := cli.FlagMap{
+	commonCreateFlags := wargcore.FlagMap{
 		"--comment": flag.New(
 			"Comment",
 			scalar.String(
@@ -290,9 +290,9 @@ func commonCreateFlagMap() cli.FlagMap {
 	return commonCreateFlags
 }
 
-func commonUpdateFlags() cli.FlagMap {
+func commonUpdateFlags() wargcore.FlagMap {
 
-	commonUpdateFlags := cli.FlagMap{
+	commonUpdateFlags := wargcore.FlagMap{
 		"--comment": flag.New(
 			"Comment",
 			scalar.String(),
@@ -319,8 +319,8 @@ func commonUpdateFlags() cli.FlagMap {
 	return commonUpdateFlags
 }
 
-func timeoutFlagMap() cli.FlagMap {
-	timeoutFlag := cli.FlagMap{
+func timeoutFlagMap() wargcore.FlagMap {
+	timeoutFlag := wargcore.FlagMap{
 		"--timeout": flag.New(
 			"Timeout for a run. Use https://pkg.go.dev/time#Duration to build it",
 			scalar.Duration(
@@ -333,8 +333,8 @@ func timeoutFlagMap() cli.FlagMap {
 
 }
 
-func timeZoneFlagMap() cli.FlagMap {
-	return cli.FlagMap{
+func timeZoneFlagMap() wargcore.FlagMap {
+	return wargcore.FlagMap{
 		"--timezone": flag.New(
 			"Timezone to display dates",
 			scalar.String(
@@ -363,7 +363,7 @@ type commonCreateArgs struct {
 	UpdateTime time.Time
 }
 
-func mustGetCommonCreateArgs(pf cli.PassedFlags) commonCreateArgs {
+func mustGetCommonCreateArgs(pf wargcore.PassedFlags) commonCreateArgs {
 	return commonCreateArgs{
 		Comment:    pf["--comment"].(string),
 		CreateTime: pf["--create-time"].(time.Time),
@@ -378,7 +378,7 @@ type commonUpdateArgs struct {
 	UpdateTime *time.Time
 }
 
-func getCommonUpdateArgs(pf cli.PassedFlags) commonUpdateArgs {
+func getCommonUpdateArgs(pf wargcore.PassedFlags) commonUpdateArgs {
 	return commonUpdateArgs{
 		Comment:    ptrFromMap[string](pf, "--comment"),
 		CreateTime: ptrFromMap[time.Time](pf, "--create-time"),
@@ -387,35 +387,35 @@ func getCommonUpdateArgs(pf cli.PassedFlags) commonUpdateArgs {
 	}
 }
 
-func mustGetEnvNameArg(pf cli.PassedFlags) string {
+func mustGetEnvNameArg(pf wargcore.PassedFlags) string {
 	return pf["--env"].(string)
 }
 
-func mustGetMaskArg(pf cli.PassedFlags) bool {
+func mustGetMaskArg(pf wargcore.PassedFlags) bool {
 	return pf["--mask"].(bool)
 }
 
-func mustGetNameArg(pf cli.PassedFlags) string {
+func mustGetNameArg(pf wargcore.PassedFlags) string {
 	return pf["--name"].(string)
 }
 
-func mustGetTimeoutArg(pf cli.PassedFlags) time.Duration {
+func mustGetTimeoutArg(pf wargcore.PassedFlags) time.Duration {
 	return pf["--timeout"].(time.Duration)
 }
 
-func mustGetTimezoneArg(pf cli.PassedFlags) string {
+func mustGetTimezoneArg(pf wargcore.PassedFlags) string {
 	return pf["--timezone"].(string)
 }
 
-func mustGetWidthArg(pf cli.PassedFlags) int {
+func mustGetWidthArg(pf wargcore.PassedFlags) int {
 	return pf["--width"].(int)
 }
 
 // withEnvService wraps a cli.Action to read --db-path and --timeout and create a EnvService
 func withEnvService(
-	f func(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error,
-) cli.Action {
-	return func(cmdCtx cli.Context) error {
+	f func(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error,
+) wargcore.Action {
+	return func(cmdCtx wargcore.Context) error {
 
 		ctx, cancel := context.WithTimeout(
 			context.Background(),
@@ -435,9 +435,9 @@ func withEnvService(
 
 // withEnvService wraps a cli.Action to read --db-path and --timeout and create a EnvService
 func withEnvServiceCompletions(
-	f func(ctx context.Context, es models.EnvService, cmdCtx cli.Context) (*completion.Candidates, error),
-) cli.CompletionCandidates {
-	return func(cmdCtx cli.Context) (*completion.Candidates, error) {
+	f func(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) (*completion.Candidates, error),
+) wargcore.CompletionCandidates {
+	return func(cmdCtx wargcore.Context) (*completion.Candidates, error) {
 
 		ctx, cancel := context.WithTimeout(
 			context.Background(),
@@ -456,8 +456,8 @@ func withEnvServiceCompletions(
 }
 
 // withConfirm wraps a cli.Action to ask for confirmation before running
-func withConfirm(f func(cmdCtx cli.Context) error) cli.Action {
-	return func(cmdCtx cli.Context) error {
+func withConfirm(f func(cmdCtx wargcore.Context) error) wargcore.Action {
+	return func(cmdCtx wargcore.Context) error {
 		confirm := cmdCtx.Flags["--confirm"].(bool)
 		if !confirm {
 			return f(cmdCtx)

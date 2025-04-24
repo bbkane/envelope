@@ -8,13 +8,13 @@ import (
 
 	"go.bbkane.com/envelope/cli/tableprint"
 	"go.bbkane.com/envelope/models"
-	"go.bbkane.com/warg/cli"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
+	"go.bbkane.com/warg/wargcore"
 )
 
-func VarCreateCmd() cli.Command {
+func VarCreateCmd() wargcore.Command {
 	return command.New(
 		"Create a variable local to the this env",
 		withEnvService(varCreateRun),
@@ -39,7 +39,7 @@ func VarCreateCmd() cli.Command {
 	)
 }
 
-func varCreateRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
+func varCreateRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
@@ -77,7 +77,7 @@ func varCreateRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context)
 	return nil
 }
 
-func VarDeleteCmd() cli.Command {
+func VarDeleteCmd() wargcore.Command {
 	return command.New(
 		"Delete a variable local to the this env",
 		withConfirm(withEnvService(varDeleteRun)),
@@ -92,7 +92,7 @@ func VarDeleteCmd() cli.Command {
 	)
 }
 
-func varDeleteRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
+func varDeleteRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 
@@ -104,7 +104,7 @@ func varDeleteRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context)
 	return nil
 }
 
-func VarShowCmd() cli.Command {
+func VarShowCmd() wargcore.Command {
 	return command.New(
 		"Show details for a local var",
 		withEnvService(varShowRun),
@@ -122,7 +122,7 @@ func VarShowCmd() cli.Command {
 	)
 }
 
-func varShowRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
+func varShowRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
@@ -148,7 +148,7 @@ func varShowRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) e
 	return nil
 }
 
-func VarUpdateCmd() cli.Command {
+func VarUpdateCmd() wargcore.Command {
 	return command.New(
 		"Update and env var",
 		withConfirm(withEnvService(varUpdateRun)),
@@ -159,7 +159,7 @@ func VarUpdateCmd() cli.Command {
 		command.FlagMap(confirmFlag()),
 		command.Flag("--name", varNameFlag()),
 		command.NewFlag(
-			"--new-env-name",
+			"--new-env",
 			"New env name",
 			scalar.String(),
 		),
@@ -171,13 +171,13 @@ func VarUpdateCmd() cli.Command {
 	)
 }
 
-func varUpdateRun(ctx context.Context, es models.EnvService, cmdCtx cli.Context) error {
+func varUpdateRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	// common update flags
 	commonUpdateArgs := getCommonUpdateArgs(cmdCtx.Flags)
 
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
-	newEnvName := ptrFromMap[string](cmdCtx.Flags, "--new-env-name")
+	newEnvName := ptrFromMap[string](cmdCtx.Flags, "--new-env")
 	value := ptrFromMap[string](cmdCtx.Flags, "--value")
 
 	err := es.VarUpdate(ctx, envName, name, models.VarUpdateArgs{

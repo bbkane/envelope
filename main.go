@@ -3,9 +3,9 @@ package main
 import (
 	"go.bbkane.com/envelope/cli"
 	"go.bbkane.com/warg"
-	wargcli "go.bbkane.com/warg/cli"
 	"go.bbkane.com/warg/help"
 	"go.bbkane.com/warg/section"
+	wargcli "go.bbkane.com/warg/wargcore"
 )
 
 var version string
