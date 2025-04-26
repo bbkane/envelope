@@ -7,6 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"go.bbkane.com/warg"
+	"go.bbkane.com/warg/parseopt"
+	"go.bbkane.com/warg/wargcore"
 )
 
 // abstract some common test functionality to make writing
@@ -81,7 +83,7 @@ func (tcb *testCmdBuilder) ZeroTimes() *testCmdBuilder {
 }
 
 func (tcb *testCmdBuilder) EnvName(envName string) *testCmdBuilder {
-	return tcb.Strs("--env-name", envName)
+	return tcb.Strs("--env", envName)
 }
 
 func (tcb *testCmdBuilder) Tz() *testCmdBuilder {
@@ -118,7 +120,7 @@ func goldenTest(t *testing.T, tt testcase, updateGolden bool) {
 			UpdateGolden:    updateGolden,
 			ExpectActionErr: tt.expectActionErr,
 		},
-		warg.OverrideArgs(tt.args),
-		warg.OverrideLookupFunc(warg.LookupMap(nil)),
+		parseopt.Args(tt.args),
+		parseopt.LookupEnv(wargcore.LookupMap(nil)),
 	)
 }

@@ -19,7 +19,7 @@ func VarShowPrint(c CommonTablePrintArgs, envVar models.Var, envRefs []models.Va
 			newRow("Value", mask(c.Mask, envVar.Value)),
 			newRow("Comment", envVar.Comment, skipRowIf(envVar.Comment == "")),
 			newRow("CreateTime", createTime),
-			newRow("UpdateTime", updateTime, skipRowIf(envVar.CreateTime == envVar.UpdateTime)),
+			newRow("UpdateTime", updateTime, skipRowIf(envVar.CreateTime.Equal(envVar.UpdateTime))),
 		)
 		t.Render()
 

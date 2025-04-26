@@ -11,34 +11,35 @@ import (
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
+	"go.bbkane.com/warg/wargcore"
 )
 
-func VarCreateCmd() command.Command {
+func VarCreateCmd() wargcore.Command {
 	return command.New(
 		"Create a variable local to the this env",
 		withEnvService(varCreateRun),
-		command.ExistingFlag(
-			"--env-name",
+		command.Flag(
+			"--env",
 			envNameFlag(),
 		),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(commonCreateFlagMap()),
-		command.Flag(
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(commonCreateFlagMap()),
+		command.NewFlag(
 			"--name",
-			"Existing env var name",
+			"New env var name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.Flag(
+		command.NewFlag(
 			"--value",
-			"Value for this local env var",
+			"New env var value",
 			scalar.String(),
 		),
 	)
 }
 
-func varCreateRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func varCreateRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
@@ -76,27 +77,22 @@ func varCreateRun(ctx context.Context, es models.EnvService, cmdCtx command.Cont
 	return nil
 }
 
-func VarDeleteCmd() command.Command {
+func VarDeleteCmd() wargcore.Command {
 	return command.New(
 		"Delete a variable local to the this env",
 		withConfirm(withEnvService(varDeleteRun)),
-		command.ExistingFlags(confirmFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
+		command.FlagMap(confirmFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.Flag("--name", varNameFlag()),
 		command.Flag(
-			"--name",
-			"Env var name",
-			scalar.String(),
-			flag.Required(),
-		),
-		command.ExistingFlag(
-			"--env-name",
+			"--env",
 			envNameFlag(),
 		),
 	)
 }
 
-func varDeleteRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func varDeleteRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 
@@ -108,30 +104,25 @@ func varDeleteRun(ctx context.Context, es models.EnvService, cmdCtx command.Cont
 	return nil
 }
 
-func VarShowCmd() command.Command {
+func VarShowCmd() wargcore.Command {
 	return command.New(
 		"Show details for a local var",
 		withEnvService(varShowRun),
-		command.ExistingFlags(maskFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeZoneFlagMap()),
-		command.ExistingFlags(formatFlag()),
-		command.ExistingFlags(widthFlag()),
+		command.FlagMap(maskFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeZoneFlagMap()),
+		command.FlagMap(formatFlag()),
+		command.FlagMap(widthFlag()),
+		command.Flag("--name", varNameFlag()),
 		command.Flag(
-			"--name",
-			"Env var name",
-			scalar.String(),
-			flag.Required(),
-		),
-		command.ExistingFlag(
-			"--env-name",
+			"--env",
 			envNameFlag(),
 		),
 	)
 }
 
-func varShowRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func varShowRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
@@ -157,27 +148,22 @@ func varShowRun(ctx context.Context, es models.EnvService, cmdCtx command.Contex
 	return nil
 }
 
-func VarUpdateCmd() command.Command {
+func VarUpdateCmd() wargcore.Command {
 	return command.New(
 		"Update and env var",
 		withConfirm(withEnvService(varUpdateRun)),
-		command.ExistingFlag("--env-name", envNameFlag()),
-		command.ExistingFlags(commonUpdateFlags()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(confirmFlag()),
-		command.Flag(
-			"--name",
-			"Env var name",
-			scalar.String(),
-			flag.Required(),
-		),
-		command.Flag(
-			"--new-env-name",
+		command.Flag("--env", envNameFlag()),
+		command.FlagMap(commonUpdateFlags()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(confirmFlag()),
+		command.Flag("--name", varNameFlag()),
+		command.NewFlag(
+			"--new-env",
 			"New env name",
 			scalar.String(),
 		),
-		command.Flag(
+		command.NewFlag(
 			"--value",
 			"New value for this env var",
 			scalar.String(),
@@ -185,13 +171,13 @@ func VarUpdateCmd() command.Command {
 	)
 }
 
-func varUpdateRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func varUpdateRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	// common update flags
 	commonUpdateArgs := getCommonUpdateArgs(cmdCtx.Flags)
 
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
-	newEnvName := ptrFromMap[string](cmdCtx.Flags, "--new-env-name")
+	newEnvName := ptrFromMap[string](cmdCtx.Flags, "--new-env")
 	value := ptrFromMap[string](cmdCtx.Flags, "--value")
 
 	err := es.VarUpdate(ctx, envName, name, models.VarUpdateArgs{

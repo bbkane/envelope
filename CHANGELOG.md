@@ -5,6 +5,26 @@ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note the the latest version is usually work in progress and may have not yet been released.
 
+# v0.0.14
+
+## Added
+
+- Added zsh tab completion!!
+
+Example (note that `~/fbin` is in my `$FPATH`):
+
+```zsh
+envelope --completion-script-zsh > ~/fbin/_envelope
+```
+
+## Changed
+
+- Shortened flag names:
+  - `--env-name` -> `--env`
+  - `--ref-env-name` -> `--ref-env`
+  - `--ref-var-name` -> `--ref-var`
+  - `--new-env-name` -> `--new-env`
+
 # v0.0.13
 
 ## Added

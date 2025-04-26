@@ -9,50 +9,54 @@ import (
 	"go.bbkane.com/envelope/models"
 
 	"go.bbkane.com/warg/command"
+	"go.bbkane.com/warg/flag"
+	"go.bbkane.com/warg/value/scalar"
+	"go.bbkane.com/warg/wargcore"
 )
 
-func EnvCreateCmd() command.Command {
+func EnvCreateCmd2() wargcore.Command {
+	var createArgs models.EnvCreateArgs
 	return command.New(
 		"Create an environment",
-		withEnvService(envCreate),
-		command.ExistingFlags(commonCreateFlagMap()),
-		command.ExistingFlag("--name", envNameFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
+		withEnvService(func(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
+			env, err := es.EnvCreate(ctx, createArgs)
+			if err != nil {
+				return fmt.Errorf("could not create env: %w", err)
+			}
+			fmt.Fprintf(cmdCtx.Stdout, "Created env: %s\n", env.Name)
+			return nil
+		}),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(commonCreateFlagMapPtrs(
+			&createArgs.Comment,
+			&createArgs.CreateTime,
+			&createArgs.UpdateTime,
+		)),
+		command.NewFlag(
+			"--name",
+			"Environment name",
+			scalar.String(
+				scalar.Default(cwd),
+				scalar.PointerTo(&createArgs.Name),
+			),
+			flag.Required(),
+		),
 	)
 }
 
-func envCreate(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
-	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
-
-	env, err := es.EnvCreate(ctx, models.EnvCreateArgs{
-		Name:       mustGetNameArg(cmdCtx.Flags),
-		Comment:    commonCreateArgs.Comment,
-		CreateTime: commonCreateArgs.CreateTime,
-		UpdateTime: commonCreateArgs.UpdateTime,
-	})
-
-	if err != nil {
-		return fmt.Errorf("could not create env: %w", err)
-	}
-
-	fmt.Fprintf(cmdCtx.Stdout, "Created env: %s\n", env.Name)
-
-	return nil
-}
-
-func EnvDeleteCmd() command.Command {
+func EnvDeleteCmd() wargcore.Command {
 	return command.New(
 		"Delete an environment and associated vars",
 		withConfirm(withEnvService(envDelete)),
-		command.ExistingFlag("--name", envNameFlag()),
-		command.ExistingFlags(confirmFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
+		command.Flag("--name", envNameFlag()),
+		command.FlagMap(confirmFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
 	)
 }
 
-func envDelete(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func envDelete(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	name := mustGetNameArg(cmdCtx.Flags)
 
 	err := es.EnvDelete(ctx, name)
@@ -64,18 +68,18 @@ func envDelete(ctx context.Context, es models.EnvService, cmdCtx command.Context
 	return nil
 }
 
-func EnvListCmd() command.Command {
+func EnvListCmd() wargcore.Command {
 	return command.New(
 		"List environments",
 		withEnvService(envList),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeZoneFlagMap()),
-		command.ExistingFlags(widthFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeZoneFlagMap()),
+		command.FlagMap(widthFlag()),
 	)
 }
 
-func envList(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func envList(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	envs, err := es.EnvList(ctx)
 	if err != nil {
 		return err
@@ -93,20 +97,20 @@ func envList(ctx context.Context, es models.EnvService, cmdCtx command.Context) 
 	return nil
 }
 
-func EnvShowCmd() command.Command {
+func EnvShowCmd() wargcore.Command {
 	return command.New(
 		"Print environment details",
 		withEnvService(envShow),
-		command.ExistingFlag("--name", envNameFlag()),
-		command.ExistingFlags(maskFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeZoneFlagMap()),
-		command.ExistingFlags(widthFlag()),
+		command.Flag("--name", envNameFlag()),
+		command.FlagMap(maskFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeZoneFlagMap()),
+		command.FlagMap(widthFlag()),
 	)
 }
 
-func envShow(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func envShow(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)
 	timezone := mustGetTimezoneArg(cmdCtx.Flags)
@@ -138,19 +142,19 @@ func envShow(ctx context.Context, es models.EnvService, cmdCtx command.Context) 
 	return nil
 }
 
-func EnvUpdateCmd() command.Command {
+func EnvUpdateCmd() wargcore.Command {
 	return command.New(
 		"Update an environment",
 		withConfirm(withEnvService(envUpdate)),
-		command.ExistingFlags(commonUpdateFlags()),
-		command.ExistingFlag("--name", envNameFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(confirmFlag()),
+		command.FlagMap(commonUpdateFlags()),
+		command.Flag("--name", envNameFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(confirmFlag()),
 	)
 }
 
-func envUpdate(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func envUpdate(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	// common update flags
 	comment := ptrFromMap[string](cmdCtx.Flags, "--comment")
 	createTime := ptrFromMap[time.Time](cmdCtx.Flags, "--create-time")

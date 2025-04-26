@@ -33,8 +33,8 @@ func TestEnvRefCreate(t *testing.T) {
 			name: "04_varRefCreate",
 			args: new(testCmdBuilder).Strs("var", "ref", "create").
 				EnvName(envName02).Name(envRefName01).ZeroTimes().
-				Strs("--ref-env-name", envName01).
-				Strs("--ref-var-name", envVarName01).Finish(dbName),
+				Strs("--ref-env", envName01).
+				Strs("--ref-var", envVarName01).Finish(dbName),
 			expectActionErr: false,
 		},
 		{
@@ -84,8 +84,8 @@ func TestEnvRefDelete(t *testing.T) {
 		{
 			name: "03_envRefCreate",
 			args: new(testCmdBuilder).Strs("var", "ref", "create").
-				EnvName(envName01).Name(envRefName01).Strs("--ref-env-name", envName01).
-				Strs("--ref-var-name", envVarName01).ZeroTimes().Finish(dbName),
+				EnvName(envName01).Name(envRefName01).Strs("--ref-env", envName01).
+				Strs("--ref-var", envVarName01).ZeroTimes().Finish(dbName),
 			expectActionErr: false,
 		},
 		{

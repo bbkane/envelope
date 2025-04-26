@@ -9,47 +9,50 @@ import (
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
+	"go.bbkane.com/warg/wargcore"
 )
 
-func VarRefCreateCmd() command.Command {
+func VarRefCreateCmd() wargcore.Command {
 	return command.New(
 		"Create a reference in this env to a variable in another env",
 		withEnvService(varRefCreateRun),
-		command.Flag(
+		command.NewFlag(
 			"--name",
 			"Ref name",
 			scalar.String(),
 			flag.Required(),
 		),
-		command.Flag(
-			"--ref-env-name",
+		command.NewFlag(
+			"--ref-env",
 			"Environment we're referencing",
 			scalar.String(),
 			flag.Required(),
+			flag.CompletionCandidates(withEnvServiceCompletions(completeExistingEnvName)),
 		),
-		command.Flag(
-			"--ref-var-name",
+		command.NewFlag(
+			"--ref-var",
 			"Variable we're referencing",
 			scalar.String(),
 			flag.Required(),
+			flag.CompletionCandidates(withEnvServiceCompletions(completeExistingEnvVarName)),
 		),
-		command.ExistingFlags(commonCreateFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlag(
-			"--env-name",
+		command.FlagMap(commonCreateFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeoutFlagMap()),
+		command.Flag(
+			"--env",
 			envNameFlag(),
 		),
 	)
 }
 
-func varRefCreateRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func varRefCreateRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	// common create Flags
 	commonCreateArgs := mustGetCommonCreateArgs(cmdCtx.Flags)
 
 	name := mustGetNameArg(cmdCtx.Flags)
-	refEnvName := cmdCtx.Flags["--ref-env-name"].(string)
-	refVarName := cmdCtx.Flags["--ref-var-name"].(string)
+	refEnvName := cmdCtx.Flags["--ref-env"].(string)
+	refVarName := cmdCtx.Flags["--ref-var"].(string)
 
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
@@ -74,27 +77,22 @@ func varRefCreateRun(ctx context.Context, es models.EnvService, cmdCtx command.C
 	return nil
 }
 
-func VarRefDeleteCmd() command.Command {
+func VarRefDeleteCmd() wargcore.Command {
 	return command.New(
 		"Delete a reference to a variablea",
 		withConfirm(withEnvService(varRefDeleteRun)),
-		command.ExistingFlags(confirmFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
+		command.FlagMap(confirmFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.Flag("--name", varRefFlag()),
 		command.Flag(
-			"--name",
-			"Ref name",
-			scalar.String(),
-			flag.Required(),
-		),
-		command.ExistingFlag(
-			"--env-name",
+			"--env",
 			envNameFlag(),
 		),
 	)
 }
 
-func varRefDeleteRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func varRefDeleteRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 
 	name := mustGetNameArg(cmdCtx.Flags)
@@ -107,30 +105,25 @@ func varRefDeleteRun(ctx context.Context, es models.EnvService, cmdCtx command.C
 	return nil
 }
 
-func VarRefShowCmd() command.Command {
+func VarRefShowCmd() wargcore.Command {
 	return command.New(
 		"Show details for a reference",
 		withEnvService(varRefShowRun),
-		command.ExistingFlags(maskFlag()),
-		command.ExistingFlags(timeoutFlagMap()),
-		command.ExistingFlags(sqliteDSNFlagMap()),
-		command.ExistingFlags(timeZoneFlagMap()),
-		command.ExistingFlags(formatFlag()),
-		command.ExistingFlags(widthFlag()),
+		command.FlagMap(maskFlag()),
+		command.FlagMap(timeoutFlagMap()),
+		command.FlagMap(sqliteDSNFlagMap()),
+		command.FlagMap(timeZoneFlagMap()),
+		command.FlagMap(formatFlag()),
+		command.FlagMap(widthFlag()),
+		command.Flag("--name", varRefFlag()),
 		command.Flag(
-			"--name",
-			"Env ref name",
-			scalar.String(),
-			flag.Required(),
-		),
-		command.ExistingFlag(
-			"--env-name",
+			"--env",
 			envNameFlag(),
 		),
 	)
 }
 
-func varRefShowRun(ctx context.Context, es models.EnvService, cmdCtx command.Context) error {
+func varRefShowRun(ctx context.Context, es models.EnvService, cmdCtx wargcore.Context) error {
 	envName := mustGetEnvNameArg(cmdCtx.Flags)
 	mask := mustGetMaskArg(cmdCtx.Flags)
 	name := mustGetNameArg(cmdCtx.Flags)

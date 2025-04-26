@@ -16,7 +16,7 @@ func EnvList(c CommonTablePrintArgs, envs []models.Env) {
 				newRow("Name", e.Name),
 				newRow("Comment", e.Comment, skipRowIf(e.Comment == "")),
 				newRow("CreateTime", createTime),
-				newRow("UpdateTime", updateTime, skipRowIf(e.CreateTime == e.UpdateTime)),
+				newRow("UpdateTime", updateTime, skipRowIf(e.CreateTime.Equal(e.UpdateTime))),
 			)
 		}
 		t.Render()
@@ -43,7 +43,7 @@ func EnvShowRun(
 			newRow("Name", env.Name),
 			newRow("Comment", env.Comment, skipRowIf(env.Comment == "")),
 			newRow("CreateTime", createTime),
-			newRow("UpdateTime", updateTime, skipRowIf(env.CreateTime == env.UpdateTime)),
+			newRow("UpdateTime", updateTime, skipRowIf(env.CreateTime.Equal(env.UpdateTime))),
 		)
 		t.Render()
 
