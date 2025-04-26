@@ -21,7 +21,7 @@ func VarRefShowPrint(c CommonTablePrintArgs, envRef models.VarRef, envVar models
 			newRow("RefVarValue", mask(c.Mask, envVar.Value)),
 			newRow("Comment", envRef.Comment, skipRowIf(envRef.Comment == "")),
 			newRow("CreateTime", createTime),
-			newRow("UpdateTime", updateTime, skipRowIf(envRef.CreateTime == envRef.UpdateTime)),
+			newRow("UpdateTime", updateTime, skipRowIf(envRef.CreateTime.Equal(envRef.UpdateTime))),
 		)
 		t.Render()
 	case Format_ValueOnly:

@@ -1,26 +1,35 @@
+version: "2"
 linters:
-  disable-all: false
   enable:
-    # defaults
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - typecheck
-    - unused
-    # stuff I'm adding
     - exhaustive
     - exhaustruct
     - gochecknoglobals
     - gochecknoinits
-    - gofmt
-    - goimports
     - nonamedreturns
     - paralleltest
     - predeclared
-  fast: false
-linters-settings:
-  paralleltest:
-    ignore-missing: false
-    ignore-missing-subtests: true
+  settings:
+    paralleltest:
+      ignore-missing: false
+      ignore-missing-subtests: true
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
