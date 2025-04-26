@@ -14,7 +14,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 Example (note that `~/fbin` is in my `$FPATH`):
 
 ```zsh
-envelope --completion-script-zsh > ~/fbin/_envelope
+envelope completion zsh > ~/fbin/_envelope
 ```
 
 ## Changed

@@ -16,6 +16,8 @@ brews:
     description: Example Go CLI to model tooling
     directory: Formula
     homepage: https://github.com/bbkane/envelope
+    post_install: |
+      generate_completions_from_executable(bin/"envelope", "completion", shells: [:zsh])
     repository:
       name: homebrew-tap
       owner: bbkane

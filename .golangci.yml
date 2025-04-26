@@ -9,6 +9,7 @@ formatters:
       - builtin$
       - examples$
 linters:
+  default: standard
   enable:
     - exhaustive
     - exhaustruct
@@ -30,6 +31,5 @@ linters:
       - std-error-handling
   settings:
     paralleltest:
-      ignore-missing: false
       ignore-missing-subtests: true
 version: '2'
