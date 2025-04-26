@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/alessio/shellescape"
+	"al.essio.dev/pkg/shellescape"
 	"go.bbkane.com/envelope/models"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
