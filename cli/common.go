@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"go.bbkane.com/envelope/app"
-	"go.bbkane.com/envelope/models"
+	"go.bbkane.com/enventory/app"
+	"go.bbkane.com/enventory/models"
 	"go.bbkane.com/warg/completion"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/path"
@@ -219,7 +219,7 @@ func sqliteDSNFlagMap() wargcore.FlagMap {
 		"--db-path": flag.New(
 			"Sqlite DSN. Usually the file name",
 			scalar.Path(
-				scalar.Default(path.New("~/.config/envelope.db")),
+				scalar.Default(path.New("~/.config/enventory.db")),
 			),
 			flag.Required(),
 			flag.EnvVars("ENVELOPE_DB_PATH"),

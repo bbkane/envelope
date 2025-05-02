@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"go.bbkane.com/envelope/cli/tableprint"
-	"go.bbkane.com/envelope/models"
+	"go.bbkane.com/enventory/cli/tableprint"
+	"go.bbkane.com/enventory/models"
 
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"

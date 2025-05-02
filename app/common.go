@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"go.bbkane.com/envelope/app/sqliteconnect"
-	"go.bbkane.com/envelope/models"
+	"go.bbkane.com/enventory/app/sqliteconnect"
+	"go.bbkane.com/enventory/models"
 )
 
 type EnvService struct {

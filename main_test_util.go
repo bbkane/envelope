@@ -24,7 +24,7 @@ const envVarValue01 = "envVarValue01"
 const envRefName01 = "envRefName01"
 
 func createTempDB(t *testing.T) string {
-	dbFile, err := os.CreateTemp(os.TempDir(), "envelope-test-")
+	dbFile, err := os.CreateTemp(os.TempDir(), "enventory-test-")
 	require.NoError(t, err)
 	err = dbFile.Close()
 	require.NoError(t, err)
@@ -63,7 +63,7 @@ func (tcb *testCmdBuilder) Strs(args ...string) *testCmdBuilder {
 }
 
 func (tcb *testCmdBuilder) Finish(dbPath string) []string {
-	return slices.Concat([]string{"envelope"}, tcb.cmd, []string{"--db-path", dbPath})
+	return slices.Concat([]string{"enventory"}, tcb.cmd, []string{"--db-path", dbPath})
 }
 
 func (tcb *testCmdBuilder) Name(name string) *testCmdBuilder {

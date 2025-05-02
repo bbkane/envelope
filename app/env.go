@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"go.bbkane.com/envelope/app/sqliteconnect/sqlcgen"
-	"go.bbkane.com/envelope/models"
+	"go.bbkane.com/enventory/app/sqliteconnect/sqlcgen"
+	"go.bbkane.com/enventory/models"
 )
 
 // mapErrEnvNotFound replaces sql.ErrNoRows with domain.ErrEnvNotFound but otherwise

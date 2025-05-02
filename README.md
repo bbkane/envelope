@@ -1,4 +1,4 @@
-# envelope
+# enventory
 
 ![./demo.gif](./demo.gif)
 
@@ -9,20 +9,20 @@ Store environment variables for projects in a central SQLite database!
 
 ## Project Status
 
-I'm using `envelope` personally, but I can't recommend it for anyone else to use until I have more features and tab completion. The CLI interface is also not stable.
+I'm using `enventory` personally, but I can't recommend it for anyone else to use until I have more features and tab completion. The CLI interface is also not stable.
 
 ## Install
 
-- [Homebrew](https://brew.sh/): `brew install bbkane/tap/envelope`
+- [Homebrew](https://brew.sh/): `brew install bbkane/tap/enventory`
 - [Scoop](https://scoop.sh/):
 
 ```
 scoop bucket add bbkane https://github.com/bbkane/scoop-bucket
-scoop install bbkane/envelope
+scoop install bbkane/enventory
 ```
 
-- Download Mac/Linux/Windows executable: [GitHub releases](https://github.com/bbkane/envelope/releases)
-- Go: `go install go.bbkane.com/envelope@latest`
+- Download Mac/Linux/Windows executable: [GitHub releases](https://github.com/bbkane/enventory/releases)
+- Go: `go install go.bbkane.com/enventory@latest`
 - Build with [goreleaser](https://goreleaser.com/) after cloning: ` goreleaser release --snapshot --clean`
 
 ## Initialize in `~/.zshrc`
@@ -30,7 +30,7 @@ scoop install bbkane/envelope
 > Other shells not yet supported
 
 ```bash
-eval "$(envelope shell zsh init)"
+eval "$(enventory shell zsh init)"
 ```
 
 ## Dev Notes

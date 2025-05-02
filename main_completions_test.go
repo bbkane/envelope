@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.bbkane.com/envelope/app"
-	"go.bbkane.com/envelope/models"
+	"go.bbkane.com/enventory/app"
+	"go.bbkane.com/enventory/models"
 	"go.bbkane.com/warg/completion"
 	"go.bbkane.com/warg/parseopt"
 	"go.bbkane.com/warg/wargcore"

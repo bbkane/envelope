@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"al.essio.dev/pkg/shellescape"
-	"go.bbkane.com/envelope/models"
+	"go.bbkane.com/enventory/models"
 	"go.bbkane.com/warg/command"
 	"go.bbkane.com/warg/flag"
 	"go.bbkane.com/warg/value/scalar"
@@ -51,11 +51,11 @@ func shellZshInitRun(cmdCtx wargcore.Context) error {
 	printExportEnv := cmdCtx.Flags["--print-export-env"].(bool)
 
 	prelude := `
-# https://github.com/bbkane/envelope/
+# https://github.com/bbkane/enventory/
 #
-# To initialize envelope, add this to your configuration (usually ~/.zshrc):
+# To initialize enventory, add this to your configuration (usually ~/.zshrc):
 #
-# eval "$(envelope shell zsh init)"
+# eval "$(enventory shell zsh init)"
 #
 `
 	fmt.Fprint(cmdCtx.Stdout, prelude)
@@ -69,8 +69,8 @@ autoload -Uz add-zsh-hook
 
 	chpwdHook := `
 add-zsh-hook -Uz chpwd (){
-    eval $(envelope shell zsh unexport --env "$OLDPWD" --no-env-no-problem true)
-    eval $(envelope shell zsh export --env "$PWD" --no-env-no-problem true)
+    eval $(enventory shell zsh unexport --env "$OLDPWD" --no-env-no-problem true)
+    eval $(enventory shell zsh export --env "$PWD" --no-env-no-problem true)
 }
 `
 	if printChpwdHook {
@@ -78,8 +78,8 @@ add-zsh-hook -Uz chpwd (){
 	}
 
 	exportEnv := `
-export-env() { eval $(envelope shell zsh export --env "$1" --no-env-no-problem true) }
-unexport-env() { eval $(envelope shell zsh unexport --env "$1" --no-env-no-problem true) }
+export-env() { eval $(enventory shell zsh export --env "$1" --no-env-no-problem true) }
+unexport-env() { eval $(enventory shell zsh unexport --env "$1" --no-env-no-problem true) }
 `
 	if printExportEnv {
 		fmt.Fprint(cmdCtx.Stdout, exportEnv)

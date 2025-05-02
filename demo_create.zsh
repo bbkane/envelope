@@ -10,11 +10,11 @@ script_dir="${0:A:h}"
 readonly script_dir
 cd "${script_dir}"
 
-# Use a new version of envelope
+# Use a new version of enventory
 go install .
 export PATH="$HOME/go/bin:$PATH"
 echo "Using:"
-which envelope
+which enventory
 
 export PROMPT='%F{47}$ %f'
 rm -f ./tmp.db

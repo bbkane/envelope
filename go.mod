@@ -1,4 +1,4 @@
-module go.bbkane.com/envelope
+module go.bbkane.com/enventory
 
 go 1.23.0
 

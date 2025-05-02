@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"go.bbkane.com/envelope/app/sqliteconnect/sqlcgen"
-	"go.bbkane.com/envelope/models"
+	"go.bbkane.com/enventory/app/sqliteconnect/sqlcgen"
+	"go.bbkane.com/enventory/models"
 )
 
 func (e *EnvService) VarRefCreate(ctx context.Context, args models.VarRefCreateArgs) (*models.VarRef, error) {

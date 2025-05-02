@@ -14,7 +14,7 @@ Note the the latest version is usually work in progress and may have not yet bee
 Example (note that `~/fbin` is in my `$FPATH`):
 
 ```zsh
-envelope completion zsh > ~/fbin/_envelope
+enventory completion zsh > ~/fbin/_enventory
 ```
 
 ## Changed
@@ -135,8 +135,8 @@ envelope completion zsh > ~/fbin/_envelope
 ## Added
 
 - `--confirm` flag to deletes / updates
-- `envelope env print-script --type unexport`
-- `envelope init`
+- `enventory env print-script --type unexport`
+- `enventory init`
 
 ## Changed
 

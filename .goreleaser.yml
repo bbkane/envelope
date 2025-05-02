@@ -15,10 +15,10 @@ brews:
       See https://www.macworld.com/article/3140183/how-to-install-an-app-in-macos-sierra-thats-not-signed-by-a-developer.html to work around that
     description: Centrally manage environment variables
     directory: Formula
-    homepage: https://github.com/bbkane/envelope
+    homepage: https://github.com/bbkane/enventory
     install: |
-      bin.install "envelope"
-      generate_completions_from_executable(bin/"envelope", "completion", shells: [:zsh])
+      bin.install "enventory"
+      generate_completions_from_executable(bin/"enventory", "completion", shells: [:zsh])
     repository:
       name: homebrew-tap
       owner: bbkane
@@ -48,7 +48,7 @@ checksum:
   name_template: checksums.txt
 scoops:
   - description: Example Go CLI to model tooling
-    homepage: https://github.com/bbkane/envelope
+    homepage: https://github.com/bbkane/enventory
     license: MIT
     repository:
       name: scoop-bucket

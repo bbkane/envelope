@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go.bbkane.com/envelope/cli"
+	"go.bbkane.com/enventory/cli"
 	"go.bbkane.com/warg"
 	"go.bbkane.com/warg/help"
 	"go.bbkane.com/warg/section"
@@ -13,7 +13,7 @@ var version string
 func buildApp() *wargcli.App {
 
 	app := warg.New(
-		"envelope",
+		"enventory",
 		version,
 		section.New(
 			"Manage Environmental secrets centrally",

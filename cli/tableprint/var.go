@@ -3,7 +3,7 @@ package tableprint
 import (
 	"fmt"
 
-	"go.bbkane.com/envelope/models"
+	"go.bbkane.com/enventory/models"
 )
 
 func VarShowPrint(c CommonTablePrintArgs, envVar models.Var, envRefs []models.VarRef) {
