@@ -6,10 +6,13 @@ Store environment variables for projects in a central SQLite database!
 
 - Automatically export/unexport environments when entering/leaving directories
 - Need an environment variable in more than one environment? Create a reference to it instead of copying it.
+- Currently only supports `zsh`
 
 ## Project Status
 
-I'm using `enventory` personally, but I can't recommend it for anyone else to use until I have more features and tab completion. The CLI interface is also not stable.
+I'm using `enventory` personally, and it seems to work well! That said, I work
+on `enventory` for fun, and part of that is changing APIs and CLI interfaces
+when I want to.
 
 ## Install
 
@@ -31,6 +34,14 @@ scoop install bbkane/enventory
 
 ```bash
 eval "$(enventory shell zsh init)"
+```
+
+## Initialize `zsh` Tab Completion
+
+`enventory` is quite a verbose CLI, so tab completion (which also auto-completes env names, var names, and var ref names) is super useful.
+
+```bash
+enventory completion zsh > /something/in/$fpath
 ```
 
 ## Dev Notes

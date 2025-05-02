@@ -5,6 +5,18 @@ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note the the latest version is usually work in progress and may have not yet been released.
 
+# v0.0.17
+
+## Changed
+
+- Rename app from envelope to enventory. "envelope" turns out to be a very similar CLI: https://github.com/mattrighetti/envelope
+
+# v0.0.15 and v0.0.16
+
+## Fixed
+
+- Fix zsh tab completion install in generated Homebrew formula
+
 # v0.0.14
 
 ## Added
