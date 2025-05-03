@@ -11,6 +11,20 @@ Note the the latest version is usually work in progress and may have not yet bee
 
 - Rename app from envelope to enventory. "envelope" turns out to be a very similar CLI: https://github.com/mattrighetti/envelope
 
+### Migration steps
+
+Install `enventory`: `brew install bbkane/tap/enventory` or alternatives
+
+Change `~/.zshrc`: replace `eval "$(envelope shell zsh init)"` with `eval "$(enventory shell zsh init)"`
+
+Rename database: `cp ~/.config/envelope.db ~/.config/enventory.db`
+
+Clear shell completions cache if needed: `rm ~/.zcompdump`
+
+Open a new shell and test that everything works
+
+Uninstall envelope and delete `~/.config/envelope.db`
+
 # v0.0.15 and v0.0.16
 
 ## Fixed
